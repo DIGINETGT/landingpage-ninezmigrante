@@ -80,7 +80,7 @@ const Navbar = () => {
               fontSize={{ md: 'md', lg: '1.4em' }}
               display={{ base: 'none', md: 'block' }}
             >
-              Monitoreo centroamericano de niñez y adolescencia migrante
+              Monitoreo de niñez y adolescencia migrante
             </Text>
           </Stack>
 

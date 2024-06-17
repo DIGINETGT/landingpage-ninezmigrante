@@ -93,7 +93,7 @@ const GraphFooter = ({ responsive }) => {
             lineHeight={1.2}
             textAlign="center"
           >
-            Monitoreo centroamericano de niñez y adolescencia migrante
+            Monitoreo de niñez y adolescencia migrante
           </Text>
         </Stack>
         <Stack
