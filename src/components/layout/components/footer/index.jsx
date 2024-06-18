@@ -20,7 +20,7 @@ const Footer = () => {
       <Box padding="40px 24px 0px 24px">
         {/* CONTAINER */}
         <Stack
-          gap="40px"
+          gap="20px"
           padding={{ base: '16px', md: '24px' }}
           direction={{ base: 'column', md: 'row' }}
           alignItems={{ base: 'flex-start', md: 'center' }}
@@ -105,7 +105,7 @@ const Footer = () => {
 
           {/* LOGOS */}
           <Stack
-            gap="8px"
+            gap="24px"
             alignItems={{ base: 'flex-start', md: 'center' }}
             direction={{ base: 'column', md: 'row' }}
           >
