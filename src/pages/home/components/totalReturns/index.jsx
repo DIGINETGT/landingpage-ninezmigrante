@@ -11,11 +11,19 @@ import Honduras from '../../../../assets/honduras.png';
 import Salvador from '../../../../assets/salvador.png';
 
 // UTILS
-import { year } from '../../../../utils/year';
-import useFetch from '../../../../hooks/fetch';
+import { year } from "../../../../utils/year";
+import useFetch from "../../../../hooks/fetch";
+import { useQuery } from "@apollo/client";
+import { GET_RETURNEDS } from "../../../../utils/query/returned";
 
 const TotalReturns = () => {
   const [total, setTotal] = useState({ gt: 0, hn: 0 });
+  const {
+    data: returneds,
+    loading: loadingReturned,
+    error: errorReturned,
+  } = useQuery(GET_RETURNEDS);
+
 
   useFetch({
     url: '/consultas/totalnnaporpaiscurrentyear',

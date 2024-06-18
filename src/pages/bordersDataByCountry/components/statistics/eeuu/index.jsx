@@ -19,6 +19,7 @@ import { year } from "../../../../../utils/year";
 import GraphFooter from "../../../../../components/graphFooter";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
+import MonthPicker from "../../../../../components/monthPicker";
 
 const excludeFields = [
   "_id",
@@ -144,7 +145,7 @@ const EEUU = () => {
             <YearSelect handleYear={handleYear} currentYear={currentYear} />
 
             {/* SELECT MONTH */}
-            <Select
+            {/* <Select
               fontSize="2xl"
               lineHeight="1.8"
               fontWeight="600"
@@ -167,7 +168,11 @@ const EEUU = () => {
               <option value="OCTUBRE">Octubre</option>
               <option value="NOVIEMBRE">Noviembre</option>
               <option value="DICIEMBRE">Diciembre</option>
-            </Select>
+            </Select> */}
+            <MonthPicker
+              handleMonth={handleMonth}
+              currentMonth={currentMonth}
+            />
           </Stack>
         </Stack>
 
