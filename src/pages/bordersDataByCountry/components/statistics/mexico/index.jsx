@@ -29,6 +29,7 @@ import useFetch, { monthNames } from "../../../../../hooks/fetch";
 import { year } from "../../../../../utils/year";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
+import MonthPicker from "../../../../../components/monthPicker";
 
 const Mexico = () => {
   const [currentMonth, setCurrentMonth] = useState("");
@@ -137,7 +138,7 @@ const Mexico = () => {
             <YearSelect handleYear={handleYear} currentYear={currentYear} />
 
             {/* SELECT MONTH */}
-            <Select
+            {/* <Select
               fontSize="2xl"
               lineHeight="1.8"
               fontWeight="600"
@@ -160,7 +161,11 @@ const Mexico = () => {
               <option value="OCTUBRE">Octubre</option>
               <option value="NOVIEMBRE">Noviembre</option>
               <option value="DICIEMBRE">Diciembre</option>
-            </Select>
+            </Select> */}
+            <MonthPicker
+              handleMonth={handleMonth}
+              currentMonth={currentMonth}
+            />
           </Stack>
         </Stack>
 

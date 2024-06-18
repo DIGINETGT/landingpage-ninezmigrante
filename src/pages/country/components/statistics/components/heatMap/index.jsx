@@ -21,7 +21,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
   const countryID = useParams().countryID || country;
 
   //SCALE
-  const [scale, setScale] = useState({
+  const scale = {
     heat: getCountryContent({
       countryID,
       content: {
@@ -39,7 +39,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
         },
       },
     }),
-  });
+  };
 
   // COLORES
   const [colorScales, setColorScales] = useState({});
@@ -89,18 +89,16 @@ const HeatMap = ({ period, year, country, periodId }) => {
         <Box>
           <HStack spacing={0}>
             <Box height="30px" width="30px" background={colors.heatMin[100]} />
-            {Object.values(scale?.heat?.[countryID]?.levelHeat ?? {}).map(
-              (color) => {
-                return (
-                  <Box
-                    height="30px"
-                    width="30px"
-                    key={color}
-                    background={`${scale.heat[countryID].color}, ${color})`}
-                  />
-                );
-              }
-            )}
+            {Object.values(scale?.heat?.levelHeat ?? {}).map((color) => {
+              return (
+                <Box
+                  height="30px"
+                  width="30px"
+                  key={color}
+                  background={`${scale.heat.color}, ${color})`}
+                />
+              );
+            })}
           </HStack>
           <Flex justifyContent="space-between">
             <Text fontFamily="Oswald" fontSize="lg">
