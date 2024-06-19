@@ -35,11 +35,11 @@ const Gender = ({
       })
     ) {
       if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Femenino") {
-        total += acc?.attributes?.data?.cant;
+        total.male += acc?.attributes?.data?.cant;
       }
 
       if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Masculino") {
-        total += acc?.attributes?.data?.cant;
+        total.female += acc?.attributes?.data?.cant;
       }
     }
   });

@@ -79,7 +79,6 @@ const AgeRanges = ({
   if (disableFirstAge) {
     chartColors = chartColors.slice(1);
     agesLabels = agesLabels.slice(1);
-    totals = totals.slice(1);
   }
 
   const data = {
