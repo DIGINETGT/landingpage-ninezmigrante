@@ -7,79 +7,131 @@ export const GET_RETURNEDS = gql`
         id
         attributes {
           total
-          fuentes {
-            url
-            name
-          }
-          monthly_report {
-            data {
-              id
-              attributes {
-                report_name
-                report_date
-              }
-            }
-          }
           country_contributions {
             data {
-              id
               attributes {
-                country_name
-                contribution_amount
+                country {
+                  data {
+                    attributes {
+                      name
+                    }
+                  }
+                }
               }
             }
           }
-          travel_condition_contributions {
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_GENDER = gql`
+  query {
+    genderContributions {
+      data {
+        attributes {
+          cant
+          gender {
             data {
-              id
               attributes {
-                condition_name
-                contribution_amount
+                name
+                description
+                code
               }
             }
           }
-          age_group_contributions {
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
+  query {
+    travel_condition_contributions {
+      data {
+        attributes {
+          cant
+          travel_condition {
             data {
-              id
               attributes {
-                age_group
-                contribution_amount
+                name
+                description
+                code
               }
             }
           }
-          return_route_contributions {
+        }
+      }
+    }
+  }
+`;
+
+export const GET_DETAINED_IN_BORDERDS = gql`
+  query {
+    detainedInBordersReports {
+      data {
+        id
+        attributes {
+          country {
             data {
               id
               attributes {
-                route_name
-                contribution_amount
+                name
               }
             }
           }
-          department_contributions {
+        }
+      }
+    }
+  }
+`;
+
+export const GET_DETAINED = gql`
+  query {
+    detainedInBorders {
+      data {
+        id
+        attributes {
+          total
+          month
+        }
+      }
+    }
+  }
+`;
+
+export const GET_BY_GENDER = gql`
+  query {
+    genderContributions {
+      data {
+        attributes {
+          cant
+          gender {
             data {
-              id
               attributes {
-                department_name
-                contribution_amount
+                name
               }
             }
           }
-          municipality_contributions {
+        }
+      }
+    }
+  }
+`;
+
+export const GET_BY_MUNI = gql`
+  query {
+    municipalityContributions {
+      data {
+        attributes {
+          cant
+          municipality {
             data {
-              id
               attributes {
-                municipality_name
-                contribution_amount
-              }
-            }
-          }
-          gender_contributions {
-            data {
-              id
-              attributes {
-                gender
-                contribution_amount
+                name
+                code
               }
             }
           }

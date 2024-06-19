@@ -21,3 +21,9 @@ export const reorder = (list, startIndex, endIndex) => {
 export const capitalizeText = (text) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const compareDateRange = ({ start, end, month }) => {
+  // month 2024-06-18
+  const comparedMonth = Number(month?.split("-")?.[1] ?? "0");
+  return comparedMonth >= start && comparedMonth <= end;
+};

@@ -9,38 +9,24 @@ import ReturnPath from "../../../country/components/statistics/components/return
 import ReturnCountry from "../../../country/components/statistics/components/returnCountry";
 import HeatMap from "../../../country/components/statistics/components/heatMap";
 
+import { GET_DETAINED_IN_BORDERDS } from "../../../../utils/query/returned";
+
 import useFetch, { monthNames } from "../../../../hooks/fetch";
 
 const Statistics = ({ data, setUpdateDate, setPeriodId }) => {
-  const [total, setTotal] = useState(0);
+  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
 
-  useFetch({
-    url: "/consultas/totalporpaisanioperiodo/country?anio=selectedYear&periodRange",
-    year: data.year,
-    periodStart: data.period[0],
-    periodEnd: data.period[1],
-    country: data.country,
-    resolve: (resData) => {
-      const lastData = resData?.data?.[resData?.data?.length - 1];
-      const dates = resData?.data
-        ?.map((reg) => new Date(reg?._id["Fecha de actualización"]))
-        .sort((a, b) => b - a);
-
-      const uDate = dates[0];
-
-      setPeriodId(lastData?._id?._id);
-      setUpdateDate(
-        `${uDate.getDate()} de ${monthNames[
-          uDate.getMonth() + 1
-        ]?.toLowerCase()} del ${uDate.getFullYear()}`
-      );
-
-      const total = resData?.data?.reduce(
-        (acc, item) => acc + (item?.total ?? 0),
-        0
-      );
-      setTotal(total);
-    },
+  // OBTENER DATOS
+  const total = dataBorder?.detainedInBorders?.data?.reduce((acc, item) => {
+    if (
+      compareDateRange({
+        start: currentPeriod[0],
+        end: currentPeriod[1],
+        month: item?.attributes?.month,
+      })
+    ) {
+      acc += item?.attributes?.total;
+    }
   });
 
   return (

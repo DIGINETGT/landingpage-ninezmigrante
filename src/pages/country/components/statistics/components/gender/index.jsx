@@ -10,6 +10,10 @@ import Male from "../../../../../../assets/male.png";
 import Femenine from "../../../../../../assets/femenine.png";
 
 import useFetch from "../../../../../../hooks/fetch";
+import {
+  GET_BY_GENDER,
+  GET_DETAINED,
+} from "../../../../../../utils/query/returned";
 
 const Gender = ({
   period,
@@ -18,25 +22,28 @@ const Gender = ({
   defData: { female = undefined, male = undefined },
 }) => {
   const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState({ male: male ?? 0, female: female ?? 0 });
 
-  useFetch({
-    url: "/consultas/totalporgenero/country?anio=selectedYear&periodRange",
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    disableFetch: female !== undefined || male !== undefined,
-    resolve: (data) => {
-      let totals = { male: 0, female: 0 };
-      data?.data?.forEach((stats) => {
-        const id = stats._id?.toLowerCase();
-        if (id === "femenino" || id === "f") totals.female += stats.total;
-        if (id === "masculino" || id === "m") totals.male += stats.total;
-      });
-      setTotal(totals);
-    },
+  const { data, loading, error } = useQuery(GET_BY_GENDER);
+  const total = { male: 0, female: 0 };
+
+  data?.detainedInBorders?.data?.forEach((acc, item) => {
+    if (
+      compareDateRange({
+        start: currentPeriod[0],
+        end: currentPeriod[1],
+        month: item?.attributes?.month,
+      })
+    ) {
+      if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Femenino") {
+        total += acc?.attributes?.data?.cant;
+      }
+
+      if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Masculino") {
+        total += acc?.attributes?.data?.cant;
+      }
+    }
   });
+
 
   return (
     <Box width="100%">

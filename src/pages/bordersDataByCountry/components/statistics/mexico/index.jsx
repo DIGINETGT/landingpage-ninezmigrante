@@ -34,7 +34,6 @@ import MonthPicker from "../../../../../components/monthPicker";
 const Mexico = () => {
   const [currentMonth, setCurrentMonth] = useState("");
   const [currentYear, setCurrentYear] = useState("");
-  const [bordersData, setBordersData] = useState([]);
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [updateDate, setUpdateDate] = useState("");
@@ -46,22 +45,10 @@ const Mexico = () => {
   const handleMonth = (ev) => setCurrentMonth(ev.target.value);
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  // OBTENER DATOS
-  useFetch({
-    url: "/consultas/detenidosenfrontera/selectedYear/m%C3%A9xico",
-    year: currentYear,
-    resolve: (data) => {
-      const lastDate = data?.data?.[data?.data?.length - 1]?.["updatedAt"];
-      const uDate = new Date(lastDate);
+  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
 
-      setUpdateDate(
-        `${uDate.getDate()} de ${monthNames[
-          uDate.getMonth() + 1
-        ]?.toLowerCase()} del ${uDate.getFullYear()}`
-      );
-      setBordersData(data.data);
-    },
-  });
+  // OBTENER DATOS
+  const bordersData = dataBorder?.country_contributions?.data;
 
   const dataPerMonth =
     bordersData?.find(

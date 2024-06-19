@@ -22,57 +22,26 @@ import getCountryContent from '../../../../utils/country';
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
   const { countryID } = useParams();
-  const [total, setTotal] = useState(0);
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [updateDate, setUpdateDate] = useState('');
   const [periodId, setPeriodId] = useState('');
 
-  // OBTENER TOTAL POR PERIODO
-  useFetch({
-    url: '/consultas/totalporpaisanioperiodo/country?anio=selectedYear&periodRange',
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    resolve: (data) => {
-      const dates = data?.data
-        ?.map((reg) => new Date(reg?._id['Fecha de actualización']))
-        .sort((a, b) => b - a);
-
-      const lastData = data?.data?.[data?.data?.length - 1];
-      const lastDate = dates[0];
-
-      setPeriodId(lastData?._id?._id);
-      setUpdateDate(
-        `${lastDate.getDate()} de ${monthNames[
-          lastDate.getMonth() + 1
-        ]?.toLowerCase()} del ${lastDate.getFullYear()}`
-      );
-
-      const total = data?.data?.reduce(
-        (acc, item) => acc + (item?.total ?? 0),
-        0
-      );
-      setTotal(total);
-    },
+  const { data, loading, error } = useQuery(GET_DETAINED);
+  const total = data?.detainedInBorders?.data?.reduce((acc, item) => {
+    if (
+      compareDateRange({
+        start: currentPeriod[0],
+        end: currentPeriod[1],
+        month: item?.attributes?.month,
+      })
+    ) {
+      acc += item?.attributes?.total;
+    }
   });
 
-  useFetch({
-    url: '/consultas/totalpordepartamento/country?anio=selectedYear&periodRange',
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    resolve: (data) => {
-      const filteredData = data.data.map((department) => ({
-        ...department,
-        name: department._id.replace('Department', '').toUpperCase()?.trim(),
-      }));
-      setDepartments(filteredData.sort((a, b) => b.total - a.total));
-    },
-  });
 
+ 
   const sources = (
     <Box direction="column" margin="auto" maxWidth="800px">
       {getCountryContent({
