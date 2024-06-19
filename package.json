@@ -24,7 +24,6 @@
     "react-chartjs-2": "^4.2.0",
     "react-dom": "^18.0.0",
     "react-google-recaptcha": "^2.1.0",
-    "react-month-picker": "^2.2.1",
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
