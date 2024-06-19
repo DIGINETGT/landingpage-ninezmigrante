@@ -3,15 +3,7 @@ import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMPONENTS
-import {
-  Box,
-  Stack,
-  Text,
-  Select,
-  Image,
-  Divider,
-  useQuery,
-} from "@chakra-ui/react";
+import { Box, Stack, Text, Select, Image, Divider } from "@chakra-ui/react";
 
 // COMPONENTS
 import DownloadImage from "../../../../components/downloadImage";
@@ -38,6 +30,7 @@ import {
   GET_DETAINED_IN_BORDERDS,
 } from "../../../../utils/query/returned";
 import { compareDateRange } from "../../../../utils/tools";
+import { useQuery } from "@apollo/client";
 
 const Compare = () => {
   const [currentPeriod, setCurrentPeriod] = useState([1, 1]);
@@ -86,8 +79,8 @@ const Compare = () => {
   };
 
   const dataPerPeriod = {
-    mx: bordersData.mx
-      .filter((item) => {
+    mx: bordersData?.mx
+      ?.filter((item) => {
         const monthIndex = monthNames.indexOf(item.mes);
         return (
           monthIndex >= currentPeriod[0] &&
@@ -96,8 +89,8 @@ const Compare = () => {
         );
       })
       .reduce((acc, item) => acc + item.totalMes, 0),
-    usa: bordersData.usa
-      .filter((item) => {
+    usa: bordersData?.usa
+      ?.filter((item) => {
         const monthIndex = monthNames.indexOf(item.mes);
         return (
           monthIndex >= currentPeriod[0] &&

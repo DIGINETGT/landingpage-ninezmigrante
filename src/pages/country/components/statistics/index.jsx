@@ -16,8 +16,10 @@ import Gender from './components/gender';
 import useFetch, { monthNames } from '../../../../hooks/fetch';
 
 import StatisticsContext from './context';
-import { capitalizeText } from '../../../../utils/tools';
+import { capitalizeText, compareDateRange } from '../../../../utils/tools';
 import getCountryContent from '../../../../utils/country';
+import { useQuery } from '@apollo/client';
+import { GET_DETAINED } from '../../../../utils/query/returned';
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
@@ -29,15 +31,9 @@ const Statistics = ({ period, year, satisticsRef }) => {
 
   const { data, loading, error } = useQuery(GET_DETAINED);
   const total = data?.detainedInBorders?.data?.reduce((acc, item) => {
-    if (
-      compareDateRange({
-        start: currentPeriod[0],
-        end: currentPeriod[1],
-        month: item?.attributes?.month,
-      })
-    ) {
+  
       acc += item?.attributes?.total;
-    }
+    
   });
 
 

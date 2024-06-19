@@ -27,6 +27,7 @@ import DownloadTable from "../../../../components/downloadTable";
 import GraphFooter from "../../../../../../../../components/graphFooter";
 import StatisticsContext from "../../../../context";
 import { GET_BY_MUNI } from "../../../../../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
 
 const MapModal = ({
   modalDep,
@@ -41,7 +42,7 @@ const MapModal = ({
 
   const { data: databorders, loading, error } = useQuery(GET_BY_MUNI);
   const depTotals = {};
-  databorders.data?.forEach((stats) => {
+  databorders?.data?.forEach((stats) => {
     depTotals[stats._id] = stats.total;
   });
 

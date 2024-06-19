@@ -14,6 +14,8 @@ import {
   GET_BY_GENDER,
   GET_DETAINED,
 } from "../../../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
+import { compareDateRange } from "../../../../../../utils/tools";
 
 const Gender = ({
   period,
@@ -27,13 +29,7 @@ const Gender = ({
   const total = { male: 0, female: 0 };
 
   data?.detainedInBorders?.data?.forEach((acc, item) => {
-    if (
-      compareDateRange({
-        start: currentPeriod[0],
-        end: currentPeriod[1],
-        month: item?.attributes?.month,
-      })
-    ) {
+    
       if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Femenino") {
         total.male += acc?.attributes?.data?.cant;
       }
@@ -41,7 +37,7 @@ const Gender = ({
       if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Masculino") {
         total.female += acc?.attributes?.data?.cant;
       }
-    }
+    
   });
 
 

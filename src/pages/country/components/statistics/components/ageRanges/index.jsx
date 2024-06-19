@@ -15,6 +15,9 @@ import { colors } from "../../../../../../utils/theme";
 
 import { Box, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import useFetch from "../../../../../../hooks/fetch";
+import { useQuery } from "@apollo/client";
+import { GET_DETAINED } from "../../../../../../utils/query/returned";
+import { compareDateRange } from "../../../../../../utils/tools";
 
 export const options = {
   responsive: true,
@@ -52,28 +55,22 @@ const AgeRanges = ({
 
   const totals = { f1: 0, f2: 0, f3: 0, f4: 0 };
   databorders?.detainedInBorders?.data?.forEach((acc) => {
-    if (
-      compareDateRange({
-        start: currentPeriod[0],
-        end: currentPeriod[1],
-        month: item?.attributes?.month,
-      })
-    ) {
+ 
       // PRIMERA INFANCIA
-      if (item?.attributes?.age === "Primera infancia") {
-        totals.f1 += item?.attributes?.total;
+      if (acc?.attributes?.age === "Primera infancia") {
+        totals.f1 += acc?.attributes?.total;
       }
 
       // NIÑEZ
-      if (item?.attributes?.age === "Niñez") {
-        totals.f2 += item?.attributes?.total;
+      if (acc?.attributes?.age === "Niñez") {
+        totals.f2 += acc?.attributes?.total;
       }
 
       // ADOLESCENCIA
-      if (item?.attributes?.age === "Adolescencia") {
-        totals.f3 += item?.attributes?.total;
+      if (acc?.attributes?.age === "Adolescencia") {
+        totals.f3 += acc?.attributes?.total;
       }
-    }
+    
   });
 
   if (disableFirstAge) {

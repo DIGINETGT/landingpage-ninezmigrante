@@ -20,6 +20,8 @@ import GraphFooter from "../../../../../components/graphFooter";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
+import { GET_DETAINED_IN_BORDERDS } from "../../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
 
 const excludeFields = [
   "_id",

@@ -50,7 +50,8 @@ const TotalReturns = () => {
       (acc, returned) =>
         returned?.attributes?.country_contributions?.data?.reduce(
           (acc, country) =>
-            country?.attributes?.country?.data?.attributes?.name === "El Salvador"
+            country?.attributes?.country?.data?.attributes?.name ===
+            "El Salvador"
               ? acc + country?.attributes?.total
               : acc,
           0
@@ -58,6 +59,10 @@ const TotalReturns = () => {
       0
     ),
   };
+
+  const tot = Number.isNaN(total.gt + total.hn + total.sv)
+    ? 0
+    : total.gt + total.hn + total.sv;
 
   return (
     <Box bg="blue.700" p={{ base: "40px 24px", md: "80px 40px" }}>
@@ -107,7 +112,7 @@ const TotalReturns = () => {
             fontFamily="Oswald"
             fontSize={{ base: "5xl", md: "6xl" }}
           >
-            {total.gt + total.hn + total.sv}
+            {tot}
           </Text>
 
           {/* DATA PER COUNTRY */}
@@ -149,7 +154,7 @@ const TotalReturns = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "3xl", md: "4xl" }}
               >
-                {total.gt}
+                {Number.isNaN(total.gt) ? 0 : total.gt}
               </Text>
             </Stack>
 
@@ -186,7 +191,7 @@ const TotalReturns = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "3xl", md: "4xl" }}
               >
-                {total.hn}
+                {Number.isNaN(total.hn) ? 0 : total.hn}
               </Text>
             </Stack>
 
@@ -223,7 +228,7 @@ const TotalReturns = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "3xl", md: "4xl" }}
               >
-                {total.sv}
+                {Number.isNaN(total.sv) ? 0 : total.sv}
               </Text>
             </Stack>
           </Stack>

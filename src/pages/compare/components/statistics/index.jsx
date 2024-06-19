@@ -12,21 +12,17 @@ import HeatMap from "../../../country/components/statistics/components/heatMap";
 import { GET_DETAINED_IN_BORDERDS } from "../../../../utils/query/returned";
 
 import useFetch, { monthNames } from "../../../../hooks/fetch";
+import { compareDateRange } from "../../../../utils/tools";
+import { useQuery } from "@apollo/client";
 
 const Statistics = ({ data, setUpdateDate, setPeriodId }) => {
   const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
 
   // OBTENER DATOS
   const total = dataBorder?.detainedInBorders?.data?.reduce((acc, item) => {
-    if (
-      compareDateRange({
-        start: currentPeriod[0],
-        end: currentPeriod[1],
-        month: item?.attributes?.month,
-      })
-    ) {
+    
       acc += item?.attributes?.total;
-    }
+    
   });
 
   return (

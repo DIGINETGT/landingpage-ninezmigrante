@@ -30,6 +30,8 @@ import { year } from "../../../../../utils/year";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
+import { useQuery } from "@apollo/client";
+import { GET_DETAINED_IN_BORDERDS } from "../../../../../utils/query/returned";
 
 const Mexico = () => {
   const [currentMonth, setCurrentMonth] = useState("");

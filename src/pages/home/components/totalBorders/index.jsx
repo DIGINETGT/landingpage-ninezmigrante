@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Stack, Image, Text, Tooltip, useQuery } from "@chakra-ui/react";
 
 // COMPONETS
 import Mexico from "../../../../assets/mexico.svg";
@@ -87,7 +87,9 @@ const TotalBorders = () => {
             fontFamily="Oswald"
             fontSize={{ base: "5xl", md: "6xl" }}
           >
-            {Number(total.mx) + Number(total.usa)}
+            {Number.isNaN(Number(total.mx) + Number(total.usa))
+              ? 0
+              : Number(total.mx) + Number(total.usa)}
           </Text>
 
           {/* DATA PER COUNTRY */}

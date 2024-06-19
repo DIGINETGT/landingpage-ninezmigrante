@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 // CHAKRA UI
-import { Box, Stack, Text, Image, Divider } from "@chakra-ui/react";
+import { Box, Stack, Text, Image, Divider, useQuery } from "@chakra-ui/react";
 
 // ASSETS
 import Family from "../../../../assets/family.png";
