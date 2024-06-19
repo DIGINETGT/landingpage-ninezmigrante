@@ -10,21 +10,28 @@ import Family from "../../../../assets/family.png";
 // UTILS
 import { year } from "../../../../utils/year";
 import useFetch from "../../../../hooks/fetch";
+import { GET_RETURNEDS_BY_TRAVEL_CONDITION } from "../../../../utils/query/returned";
 
 const TotalByTravelCondition = () => {
-  const [total, setTotal] = useState({ acm: 0, noAcm: 0 });
+  const { data, loading, error } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
 
-  useFetch({
-    url: "/consultas/totalnnaporcondiciondeviajecurrentyear",
-    resolve: (data) => {
-      let totals = { noAcm: 0, acm: 0 };
-      data?.data.forEach((stats) => {
-        if (stats._id === "Acompañado") totals.acm += stats.total;
-        if (stats._id === "No acompañado") totals.noAcm += stats.total;
-      });
-      setTotal(totals);
-    },
-  });
+  const acm = data?.travel_condition_contributions?.data?.reduce(
+    (acc, b) =>
+      b?.attributes?.travel_condition?.attributes?.name === "Acompañado"
+        ? acc + b?.attributes?.cant
+        : acc,
+    0
+  );
+
+  const noAcm = data?.travel_condition_contributions?.data?.reduce(
+    (acc, b) =>
+      b?.attributes?.travel_condition?.attributes?.name === "No acompañado"
+        ? acc + b?.attributes?.cant
+        : acc,
+    0
+  );
+
+  const total = { acm, noAcm };
 
   return (
     <Box bg="blue.500" p={{ base: "40px 24px", md: "80px 40px" }}>

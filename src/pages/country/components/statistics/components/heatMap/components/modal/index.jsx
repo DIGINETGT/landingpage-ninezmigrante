@@ -26,6 +26,7 @@ import ModelContent from "./components/modalContent";
 import DownloadTable from "../../../../components/downloadTable";
 import GraphFooter from "../../../../../../../../components/graphFooter";
 import StatisticsContext from "../../../../context";
+import { GET_BY_MUNI } from "../../../../../../../../utils/query/returned";
 
 const MapModal = ({
   modalDep,
@@ -36,23 +37,12 @@ const MapModal = ({
   country,
 }) => {
   const countryID = useParams().countryID || country;
-  const [depTotals, setDepTotals] = useState({});
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
-  useFetch({
-    url: "/consultas/totalpormunicipio/country/department?anio=selectedYear&periodRange",
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    department: depName[modalDep],
-    country: countryID,
-    resolve: (data) => {
-      let depLocalTotals = {};
-      data?.data?.forEach((stats) => {
-        depLocalTotals[stats._id] = stats.total;
-      });
-      setDepTotals(depLocalTotals);
-    },
+  const { data: databorders, loading, error } = useQuery(GET_BY_MUNI);
+  const depTotals = {};
+  databorders.data?.forEach((stats) => {
+    depTotals[stats._id] = stats.total;
   });
 
   const onCloseChange = () => {

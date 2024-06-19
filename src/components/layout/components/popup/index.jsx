@@ -51,27 +51,6 @@ const Popup = () => {
   const [paisList, setPaisList] = useState([]);
   const popupFilled = window.localStorage.getItem('popup');
 
-  useFetch({
-    url: '/sexovisitas',
-    resolve: (data) => {
-      setSexList(data?.sexoVisitas ?? '');
-    },
-  });
-
-  useFetch({
-    url: '/razonvisitas',
-    resolve: (data) => {
-      setRazonList(data?.razonVisitas ?? '');
-    },
-  });
-
-  useFetch({
-    url: '/pais',
-    resolve: (data) => {
-      setPaisList(data?.paises ?? '');
-    },
-  });
-
   const sendForm = () => {
     // VALIDAR CAPTCHA
     if (!form.captcha) {

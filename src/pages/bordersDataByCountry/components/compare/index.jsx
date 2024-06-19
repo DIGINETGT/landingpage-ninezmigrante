@@ -3,7 +3,15 @@ import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Text, Select, Image, Divider } from "@chakra-ui/react";
+import {
+  Box,
+  Stack,
+  Text,
+  Select,
+  Image,
+  Divider,
+  useQuery,
+} from "@chakra-ui/react";
 
 // COMPONENTS
 import DownloadImage from "../../../../components/downloadImage";
@@ -25,12 +33,16 @@ import useFetch, { monthNames } from "../../../../hooks/fetch";
 import { year } from "../../../../utils/year";
 import LastDate from "../../../../components/lastUpdate";
 import getCountryContent from "../../../../utils/country";
+import {
+  GET_DETAINED,
+  GET_DETAINED_IN_BORDERDS,
+} from "../../../../utils/query/returned";
+import { compareDateRange } from "../../../../utils/tools";
 
 const Compare = () => {
-  const [bordersData, setBordersData] = useState({ mx: [], usa: [] });
   const [currentPeriod, setCurrentPeriod] = useState([1, 1]);
   const [currentYear, setCurrentYear] = useState(year);
-  const [total, setTotal] = useState(0);
+
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [updateDate, setUpdateDate] = useState("");
 
@@ -40,46 +52,38 @@ const Compare = () => {
 
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  useFetch({
-    url: "/consultas/totalporpaisanioperiodo/country?anio=selectedYear&periodRange",
-    year: currentYear,
-    country: countryID,
-    periodStart: currentPeriod[0],
-    periodEnd: currentPeriod[1],
-    resolve: (data) => {
-      const dates = data?.data
-        ?.map((reg) => new Date(reg?._id["Fecha de actualización"]))
-        .sort((a, b) => b - a);
-
-      const uDate = dates[0];
-
-      setUpdateDate(
-        `${uDate.getDate() + 1} de ${monthNames[
-          uDate.getMonth() + 1
-        ]?.toLowerCase()} del ${uDate.getFullYear()}`
-      );
-
-      const total = data?.data?.reduce(
-        (acc, item) => acc + (item?.total ?? 0),
-        0
-      );
-      setTotal(total);
-    },
+  const { data, loading, error } = useQuery(GET_DETAINED);
+  const total = data?.detainedInBorders?.data?.reduce((acc, item) => {
+    if (
+      compareDateRange({
+        start: currentPeriod[0],
+        end: currentPeriod[1],
+        month: item?.attributes?.month,
+      })
+    ) {
+      acc += item?.attributes?.total;
+    }
   });
 
-  useFetch({
-    url: "/consultas/detenidosenfronteradeestadosunidos/selectedYear/estados%20unidos",
-    year: currentYear,
-    resolve: (data) => {
-      setBordersData((prev) => ({ ...prev, usa: data.data }));
-    },
-  });
+  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
 
-  useFetch({
-    url: "/consultas/detenidosenfrontera/selectedYear/m%C3%A9xico",
-    year: currentYear,
-    resolve: (data) => setBordersData((prev) => ({ ...prev, mx: data.data })),
-  });
+  // OBTENER DATOS
+  const bordersData = {
+    mx: dataBorder?.country_contributions?.data?.reduce(
+      (acc, b) =>
+        b?.attributes?.country?.data?.attributes?.name === "México"
+          ? acc + b?.attributes?.cant
+          : acc,
+      0
+    ),
+    usa: dataBorder?.country_contributions?.data?.reduce(
+      (acc, b) =>
+        b?.attributes?.country?.data?.attributes?.name === "Estados Unidos"
+          ? acc + b?.attributes?.cant
+          : acc,
+      0
+    ),
+  };
 
   const dataPerPeriod = {
     mx: bordersData.mx

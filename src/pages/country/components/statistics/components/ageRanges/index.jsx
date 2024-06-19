@@ -47,38 +47,35 @@ const AgeRanges = ({
   ];
 
   const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState({
-    f1: f1 ?? 0,
-    f2: f2 ?? 0,
-    f3: f3 ?? 0,
-    f4: f4 ?? 0,
+
+  const { data: databorders, loading, error } = useQuery(GET_DETAINED);
+
+  const totals = { f1: 0, f2: 0, f3: 0, f4: 0 };
+  databorders?.detainedInBorders?.data?.forEach((acc) => {
+    if (
+      compareDateRange({
+        start: currentPeriod[0],
+        end: currentPeriod[1],
+        month: item?.attributes?.month,
+      })
+    ) {
+      // PRIMERA INFANCIA
+      if (item?.attributes?.age === "Primera infancia") {
+        totals.f1 += item?.attributes?.total;
+      }
+
+      // NIÑEZ
+      if (item?.attributes?.age === "Niñez") {
+        totals.f2 += item?.attributes?.total;
+      }
+
+      // ADOLESCENCIA
+      if (item?.attributes?.age === "Adolescencia") {
+        totals.f3 += item?.attributes?.total;
+      }
+    }
   });
 
-  useFetch({
-    url: "/consultas/totalporrangoetario/country?anio=selectedYear&periodRange",
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    disableFetch:
-      f1 !== undefined ||
-      f2 !== undefined ||
-      f3 !== undefined ||
-      f4 !== undefined,
-    resolve: (data) => {
-      console.log("ages", data);
-      let totals = { f1: 0, f2: 0, f3: 0, f4: 0 };
-      data?.data?.forEach((stats) => {
-        if (stats._id === "Primera infancia") totals.f1 += stats.total;
-        if (stats._id === "Niñez") totals.f2 += stats.total;
-        if (stats._id === "Adolescencia") totals.f3 += stats.total;
-        if (stats._id === "No registrados") totals.f4 += stats.total;
-      });
-      setTotal(totals);
-    },
-  });
-
-  let totals = [f1 ?? total.f1, f2 ?? total.f2, f3 ?? total.f3, f4 ?? total.f4];
   if (disableFirstAge) {
     chartColors = chartColors.slice(1);
     agesLabels = agesLabels.slice(1);

@@ -11,22 +11,28 @@ import Femenine from "../../../../assets/femenine.png";
 // UTILS
 import { year } from "../../../../utils/year";
 import useFetch from "../../../../hooks/fetch";
+import { useQuery } from "@apollo/client";
+import { GET_RETURNEDS_BY_GENDER } from "../../../../utils/query/returned";
 
 const TotalByGender = () => {
-  const [total, setTotal] = useState({ female: 0, male: 0 });
+  const { data, loading, error } = useQuery(GET_RETURNEDS_BY_GENDER);
 
-  useFetch({
-    url: "/consultas/totalnnaporgenerocurrentyear",
-    resolve: (data) => {
-      let totals = { female: 0, male: 0 };
-      data?.data.forEach((stats) => {
-        const id = stats._id?.toLowerCase();
-        if (id === "femenino" || id === "f") totals.female += stats.total;
-        if (id === "masculino" || id === "m") totals.male += stats.total;
-      });
-      setTotal(totals);
-    },
-  });
+  const total = {
+    female: data?.genderContributions?.data?.reduce(
+      (acc, b) =>
+        b?.attributes?.gender?.attributes?.code === "F"
+          ? acc + b?.attributes?.cant
+          : acc,
+      0
+    ),
+    male: data?.genderContributions?.data?.reduce(
+      (acc, b) =>
+        b?.attributes?.gender?.attributes?.code === "M"
+          ? acc + b?.attributes?.cant
+          : acc,
+      0
+    ),
+  };
 
   return (
     <Box width="100%">
