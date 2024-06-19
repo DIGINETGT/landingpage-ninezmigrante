@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 
-import { Stack, Text } from "@chakra-ui/react";
+import { Stack, Text } from '@chakra-ui/react';
 
-import Gender from "../../../country/components/statistics/components/gender";
-import AgeRanges from "../../../country/components/statistics/components/ageRanges";
-import TravelCondition from "../../../country/components/statistics/components/travelCondition";
-import ReturnPath from "../../../country/components/statistics/components/returnPath";
-import ReturnCountry from "../../../country/components/statistics/components/returnCountry";
-import HeatMap from "../../../country/components/statistics/components/heatMap";
+import Gender from '../../../country/components/statistics/components/gender';
+import AgeRanges from '../../../country/components/statistics/components/ageRanges';
+import TravelCondition from '../../../country/components/statistics/components/travelCondition';
+import ReturnPath from '../../../country/components/statistics/components/returnPath';
+import ReturnCountry from '../../../country/components/statistics/components/returnCountry';
+import HeatMap from '../../../country/components/statistics/components/heatMap';
 
-import { GET_DETAINED_IN_BORDERDS } from "../../../../utils/query/returned";
+import { GET_DETAINED_IN_BORDERDS } from '../../../../utils/query/returned';
 
-import useFetch, { monthNames } from "../../../../hooks/fetch";
-import { compareDateRange } from "../../../../utils/tools";
-import { useQuery } from "@apollo/client";
+import useFetch, { monthNames } from '../../../../hooks/fetch';
+import { compareDateRange } from '../../../../utils/tools';
+import { useQuery } from '@apollo/client';
 
 const Statistics = ({ data, setUpdateDate, setPeriodId }) => {
   const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
 
   // OBTENER DATOS
   const total = dataBorder?.detainedInBorders?.data?.reduce((acc, item) => {
-    
-      acc += item?.attributes?.total;
-    
+    acc += item?.attributes?.total;
   });
 
   return (
@@ -31,16 +29,16 @@ const Statistics = ({ data, setUpdateDate, setPeriodId }) => {
         spacing="16px"
         alignItems="center"
         justifyContent="center"
-        direction={{ base: "column", md: "column" }}
+        direction={{ base: 'column', md: 'column' }}
       >
         <Text
           lineHeight="1"
           fontFamily="Oswald"
           textAlign="center"
-          fontSize={{ base: "4xl", md: "6xl" }}
+          fontSize={{ base: '4xl', md: '6xl' }}
         >
-          {data.country === "guatemala" && "GUATEMALA"}
-          {data.country === "honduras" && "HONDURAS"}
+          {data.country === 'guatemala' && 'GUATEMALA'}
+          {data.country === 'honduras' && 'HONDURAS'}
         </Text>
         <Text
           lineHeight="1"
@@ -55,15 +53,15 @@ const Statistics = ({ data, setUpdateDate, setPeriodId }) => {
           lineHeight="1"
           fontWeight="600"
           fontFamily="Times"
-          textAlign={{ base: "center", md: "left" }}
+          textAlign={{ base: 'center', md: 'left' }}
         >
           {`${monthNames[data.period[0]]} - ${monthNames[data.period[1]]} - ${
-            data.year ?? ""
+            data.year ?? ''
           }`}
         </Text>
         <Text
           fontFamily="Oswald"
-          fontSize={{ base: "6xl", md: "7xl" }}
+          fontSize={{ base: '6xl', md: '7xl' }}
           lineHeight="1"
         >
           {total}

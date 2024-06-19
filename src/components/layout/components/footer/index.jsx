@@ -12,6 +12,7 @@ import LogoProyectoBinacional from '../../../../assets/LogoProyectoBinacional.pn
 import LogoPAMI from '../../../../assets/LogoPAMI.png';
 import LogoKnh from '../../../../assets/LogoKnh.png';
 import LogoGMIES from '../../../../assets/LogoGMIES.png';
+import LogoRROCM from '../../../../assets/LogoRROCM.png';
 import footer from '../../../../assets/footer.png';
 
 const Footer = () => {
@@ -128,8 +129,12 @@ const Footer = () => {
               <Image src={LogoPAMI} maxWidth="100px" />
             </a>
 
-            <a href="https://pami-guatemala.org/" target="_blank">
+            <a href="https://gmies.org" target="_blank">
               <Image src={LogoGMIES} maxWidth="100px" />
+            </a>
+
+            <a href="https://rrocm.net" target="_blank">
+              <Image src={LogoRROCM} maxWidth="100px" />
             </a>
           </Stack>
         </Stack>
