@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "prestart": "npm run build",
-    "start": "vite preview"
+    "start": "vite preview --host --port 8080"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
