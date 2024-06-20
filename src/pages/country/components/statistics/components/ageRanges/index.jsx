@@ -16,8 +16,9 @@ import { colors } from "../../../../../../utils/theme";
 import { Box, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import useFetch from "../../../../../../hooks/fetch";
 import { useQuery } from "@apollo/client";
-import { GET_DETAINED } from "../../../../../../utils/query/returned";
+import { GET_DETAINED, GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP } from "../../../../../../utils/query/returned";
 import { compareDateRange } from "../../../../../../utils/tools";
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 export const options = {
   responsive: true,
@@ -49,28 +50,61 @@ const AgeRanges = ({
     "No registrado",
   ];
 
-  const countryID = useParams().countryID || country;
+  const rdata = useReturnedFilteredQuery({
+    year,
+    period,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP
+  });
 
-  const { data: databorders, loading, error } = useQuery(GET_DETAINED);
+  let totalAdolescencia = 0;
+  let totalNinez = 0;
+  let totalNoRegistrados = 0;
+  let totalPrimeraInfancia = 0;
 
-  const totals = { f1: 0, f2: 0, f3: 0, f4: 0 };
-  databorders?.detainedInBorders?.data?.forEach((acc) => {
- 
-      // PRIMERA INFANCIA
-      if (acc?.attributes?.age === "Primera infancia") {
-        totals.f1 += acc?.attributes?.total;
+  rdata?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.age_group_contributions?.data?.forEach(
+          (ageGroupContribution) => {
+            const ageGroup =
+              ageGroupContribution.attributes?.age_group?.data?.attributes?.name?.toLowerCase();
+
+            switch (ageGroup) {
+              case "adolescencia":
+                totalAdolescencia += ageGroupContribution.attributes?.cant || 0;
+                break;
+              case "niñez":
+                totalNinez += ageGroupContribution.attributes?.cant || 0;
+                break;
+              case "no registrados":
+                totalNoRegistrados +=
+                  ageGroupContribution.attributes?.cant || 0;
+                break;
+              case "primera infancia":
+                totalPrimeraInfancia +=
+                  ageGroupContribution.attributes?.cant || 0;
+                break;
+              default:
+                break;
+            }
+          }
+        );
       }
+    );
+  });
 
-      // NIÑEZ
-      if (acc?.attributes?.age === "Niñez") {
-        totals.f2 += acc?.attributes?.total;
-      }
+  const totals = [
+    totalPrimeraInfancia,
+    totalNinez,
+    totalAdolescencia,
+    totalNoRegistrados,
+  ]
 
-      // ADOLESCENCIA
-      if (acc?.attributes?.age === "Adolescencia") {
-        totals.f3 += acc?.attributes?.total;
-      }
-    
+  console.log({
+    totalAdolescencia,
+    totalNinez,
+    totalNoRegistrados,
+    totalPrimeraInfancia,
   });
 
   if (disableFirstAge) {

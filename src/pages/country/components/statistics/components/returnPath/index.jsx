@@ -10,25 +10,39 @@ import useFetch from "../../../../../../hooks/fetch";
 // ASSETS
 import Airplane from "../../../../../../assets/airplane.png";
 import Bus from "../../../../../../assets/bus.png";
+import {
+  GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
+  GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
+} from "../../../../../../utils/query/returned";
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const ReturnPath = ({ period, year, country }) => {
-  const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState({ air: 0, tr: 0 });
-
-  useFetch({
-    url: "/consultas/totalporviaderetorno/country?anio=selectedYear&periodRange",
+  const rdata = useReturnedFilteredQuery({
     year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    resolve: (data) => {
-      let totals = { tr: 0, air: 0 };
-      data?.data?.forEach((stats) => {
-        if (stats._id.nombre.startsWith("Terrestre")) totals.tr += stats.total;
-        if (stats._id.nombre.startsWith("Aérea")) totals.air += stats.total;
-      });
-      setTotal(totals);
-    },
+    period,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
+  });
+
+  let totalAerea = 0;
+  let totalTerrestre = 0;
+
+  rdata?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.return_route_contributions?.data?.forEach(
+          (routeContribution) => {
+            const returnRoute =
+              routeContribution.attributes?.return_route?.data?.attributes?.name?.toLowerCase();
+
+            if (returnRoute.startsWith("aérea")) {
+              totalAerea += routeContribution.attributes?.cant || 0;
+            } else if (returnRoute.startsWith("terrestre")) {
+              totalTerrestre += routeContribution.attributes?.cant || 0;
+            }
+          }
+        );
+      }
+    );
   });
 
   return (
@@ -55,7 +69,7 @@ const ReturnPath = ({ period, year, country }) => {
               Aérea
             </Text>
             <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-              {total.air}
+              {totalAerea}
             </Text>
           </Stack>
         </Stack>
@@ -78,7 +92,7 @@ const ReturnPath = ({ period, year, country }) => {
               Terrestre
             </Text>
             <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-              {total.tr}
+              {totalTerrestre}
             </Text>
           </Stack>
         </Stack>

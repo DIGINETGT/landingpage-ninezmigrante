@@ -13,9 +13,12 @@ import useFetch from "../../../../../../hooks/fetch";
 import {
   GET_BY_GENDER,
   GET_DETAINED,
+  GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
+  GET_RETURNEDS_BY_GENDER,
 } from "../../../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
 import { compareDateRange } from "../../../../../../utils/tools";
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const Gender = ({
   period,
@@ -23,23 +26,33 @@ const Gender = ({
   country,
   defData: { female = undefined, male = undefined },
 }) => {
-  const countryID = useParams().countryID || country;
-
-  const { data, loading, error } = useQuery(GET_BY_GENDER);
-  const total = { male: 0, female: 0 };
-
-  data?.detainedInBorders?.data?.forEach((acc, item) => {
-    
-      if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Femenino") {
-        total.male += acc?.attributes?.data?.cant;
-      }
-
-      if(acc?.attributes?.data?.gender?.data?.attributes?.name === "Masculino") {
-        total.female += acc?.attributes?.data?.cant;
-      }
-    
+  const data = useReturnedFilteredQuery({
+    year,
+    period,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
   });
 
+  let tfemale = 0;
+  let tmale = 0;
+
+  data?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.gender_contributions?.data?.forEach(
+          (genderContribution) => {
+            const gender =
+              genderContribution.attributes?.gender?.data?.attributes?.name?.toLowerCase();
+            
+            if (gender === "femenino") {
+              tfemale += genderContribution.attributes?.cant || 0;
+            } else if (gender === "masculino") {
+              tmale += genderContribution.attributes?.cant || 0;
+            }
+          }
+        );
+      }
+    );
+  });
 
   return (
     <Box width="100%">
@@ -66,7 +79,7 @@ const Gender = ({
             <Image src={Femenine} height="50px" />
           </Tooltip>
           <Text fontFamily="Oswald" fontSize="4xl" color="green.700">
-            {female ?? total.female}
+            {female ?? tfemale}
           </Text>
         </Stack>
         <Stack
@@ -88,7 +101,7 @@ const Gender = ({
             <Image src={Male} height="50px" />
           </Tooltip>
           <Text fontFamily="Oswald" fontSize="4xl" color="yellow.700">
-            {male ?? total.male}
+            {male ?? tmale}
           </Text>
         </Stack>
       </Stack>

@@ -10,6 +10,8 @@ import { Box, Stack, Text } from "@chakra-ui/react";
 import { colors } from "../../../../../../utils/theme";
 
 import useFetch from "../../../../../../hooks/fetch";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION } from "../../../../../../utils/query/returned";
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 export const options = {
   responsive: true,
@@ -27,32 +29,41 @@ const TravelCondition = ({
   country,
   defData: { acd = undefined, noAcd = undefined },
 }) => {
-  const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState({ acd: acd ?? 0, noAcd: noAcd ?? 0 });
-
-  useFetch({
-    url: "/consultas/totalporcondiciondeviaje/country?anio=selectedYear&periodRange",
+  const rdata = useReturnedFilteredQuery({
     year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    disableFetch: acd !== undefined || noAcd !== undefined,
-    resolve: (data) => {
-      let totals = { acd: 0, noAcd: 0 };
-      data?.data?.forEach((stats) => {
-        if (stats._id.condicion === "Acompañado") totals.acd += stats.total;
-        if (stats._id.condicion === "No acompañado")
-          totals.noAcd += stats.total;
-      });
-      setTotal(totals);
-    },
+    period,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
   });
+
+  let ACD = 0;
+  let NO_ACD = 0;
+
+  rdata?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
+          (conditionContribution) => {
+            const travelCondition =
+              conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
+
+            if (travelCondition === "acompañado") {
+              ACD += conditionContribution.attributes?.cant || 0;
+            } else if (travelCondition === "no acompañado") {
+              NO_ACD += conditionContribution.attributes?.cant || 0;
+            }
+          }
+        );
+      }
+    );
+  });
+
+  console.log({ rdata, ACD, NO_ACD });
 
   const data = {
     labels: ["ACAMPANADOS", "NO ACAMPANADOS"],
     datasets: [
       {
-        data: [acd ?? total.acd, noAcd ?? total.noAcd],
+        data: [acd ?? ACD, noAcd ?? NO_ACD],
         backgroundColor: [colors.green[700], colors.blue[700]],
         borderColor: [colors.green[700], colors.blue[700]],
         borderWidth: 1,
@@ -81,7 +92,7 @@ const TravelCondition = ({
               No Acompañados
             </Text>
             <Text fontFamily="Oswald" fontSize="2xl">
-              {noAcd ?? total.noAcd}
+              {noAcd ?? NO_ACD}
             </Text>
           </Stack>
 
@@ -92,7 +103,7 @@ const TravelCondition = ({
               Acompañados
             </Text>
             <Text fontFamily="Oswald" fontSize="2xl">
-              {acd ?? total.acd}
+              {acd ?? ACD}
             </Text>
           </Stack>
         </Stack>

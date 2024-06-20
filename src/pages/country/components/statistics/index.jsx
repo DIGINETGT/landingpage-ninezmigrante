@@ -1,43 +1,48 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { Box, Stack, Text, Divider } from '@chakra-ui/react';
+import { Box, Stack, Text, Divider } from "@chakra-ui/react";
 
-import GraphFooter from '../../../../components/graphFooter';
-import LastDate from '../../../../components/lastUpdate';
-import TravelCondition from './components/travelCondition';
-import ReturnCountry from './components/returnCountry';
-import DownloadTable from './components/downloadTable';
-import HeatMap from './components/heatMap/index';
-import ReturnPath from './components/returnPath';
-import AgeRanges from './components/ageRanges';
-import Gender from './components/gender';
+import GraphFooter from "../../../../components/graphFooter";
+import LastDate from "../../../../components/lastUpdate";
+import TravelCondition from "./components/travelCondition";
+import ReturnCountry from "./components/returnCountry";
+import DownloadTable from "./components/downloadTable";
+import HeatMap from "./components/heatMap/index";
+import ReturnPath from "./components/returnPath";
+import AgeRanges from "./components/ageRanges";
+import Gender from "./components/gender";
 
-import useFetch, { monthNames } from '../../../../hooks/fetch';
+import useFetch, { monthNames } from "../../../../hooks/fetch";
 
-import StatisticsContext from './context';
-import { capitalizeText, compareDateRange } from '../../../../utils/tools';
-import getCountryContent from '../../../../utils/country';
-import { useQuery } from '@apollo/client';
-import { GET_DETAINED } from '../../../../utils/query/returned';
+import StatisticsContext from "./context";
+import { capitalizeText, compareDateRange } from "../../../../utils/tools";
+import getCountryContent from "../../../../utils/country";
+import { useQuery } from "@apollo/client";
+import { GET_DETAINED, GET_RETURNEDS } from "../../../../utils/query/returned";
+import useReturnedFilteredQuery from "../../../../hooks/query";
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [updateDate, setUpdateDate] = useState('');
-  const [periodId, setPeriodId] = useState('');
+  const [updateDate, setUpdateDate] = useState("");
+  const [periodId, setPeriodId] = useState("");
 
-  const { data, loading, error } = useQuery(GET_DETAINED);
-  const total = data?.detainedInBorders?.data?.reduce((acc, item) => {
-  
-      acc += item?.attributes?.total;
-    
+  const data = useReturnedFilteredQuery({ year, period });
+  let totalCant = 0;
+  data?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        console.log({ contribution });
+        totalCant +=
+          contribution.attributes?.returned?.data?.attributes?.total || 0;
+      }
+    );
   });
 
-
- 
+  console.log("Total Cant:", totalCant);
   const sources = (
     <Box direction="column" margin="auto" maxWidth="800px">
       {getCountryContent({
@@ -48,8 +53,8 @@ const Statistics = ({ period, year, satisticsRef }) => {
               lineHeight={1}
               textAlign="center"
               fontFamily="Oswald"
-              fontSize={{ base: 'xl', md: '2xl' }}
-              maxWidth={'800px'}
+              fontSize={{ base: "xl", md: "2xl" }}
+              maxWidth={"800px"}
             >
               Fuente: Instituto Guatemalteco de Migración
             </Text>
@@ -59,8 +64,8 @@ const Statistics = ({ period, year, satisticsRef }) => {
               lineHeight={1}
               textAlign="center"
               fontFamily="Oswald"
-              fontSize={{ base: 'xl', md: '2xl' }}
-              maxWidth={'800px'}
+              fontSize={{ base: "xl", md: "2xl" }}
+              maxWidth={"800px"}
             >
               Fuente: Dirección de Niñez, Adolescencia y Familia (DINAF)
             </Text>
@@ -70,8 +75,8 @@ const Statistics = ({ period, year, satisticsRef }) => {
               lineHeight={1}
               textAlign="center"
               fontFamily="Oswald"
-              fontSize={{ base: 'xl', md: '2xl' }}
-              maxWidth={'800px'}
+              fontSize={{ base: "xl", md: "2xl" }}
+              maxWidth={"800px"}
             >
               Dirección General de Migración y Extranjería El Salvador
             </Text>
@@ -87,32 +92,32 @@ const Statistics = ({ period, year, satisticsRef }) => {
     >
       <Box
         ref={satisticsRef}
-        padding={{ base: '40px 24px', md: '80px 40px' }}
-        bgColor={isScreenShotTime ? '#fff' : '#eee'}
+        padding={{ base: "40px 24px", md: "80px 40px" }}
+        bgColor={isScreenShotTime ? "#fff" : "#eee"}
       >
         <Stack
           margin="auto"
           maxWidth="800px"
           alignItems="center"
           justifyContent="space-between"
-          gap={{ base: '24px', md: '40px' }}
-          direction={{ base: 'column', md: 'row' }}
-          marginBottom={{ base: '40px', md: '80px' }}
+          gap={{ base: "24px", md: "40px" }}
+          direction={{ base: "column", md: "row" }}
+          marginBottom={{ base: "40px", md: "80px" }}
         >
           <Stack direction="column" spacing="16px">
             <Text
               lineHeight="1"
               fontFamily="Oswald"
-              fontSize={{ base: '4xl', md: '6xl' }}
-              textAlign={{ base: 'center', md: 'left' }}
+              fontSize={{ base: "4xl", md: "6xl" }}
+              textAlign={{ base: "center", md: "left" }}
             >
               {getCountryContent({ countryID, capitalize: true }).toUpperCase()}
             </Text>
             <Text
               lineHeight="1"
               fontFamily="Oswald"
-              fontSize={{ base: '2xl', md: '4xl' }}
-              textAlign={{ base: 'center', md: 'left' }}
+              fontSize={{ base: "2xl", md: "4xl" }}
+              textAlign={{ base: "center", md: "left" }}
             >
               Total de niñez migrante retornanda
             </Text>
@@ -120,20 +125,20 @@ const Statistics = ({ period, year, satisticsRef }) => {
               lineHeight="1"
               fontWeight="600"
               fontFamily="Times"
-              fontSize={{ base: 'xl', md: '2xl' }}
-              textAlign={{ base: 'center', md: 'left' }}
+              fontSize={{ base: "xl", md: "2xl" }}
+              textAlign={{ base: "center", md: "left" }}
             >
-              {`${monthNames[period[0]] ?? ''} - ${
-                monthNames[period[1]] ?? ''
-              } ${year ?? ''}`}
+              {`${monthNames[period[0]] ?? ""} - ${
+                monthNames[period[1]] ?? ""
+              } ${year ?? ""}`}
             </Text>
           </Stack>
           <Text
             fontFamily="Oswald"
-            fontSize={{ base: '7xl', md: '8xl' }}
+            fontSize={{ base: "7xl", md: "8xl" }}
             lineHeight="1"
           >
-            {total}
+            {totalCant}
           </Text>
         </Stack>
         <Stack
@@ -142,9 +147,9 @@ const Statistics = ({ period, year, satisticsRef }) => {
           margin="auto"
           maxWidth="800px"
           justifyContent="space-between"
-          direction={{ base: 'column', md: 'row' }}
-          marginBottom={{ base: '40px', md: '60px' }}
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          direction={{ base: "column", md: "row" }}
+          marginBottom={{ base: "40px", md: "60px" }}
+          alignItems={{ base: "center", md: "flex-start" }}
         >
           <Gender period={period} year={year} />
           <TravelCondition period={period} year={year} />
@@ -156,10 +161,10 @@ const Statistics = ({ period, year, satisticsRef }) => {
           margin="auto"
           maxWidth="800px"
           justifyContent="center"
-          gap={{ base: '40px', md: '40px' }}
-          direction={{ base: 'column', md: 'row' }}
-          marginBottom={{ base: '40px', md: '60px' }}
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          gap={{ base: "40px", md: "40px" }}
+          direction={{ base: "column", md: "row" }}
+          marginBottom={{ base: "40px", md: "60px" }}
+          alignItems={{ base: "center", md: "flex-start" }}
         >
           <ReturnPath period={period} year={year} />
           <ReturnCountry period={period} year={year} />
@@ -181,7 +186,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
           alignItems="center"
           marginBottom="40px"
           justifyContent="center"
-          direction={{ base: 'column', md: 'row' }}
+          direction={{ base: "column", md: "row" }}
         >
           <HeatMap period={period} year={year} periodId={periodId} />
           <Stack direction="column" spacing={4}>

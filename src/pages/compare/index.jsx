@@ -98,6 +98,11 @@ const ComparePage = () => {
               setUpdateDate={setUpdateDate}
               setPeriodId={setPeriodId}
             />
+             <Statistics
+              data={options["3"]}
+              setUpdateDate={setUpdateDate}
+              setPeriodId={setPeriodId}
+            />
           </Stack>
 
           <LastDate

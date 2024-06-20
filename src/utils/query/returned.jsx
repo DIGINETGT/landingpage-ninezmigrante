@@ -105,6 +105,311 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
   }
 `;
 
+export const GET_RETURNEDS_BY_COUNTRY = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              gender_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    gender {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                              travel_condition_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    travel_condition {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                              age_group_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    age_group {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                              return_route_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    return_route {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_TRANSIT_REPORTS = gql`
   query {
     transitReports {

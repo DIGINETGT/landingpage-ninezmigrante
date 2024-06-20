@@ -1,6 +1,6 @@
 /* Exportación del año y del trimestre actual. */
 // export const year = new Date().getFullYear();
-export const year = 2020;
+export const year = 2024;
 export const month = new Date().getMonth() + 1;
 export const getCurrentQuarter = () => {
   const month = new Date().getMonth();
