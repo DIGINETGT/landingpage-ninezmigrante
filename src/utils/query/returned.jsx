@@ -2,18 +2,27 @@ import { gql } from "@apollo/client";
 
 export const GET_RETURNEDS = gql`
   query {
-    returneds {
+    monthlyReports {
       data {
         id
         attributes {
-          total
-          country_contributions {
+          reportMonth
+          returned {
             data {
+              id
               attributes {
-                country {
+                total
+                country_contributions {
                   data {
                     attributes {
-                      name
+                      cant
+                      country {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -28,16 +37,30 @@ export const GET_RETURNEDS = gql`
 
 export const GET_RETURNEDS_BY_GENDER = gql`
   query {
-    genderContributions {
+    monthlyReports {
       data {
+        id
         attributes {
-          cant
-          gender {
+          reportMonth
+          returned {
             data {
+              id
               attributes {
-                name
-                description
-                code
+                total
+                gender_contributions {
+                  data {
+                    attributes {
+                      cant
+                      gender {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -49,16 +72,50 @@ export const GET_RETURNEDS_BY_GENDER = gql`
 
 export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
   query {
-    travel_condition_contributions {
+    monthlyReports {
       data {
+        id
         attributes {
-          cant
-          travel_condition {
+          reportMonth
+          returned {
+            data {
+              id
+              attributes {
+                total
+                travel_condition_contributions {
+                  data {
+                    attributes {
+                      cant
+                      travel_condition {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_TRANSIT_REPORTS = gql`
+  query {
+    transitReports {
+      data {
+        id
+        attributes {
+          reportDate
+          country_contributions {
             data {
               attributes {
-                name
-                description
-                code
+                cant
               }
             }
           }
@@ -74,11 +131,26 @@ export const GET_DETAINED_IN_BORDERDS = gql`
       data {
         id
         attributes {
+          reportDate
           country {
             data {
-              id
               attributes {
                 name
+              }
+            }
+          }
+          detained_in_borders {
+            data {
+              attributes {
+                total
+              }
+            }
+          }
+
+          detained_us_borders {
+            data {
+              attributes {
+                total
               }
             }
           }

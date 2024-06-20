@@ -15,24 +15,41 @@ import { useQuery } from "@apollo/client";
 import { GET_RETURNEDS_BY_GENDER } from "../../../../utils/query/returned";
 
 const TotalByGender = () => {
-  const { data, loading, error } = useQuery(GET_RETURNEDS_BY_GENDER);
+  const { data } = useQuery(GET_RETURNEDS_BY_GENDER);
 
-  const total = {
-    female: data?.genderContributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.gender?.attributes?.code === "F"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-    male: data?.genderContributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.gender?.attributes?.code === "M"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-  };
+  const returneds = data?.monthlyReports?.data?.filter(
+    (report) =>
+      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() ===
+      year.toString()
+  );
+
+  const female = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.reduce(
+        (acc, gender) => {
+          return gender?.attributes?.gender?.data?.attributes?.name ===
+            "Femenino"
+            ? acc + gender?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
+    0
+  );
+
+  const male = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.reduce(
+        (acc, gender) => {
+          return gender?.attributes?.gender?.data?.attributes?.name ===
+            "Masculino"
+            ? acc + gender?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
+    0
+  );
 
   return (
     <Box width="100%">
@@ -91,7 +108,7 @@ const TotalByGender = () => {
               fontFamily="Oswald"
               fontSize={{ base: "5xl", md: "7xl" }}
             >
-              {total.female}
+              {female}
             </Text>
           </Stack>
         </Stack>
@@ -122,7 +139,7 @@ const TotalByGender = () => {
               fontFamily="Oswald"
               fontSize={{ base: "5xl", md: "7xl" }}
             >
-              {total.male}
+              {male}
             </Text>
           </Stack>
           <Image

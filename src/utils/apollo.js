@@ -5,7 +5,7 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
   headers: {
     Authorization:
-      "Bearer a6a73a15fe500c78d2d427cf9fffa1409f56314902c3a7deb6dc6fb776c2457834a747338163164817dab4cf3ae2ed538ef37133c87690d0a4a5d8846db3eee7cfa2e09b994b90af745cbfb4112008fb27cf3e2fcfa312f13b9538cd7c42d39e1c703c1bae8dcf1d5e19f37ad9e4f4bae596bf98d551fba6e2dde5c7ee1a4bea",
+      "Bearer f109b1829245cd323f35f76a9e9dd8408459e681b55eeb1a7614d90eaefe97ebae2fb517fdf42921c4aa93df3508adc769fdb279ffd764802ed3dbad86ba76fd55b0723339cd6c4613d7cfe7fa2cbfcc7818ced643bf27b041a480a9b6e3ce1eb4411ba70069f3ea243ef23a008b1a44411d9caaf814c6e52d8c806425c66127",
   },
 });
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Image, Text, Tooltip, useQuery } from "@chakra-ui/react";
+import { Box, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
 
 // COMPONETS
 import Mexico from "../../../../assets/mexico.svg";
@@ -16,27 +16,43 @@ import {
   GET_DETAINED_IN_BORDERDS,
   GET_RETURNEDS_BY_TRAVEL_CONDITION,
 } from "../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
 
 const TotalBorders = () => {
   const { data, loading, error } = useQuery(GET_DETAINED_IN_BORDERDS);
 
-  // OBTENER DATOS
-  const total = {
-    mx: data?.country_contributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.country?.data?.attributes?.name === "México"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-    usa: data?.country_contributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.country?.data?.attributes?.name === "Estados Unidos"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-  };
+  // Inicializa las variables para las sumas
+  let totalDetainedInMexicoBorders = 0;
+  let totalDetainedInUSBorders = 0;
+
+  // Recorre los datos devueltos por el query
+  data?.detainedInBordersReports?.data.forEach((report) => {
+    if (
+      report.attributes?.reportDate?.split("-")?.[0]?.toString() !==
+      year.toString()
+    )
+      return;
+
+    const countryName = report.attributes.country.data.attributes.name;
+
+    if (countryName === "México") {
+      report.attributes.detained_in_borders.data.forEach((detained) => {
+        totalDetainedInMexicoBorders += detained.attributes?.total;
+      });
+    }
+
+    if (countryName === "Estados Unidos") {
+      report.attributes.detained_us_borders.data.forEach((detained) => {
+        totalDetainedInUSBorders += detained.attributes?.total;
+      });
+    }
+  });
+
+  console.log(
+    "Total Detained in Mexico Borders:",
+    totalDetainedInMexicoBorders
+  );
+  console.log("Total Detained in US Borders:", totalDetainedInUSBorders);
 
   return (
     <Box bg="blue.700" p={{ base: "40px 24px", md: "80px 40px" }}>
@@ -87,9 +103,13 @@ const TotalBorders = () => {
             fontFamily="Oswald"
             fontSize={{ base: "5xl", md: "6xl" }}
           >
-            {Number.isNaN(Number(total.mx) + Number(total.usa))
+            {Number.isNaN(
+              Number(totalDetainedInMexicoBorders) +
+                Number(totalDetainedInUSBorders)
+            )
               ? 0
-              : Number(total.mx) + Number(total.usa)}
+              : Number(totalDetainedInMexicoBorders) +
+                Number(totalDetainedInUSBorders)}
           </Text>
 
           {/* DATA PER COUNTRY */}
@@ -132,7 +152,7 @@ const TotalBorders = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "3xl", md: "4xl" }}
               >
-                {total.mx}
+                {totalDetainedInMexicoBorders}
               </Text>
             </Stack>
 
@@ -170,7 +190,7 @@ const TotalBorders = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "3xl", md: "4xl" }}
               >
-                {total.usa}
+                {totalDetainedInUSBorders}
               </Text>
             </Stack>
           </Stack>

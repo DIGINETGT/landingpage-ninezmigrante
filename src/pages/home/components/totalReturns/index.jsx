@@ -1,68 +1,75 @@
-// REACT
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-// CHAKRA UI COMPONENTS
 import { Box, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
 
-// COMPONETS
 import Group from "../../../../assets/group.png";
 import Guatemala from "../../../../assets/guatemala.png";
 import Honduras from "../../../../assets/honduras.png";
 import Salvador from "../../../../assets/salvador.png";
 
-// UTILS
 import { year } from "../../../../utils/year";
-import useFetch from "../../../../hooks/fetch";
 import { useQuery } from "@apollo/client";
 import { GET_RETURNEDS } from "../../../../utils/query/returned";
 
 const TotalReturns = () => {
-  const {
-    data: returneds,
-    loading: loadingReturned,
-    error: errorReturned,
-  } = useQuery(GET_RETURNEDS);
+  const { data } = useQuery(GET_RETURNEDS);
 
-  const total = {
-    gt: returneds?.returneds?.data?.reduce(
-      (acc, returned) =>
-        returned?.attributes?.country_contributions?.data?.reduce(
-          (acc, country) =>
-            country?.attributes?.country?.data?.attributes?.name === "Guatemala"
-              ? acc + country?.attributes?.total
-              : acc,
-          0
-        ),
-      0
-    ),
-    hn: returneds?.returneds?.data?.reduce(
-      (acc, returned) =>
-        returned?.attributes?.country_contributions?.data?.reduce(
-          (acc, country) =>
-            country?.attributes?.country?.data?.attributes?.name === "Honduras"
-              ? acc + country?.attributes?.total
-              : acc,
-          0
-        ),
-      0
-    ),
-    sv: returneds?.returneds?.data?.reduce(
-      (acc, returned) =>
-        returned?.attributes?.country_contributions?.data?.reduce(
-          (acc, country) =>
-            country?.attributes?.country?.data?.attributes?.name ===
-            "El Salvador"
-              ? acc + country?.attributes?.total
-              : acc,
-          0
-        ),
-      0
-    ),
-  };
+  const returneds = data?.monthlyReports?.data?.filter(
+    (report) =>
+      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() === year.toString()
+  );
 
-  const tot = Number.isNaN(total.gt + total.hn + total.sv)
-    ? 0
-    : total.gt + total.hn + total.sv;
+  const totalAmount = returneds?.reduce(
+    (acc, returned) =>
+      acc + +returned?.attributes?.returned?.data?.attributes?.total,
+    0
+  );
+
+  const gt = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+        (acc, country) => {
+          return country?.attributes?.country?.data?.attributes?.name ===
+            "Guatemala"
+            ? acc + country?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
+    0
+  );
+
+  const hn = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+        (acc, country) => {
+          console.log({ country });
+          return country?.attributes?.country?.data?.attributes?.name ===
+            "Honduras"
+            ? acc + country?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
+    0
+  );
+
+  const sv = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+        (acc, country) => {
+          console.log({ country });
+          return country?.attributes?.country?.data?.attributes?.name ===
+            "ElSalvador"
+            ? acc + country?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
+    0
+  );
+
+  const total = { gt, hn, sv };
 
   return (
     <Box bg="blue.700" p={{ base: "40px 24px", md: "80px 40px" }}>
@@ -112,7 +119,7 @@ const TotalReturns = () => {
             fontFamily="Oswald"
             fontSize={{ base: "5xl", md: "6xl" }}
           >
-            {tot}
+            {totalAmount}
           </Text>
 
           {/* DATA PER COUNTRY */}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 // CHAKRA UI
-import { Box, Stack, Text, Image, Divider, useQuery } from "@chakra-ui/react";
+import { Box, Stack, Text, Image, Divider } from "@chakra-ui/react";
 
 // ASSETS
 import Family from "../../../../assets/family.png";
@@ -11,27 +11,47 @@ import Family from "../../../../assets/family.png";
 import { year } from "../../../../utils/year";
 import useFetch from "../../../../hooks/fetch";
 import { GET_RETURNEDS_BY_TRAVEL_CONDITION } from "../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
 
 const TotalByTravelCondition = () => {
   const { data, loading, error } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
 
-  const acm = data?.travel_condition_contributions?.data?.reduce(
-    (acc, b) =>
-      b?.attributes?.travel_condition?.attributes?.name === "Acompañado"
-        ? acc + b?.attributes?.cant
-        : acc,
+
+  const returneds = data?.monthlyReports?.data?.filter(
+    (report) =>
+      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() ===
+      year.toString()
+  );
+
+console.log({data})
+
+  const acm = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.reduce(
+        (acc, travel_condition) => {
+          return travel_condition?.attributes?.travel_condition?.data?.attributes?.name ===
+            "Acompañado"
+            ? acc + travel_condition?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
     0
   );
 
-  const noAcm = data?.travel_condition_contributions?.data?.reduce(
-    (acc, b) =>
-      b?.attributes?.travel_condition?.attributes?.name === "No acompañado"
-        ? acc + b?.attributes?.cant
-        : acc,
+  const noAcm = returneds?.reduce(
+    (_, returned) =>
+      returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.reduce(
+        (acc, travel_condition) => {
+          return travel_condition?.attributes?.travel_condition?.data?.attributes?.name ===
+            "No acompañado"
+            ? acc + travel_condition?.attributes?.cant
+            : acc;
+        },
+        0
+      ),
     0
   );
-
-  const total = { acm, noAcm };
 
   return (
     <Box bg="blue.500" p={{ base: "40px 24px", md: "80px 40px" }}>
@@ -71,7 +91,7 @@ const TotalByTravelCondition = () => {
                 ACOMPAÑADOS
               </Text>
               <Text fontFamily="Oswald" fontSize={{ base: "3xl", md: "7xl" }}>
-                {total.acm}
+                {acm}
               </Text>
             </Stack>
 
@@ -94,7 +114,7 @@ const TotalByTravelCondition = () => {
                 NO ACOMPAÑADOS
               </Text>
               <Text fontFamily="Oswald" fontSize={{ base: "3xl", md: "7xl" }}>
-                {total.noAcm}
+                {noAcm}
               </Text>
             </Stack>
           </Stack>
