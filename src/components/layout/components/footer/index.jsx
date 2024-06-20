@@ -118,7 +118,7 @@ const Footer = () => {
               href="http://pami-guatemala.org/proyectobinacionalmigracion/"
               target="_blank"
             >
-              <Image src={LogoProyectoBinacional} maxHeight="160px" />
+              <Image src={LogoProyectoBinacional} maxWidth="100px" />
             </a>
 
             <a href="https://redcoiproden.org/" target="_blank">

@@ -75,7 +75,7 @@ const DocumentationByCountry = () => {
           size="lg"
           fontFamily="Oswald"
         >
-          {`Listado de documentos de ${titulo}`}
+          {`umentos de ${titulo}`}
         </Heading>
         <Divider orientation="horizontal" />
         <Stack>

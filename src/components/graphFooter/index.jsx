@@ -114,7 +114,7 @@ const GraphFooter = ({ responsive }) => {
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoProyectoBinacional}
-                minWidth={responsive ? '100px' : '350px'}
+                minWidth={responsive ? '80px' : '80px'}
               />
             </a>
             <a href="https://redcoiproden.org/" target="_blank">
