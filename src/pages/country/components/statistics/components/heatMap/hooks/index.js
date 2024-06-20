@@ -5,6 +5,8 @@ import HeatMapContext from "../context";
 // COLORS
 import { colors } from "../../../../../../../utils/theme";
 import getCountryContent from "../../../../../../../utils/country";
+import useReturnedFilteredQuery from "../../../../../../../hooks/query";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../../utils/query/returned";
 
 /**
  * Devuelve un objeto de mapa de calor con un color y una función onClick si la propiedad disabledHeat
@@ -45,51 +47,74 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
       },
     });
   };
-  useEffect(() => {
-    if (period.length > 0 && year.length > 0) {
-      fetch(
-        `${
-          import.meta.env.VITE_APP_API_URL
-        }/consultas/totalpordepartamento/${countryID}?anio=${year}&inicio=${
-          period[0]
-        }&fin=${period[1]}`
-      )
-        .then((req) => req.json())
-        .then((data) => {
-          let total = 0;
-          const totales = [];
-          const filteredData = data.data.map((department) => {
-            total += department.total;
-            totales.push(department.total);
-            const dep = {
-              ...department,
-              id: department._id
-                .toLowerCase()
+
+  const databorders = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+    year,
+    period,
+  });
+
+  const depTotals = {};
+  const depSubDepTotals = {};
+
+  databorders?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
+          (muni) => {
+            const subDepName =
+              muni.attributes?.municipality?.data?.attributes?.name;
+
+            const depName =
+              muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
+                ?.toLowerCase()
                 .replaceAll(" ", "")
                 .replaceAll("department", "")
                 .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, ""),
+                .replace(/[\u0300-\u036f]/g, "");
+
+            const muniCant = muni.attributes?.cant || 0;
+
+            depSubDepTotals[depName] = {
+              ...depSubDepTotals[depName],
+              [subDepName]: depSubDepTotals?.[depName]?.[subDepName]
+                ? depSubDepTotals[depName][subDepName] + muniCant
+                : muniCant,
             };
-            return dep;
-          });
 
-          const scales = {};
-          const dataRange = 6 / filteredData.length;
-          // const scaleRange = dataRange * 10;
-          const higher = Math.max(...totales);
+            depTotals[depName] = depTotals[depName]
+              ? depTotals[depName] + muniCant
+              : muniCant;
+          }
+        );
+      }
+    );
+  });
 
-          filteredData.forEach((department) => {
-            const percent = department.total / higher;
-            const scale = Math.round((percent + Number.EPSILON) * 100) / 100;
+  useEffect(() => {
+    const filteredData = Object.entries(depTotals).map(([dep, total]) => ({
+      id: dep,
+      total,
+    }));
 
-            if (scale === 0) scales[department.id] = colors.heatMin[100];
-            else scales[department.id] = setColor(countryID, scale);
-          });
+    const totales = filteredData.map((department) => department.total);
+    const scales = {};
+    const higher = Math.max(...totales);
 
-          setColorScales(scales);
-        });
-    }
+    filteredData.forEach((department) => {
+      const percent = department.total / higher;
+      const scale = Math.round((percent + Number.EPSILON) * 100) / 100;
+
+      if (scale === 0) scales[department.id] = colors.heatMin[100];
+      else scales[department.id] = setColor(countryID, scale);
+    });
+
+    setColorScales(scales);
   }, [countryID, period, year]);
+
+  return {
+    depSubDepTotals,
+  };
 };
 
 export default useHeatmap;

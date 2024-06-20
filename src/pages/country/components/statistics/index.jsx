@@ -27,7 +27,6 @@ const Statistics = ({ period, year, satisticsRef }) => {
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [updateDate, setUpdateDate] = useState("");
   const [periodId, setPeriodId] = useState("");
 
   const data = useReturnedFilteredQuery({ year, period });
@@ -42,7 +41,14 @@ const Statistics = ({ period, year, satisticsRef }) => {
     );
   });
 
-  console.log("Total Cant:", totalCant);
+  const updateDate = new Date(
+    data?.[0]?.attributes?.updatedAt?.toString()
+  ).toLocaleString("en-Gb");
+  const filesUrl =
+    data?.[0]?.attributes?.users_permissions_user?.data?.attributes
+      ?.organization?.data?.attributes?.department?.data?.attributes?.country
+      ?.data?.attributes?.country_contributions?.data?.[0]?.attributes?.returned
+      ?.data?.attributes?.fuentes?.data?.[0]?.attributes?.url;
   const sources = (
     <Box direction="column" margin="auto" maxWidth="800px">
       {getCountryContent({
@@ -229,7 +235,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
 
         {isScreenShotTime && <GraphFooter responsive />}
 
-        <DownloadTable periodId={periodId} satisticsRef={satisticsRef} />
+        <DownloadTable url={filesUrl} satisticsRef={satisticsRef} />
       </Box>
     </StatisticsContext.Provider>
   );

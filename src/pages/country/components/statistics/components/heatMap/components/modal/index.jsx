@@ -26,8 +26,9 @@ import ModelContent from "./components/modalContent";
 import DownloadTable from "../../../../components/downloadTable";
 import GraphFooter from "../../../../../../../../components/graphFooter";
 import StatisticsContext from "../../../../context";
-import { GET_BY_MUNI } from "../../../../../../../../utils/query/returned";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
+import useReturnedFilteredQuery from "../../../../../../../../hooks/query";
 
 const MapModal = ({
   modalDep,
@@ -36,18 +37,11 @@ const MapModal = ({
   period,
   periodId,
   country,
+  depTotals,
 }) => {
-  const countryID = useParams().countryID || country;
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
-  const { data: databorders, loading, error } = useQuery(GET_BY_MUNI);
-  const depTotals = {};
-  databorders?.data?.forEach((stats) => {
-    depTotals[stats._id] = stats.total;
-  });
-
   const onCloseChange = () => {
-    setDepTotals({});
     onCloseModal();
   };
 

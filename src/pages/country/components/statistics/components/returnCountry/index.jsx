@@ -14,6 +14,9 @@ import AmericaMap from "./components/polygons/america";
 
 import useFetch from "../../../../../../hooks/fetch";
 import { colors } from "../../../../../../utils/theme";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY } from "../../../../../../utils/query/returned";
+
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const countryImages = {
   eu: { Image: EEUU },
@@ -33,44 +36,39 @@ const defaultTotals = {
 
 const ReturnCountry = ({ period, year, country }) => {
   const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState(() => ({ ...defaultTotals }));
 
-  useFetch({
-    url: "/consultas/totalporpaisdeproveniencia/country?anio=selectedYear&periodRange",
+  const rdata = useReturnedFilteredQuery({
     year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    country: countryID,
-    resolve: (data) => {
-      let totals = {
-        eu: { name: "", total: 0 },
-        mx: { name: "", total: 0 },
-        nextCountryG: { name: "", total: 0 },
-        nextCountryH: { name: "", total: 0 },
-        others: { name: "Otros", total: 0 },
-      };
-
-      data?.data?.forEach((stats) => {
-        if (stats._id?.nombre === "Estados Unidos") {
-          totals.eu.total += stats.total;
-          totals.eu.name = "EE.UU.";
-        } else if (stats._id?.nombre === "México") {
-          totals.mx.total += stats.total;
-          totals.mx.name = stats._id?.nombre;
-        } else if (
-          (countryID === "guatemala" && stats._id?.nombre === "Honduras") ||
-          (countryID === "honduras" && stats._id?.nombre === "Guatemala")
-        ) {
-          totals[`nextCountry${stats._id?.nombre.charAt(0)}`].name =
-            stats._id?.nombre;
-          totals[`nextCountry${stats._id?.nombre.charAt(0)}`].total +=
-            stats.total;
-        } else totals.others.total += stats.total;
-      });
-
-      setTotal(totals);
-    },
+    period,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY,
   });
+
+  let totalEstadosUnidos = 0;
+  let totalMexico = 0;
+
+  rdata?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        contribution.attributes?.returned?.data?.attributes?.country_contributions?.data?.forEach(
+          (countryContribution) => {
+            const countryName =
+              countryContribution.attributes?.country?.data?.attributes?.name;
+
+            if (countryName === "Estados Unidos") {
+              totalEstadosUnidos += countryContribution.attributes?.cant || 0;
+            } else if (countryName === "México") {
+              totalMexico += countryContribution.attributes?.cant || 0;
+            }
+          }
+        );
+      }
+    );
+  });
+
+  const total = {
+    eu: { name: "Estados Unidos", total: totalEstadosUnidos },
+    mx: { name: "México", total: totalMexico },
+  };
 
   return (
     <Box width="100%">

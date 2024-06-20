@@ -9,17 +9,17 @@ import DownloadImage from "../../../../../../components/downloadImage";
 import { useContext } from "react";
 import StatisticsContext from "../../context";
 
-const DownloadTable = ({ satisticsRef, periodId }) => {
+const DownloadTable = ({ satisticsRef, url }) => {
   const { setIsScreenShotTime } = useContext(StatisticsContext);
 
   // DOWNLOAD
   const downloadXLS = () =>
-    fetch(`${import.meta.env.VITE_APP_API_URL}/uploads/planillav1/${periodId}`)
+    fetch(url)
       .then((res) => res.blob())
       .then((blob) => {
         var a = document.createElement("a");
         a.href = window.URL.createObjectURL(blob);
-        a.download = `${periodId}`;
+        a.download = `${filesUrl}`;
         a.click();
       });
 

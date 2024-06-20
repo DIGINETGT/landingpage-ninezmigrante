@@ -7,6 +7,7 @@ export const GET_RETURNEDS = gql`
         id
         attributes {
           reportMonth
+          updatedAt
           returned {
             data {
               id
@@ -42,6 +43,7 @@ export const GET_RETURNEDS_BY_GENDER = gql`
         id
         attributes {
           reportMonth
+          updatedAt
           returned {
             data {
               id
@@ -77,6 +79,7 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
         id
         attributes {
           reportMonth
+          updatedAt
           returned {
             data {
               id
@@ -111,6 +114,7 @@ export const GET_RETURNEDS_BY_COUNTRY = gql`
       data {
         attributes {
           reportMonth
+          updatedAt
           users_permissions_user {
             data {
               attributes {
@@ -131,6 +135,13 @@ export const GET_RETURNEDS_BY_COUNTRY = gql`
                                           data {
                                             attributes {
                                               total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
                                             }
                                           }
                                         }
@@ -161,6 +172,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
       data {
         attributes {
           reportMonth
+          updatedAt
           users_permissions_user {
             data {
               attributes {
@@ -180,6 +192,14 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
                                         returned {
                                           data {
                                             attributes {
+                                              total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
                                               gender_contributions {
                                                 data {
                                                   attributes {
@@ -224,6 +244,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
       data {
         attributes {
           reportMonth
+          updatedAt
           users_permissions_user {
             data {
               attributes {
@@ -244,6 +265,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
                                           data {
                                             attributes {
                                               total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
                                               travel_condition_contributions {
                                                 data {
                                                   attributes {
@@ -288,6 +316,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
       data {
         attributes {
           reportMonth
+          updatedAt
           users_permissions_user {
             data {
               attributes {
@@ -308,6 +337,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
                                           data {
                                             attributes {
                                               total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
                                               age_group_contributions {
                                                 data {
                                                   attributes {
@@ -352,6 +388,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
       data {
         attributes {
           reportMonth
+          updatedAt
           users_permissions_user {
             data {
               attributes {
@@ -372,11 +409,90 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
                                           data {
                                             attributes {
                                               total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
                                               return_route_contributions {
                                                 data {
                                                   attributes {
                                                     cant
                                                     return_route {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = gql`
+  query {
+    monthlyReports {
+      data {
+        attributes {
+          reportMonth
+          updatedAt
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
+                                              country_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    country {
                                                       data {
                                                         attributes {
                                                           name
@@ -498,17 +614,83 @@ export const GET_BY_GENDER = gql`
   }
 `;
 
-export const GET_BY_MUNI = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = gql`
   query {
-    municipalityContributions {
+    monthlyReports {
       data {
         attributes {
-          cant
-          municipality {
+          updatedAt
+          reportMonth
+          users_permissions_user {
             data {
               attributes {
-                name
-                code
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                  country_contributions {
+                                    data {
+                                      attributes {
+                                        returned {
+                                          data {
+                                            attributes {
+                                              total
+                                              fuentes {
+                                                data {
+                                                  attributes {
+                                                    url
+                                                  }
+                                                }
+                                              }
+                                              municipality_contributions {
+                                                data {
+                                                  attributes {
+                                                    cant
+                                                    municipality {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                          department {
+                                                            data {
+                                                              attributes {
+                                                                name
+                                                                country {
+                                                                  data {
+                                                                    attributes {
+                                                                      name
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
