@@ -15,41 +15,38 @@ import { useQuery } from "@apollo/client";
 const TotalByTravelCondition = () => {
   const { data, loading, error } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
 
-
   const returneds = data?.monthlyReports?.data?.filter(
     (report) =>
       report?.attributes?.reportMonth?.split("-")?.[0]?.toString() ===
       year.toString()
   );
 
-console.log({data})
-
-  const acm = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.reduce(
-        (acc, travel_condition) => {
-          return travel_condition?.attributes?.travel_condition?.data?.attributes?.name ===
-            "Acompañado"
-            ? acc + travel_condition?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let acm = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
+      (travel_condition) => {
+        const total =
+          travel_condition?.attributes?.travel_condition?.data?.attributes
+            ?.name === "Acompañado"
+            ? (acm || 0) + +travel_condition?.attributes?.cant
+            : acm;
+        acm += total;
+      }
+    )
   );
 
-  const noAcm = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.reduce(
-        (acc, travel_condition) => {
-          return travel_condition?.attributes?.travel_condition?.data?.attributes?.name ===
-            "No acompañado"
-            ? acc + travel_condition?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let noAcm = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
+      (travel_condition) => {
+        const total =
+          travel_condition?.attributes?.travel_condition?.data?.attributes
+            ?.name === "No acompañado"
+            ? (noAcm || 0) + +travel_condition?.attributes?.cant
+            : noAcm;
+        noAcm += total;
+      }
+    )
   );
 
   return (

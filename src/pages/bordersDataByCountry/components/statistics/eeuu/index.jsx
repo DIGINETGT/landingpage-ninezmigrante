@@ -11,57 +11,113 @@ import DownloadImage from "../../../../../components/downloadImage";
 // ASSETS
 import MapaEEUU from "../../../../../assets/MapaEEUU.png";
 
-
 // UTILS
 import { year } from "../../../../../utils/year";
 import GraphFooter from "../../../../../components/graphFooter";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
-import { GET_DETAINED_IN_BORDERDS } from "../../../../../utils/query/returned";
+import {
+  GET_DETAINED_IN_BORDERDS,
+  GET_DETAINED_US_BORDERDS_BY_COUNTRY,
+} from "../../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
+import { isMonthInRange } from "../../../../../utils/tools";
 
 const excludeFields = [
-  "_id",
-  "mes",
+  "id",
+  "total",
   "anio",
-  "organizacion",
-  "pais",
-  "totalMes",
-  "paisLocal",
-  "periodo",
-  "granTotal",
   "createdAt",
   "updatedAt",
+  "__typename",
 ];
 
+const countyMapping = {
+  sanDiego: "San Diego",
+  elCentro: "El Centro",
+  yuma: "Yuma",
+  tucson: "Tucson",
+  elPaso: "El Paso",
+  bigBend: "Big Bend",
+  delRio: "Del Rio",
+  laredo: "Laredo",
+  rioGrande: "Rio Grande",
+};
+
 const EEUU = () => {
-  const [currentMonth, setCurrentMonth] = useState("");
   const [currentYear, setCurrentYear] = useState("");
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [updateDate, setUpdateDate] = useState("");
+  const [period, setPeriod] = useState([]);
 
   const { countryID } = useParams();
   const containerRef = useRef(null);
 
-  const handleMonth = (ev) => setCurrentMonth(ev.target.value);
+  const handleMonth = (period) => {
+    setPeriod(period);
+  };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
+  const { data: dataBorder } = useQuery(GET_DETAINED_US_BORDERDS_BY_COUNTRY);
 
   // OBTENER DATOS
-  const bordersData = dataBorder?.country_contributions?.data;
+  const bordersData = dataBorder?.detainedInBordersReports?.data;
 
-  const dataPerMonth =
-    bordersData?.find(
-      (item) =>
-        item.mes === currentMonth?.toUpperCase() &&
-        item.paisLocal?.toUpperCase() === countryID.toUpperCase()
-    ) ?? {};
+  const dataPerMonth = {
+    totalMes: 0,
+  };
 
-  const dataPerDeps = Object.entries(dataPerMonth).filter(
-    ([key]) => !excludeFields.includes(key)
-  );
+  const dataPerDeps = {};
+  let updateDate = "";
+  const filteredData = bordersData?.filter((report) => {
+    const [reportYear, reportMonth] = report.attributes?.reportDate
+      .split("-")
+      .map(Number);
+
+    updateDate = new Date(report?.attributes?.updatedAt ?? "0")?.toLocaleString(
+      "en-Gb"
+    );
+
+    if (
+      !isMonthInRange(reportMonth, period) ||
+      reportYear?.toString() !== currentYear?.toString()
+    ) {
+      return false;
+    }
+
+    // BY MEXICO
+    const countryName = report?.attributes?.country?.data?.attributes?.name;
+
+    if (countryName?.toLowerCase().replace(/\s+/g, "") !== "estadosunidos")
+      return false;
+
+    return (
+      report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
+        ?.toLowerCase()
+        .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
+    );
+  });
+
+  filteredData?.forEach((element) => {
+    const total = element?.attributes?.detained_us_borders?.data?.reduce(
+      (acc, curr) => {
+        return acc + curr?.attributes?.total;
+      },
+      0
+    );
+
+    element?.attributes?.detained_us_borders?.data?.forEach((dep) => {
+      Object.keys(dep.attributes)
+        .filter((key) => !excludeFields.includes(key))
+        .forEach((key) => {
+          if (!dataPerDeps[countyMapping[key]])
+            dataPerDeps[countyMapping[key]] = 0;
+          dataPerDeps[countyMapping[key]] += dep.attributes[key];
+        });
+    });
+
+    dataPerMonth.totalMes += total;
+  });
 
   const sources = (
     <Stack
@@ -132,35 +188,7 @@ const EEUU = () => {
             {/* SELECT YEAR */}
             <YearSelect handleYear={handleYear} currentYear={currentYear} />
 
-            {/* SELECT MONTH */}
-            {/* <Select
-              fontSize="2xl"
-              lineHeight="1.8"
-              fontWeight="600"
-              fontFamily="Times"
-              letterSpacing="1.2px"
-              onChange={handleMonth}
-              bgColor="rgba(255,255,255,0.5)"
-              value={currentMonth || ""}
-            >
-              <option value="">Elegir mes</option>
-              <option value="ENERO">Enero</option>
-              <option value="FEBRERO">Febrero</option>
-              <option value="MARZO">Marzo</option>
-              <option value="ABRIL">Abril</option>
-              <option value="MAYO">Mayo</option>
-              <option value="JUNIO">Junio</option>
-              <option value="JULIO">Julio</option>
-              <option value="AGOSTO">Agosto</option>
-              <option value="SEPTIEMBRE">Septiembre</option>
-              <option value="OCTUBRE">Octubre</option>
-              <option value="NOVIEMBRE">Noviembre</option>
-              <option value="DICIEMBRE">Diciembre</option>
-            </Select> */}
-            <MonthPicker
-              handleMonth={handleMonth}
-              currentMonth={currentMonth}
-            />
+            <MonthPicker onAccept={handleMonth} />
           </Stack>
         </Stack>
 
@@ -184,7 +212,7 @@ const EEUU = () => {
             {/* TOTAL MONTH DATA */}
             <Stack>
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                {currentMonth || "Mes"}
+                {"Mes"}
               </Text>
               <Text fontFamily="Oswald" fontSize="6xl" lineHeight="1">
                 {dataPerMonth?.totalMes ?? "0"}
@@ -193,7 +221,7 @@ const EEUU = () => {
 
             {/* DATA BY BORDERS */}
             <Stack>
-              {dataPerDeps.map(([key, value]) => (
+              {Object.entries(dataPerDeps ?? {}).map(([key, value]) => (
                 <Stack
                   key={`${key}-${value}`}
                   gap="120px"

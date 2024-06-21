@@ -16,57 +16,58 @@ const TotalReturns = () => {
 
   const returneds = data?.monthlyReports?.data?.filter(
     (report) =>
-      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() === year.toString()
+      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() ===
+      year.toString()
   );
 
-  const totalAmount = returneds?.reduce(
-    (acc, returned) =>
-      acc + +returned?.attributes?.returned?.data?.attributes?.total,
-    0
+  console.log("SDS", { returneds });
+
+  let totalAmount = 0;
+  returneds?.forEach((returned) => {
+    totalAmount += Number(
+      returned?.attributes?.returned?.data?.attributes?.total ?? 0
+    );
+  });
+
+  let gt = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+      (country) => {
+        console.log(
+          "SDSDDSDSDSD",
+          country?.attributes?.country?.data?.attributes?.name,
+          country?.attributes?.cant
+        );
+        return country?.attributes?.country?.data?.attributes?.name ===
+          "Guatemala"
+          ? (gt += Number(country?.attributes?.cant ?? 0))
+          : gt;
+      }
+    )
   );
 
-  const gt = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          return country?.attributes?.country?.data?.attributes?.name ===
-            "Guatemala"
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let hn = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+      (country) => {
+        return country?.attributes?.country?.data?.attributes?.name ===
+          "Honduras"
+          ? (hn += Number(country?.attributes?.cant ?? 0))
+          : hn;
+      }
+    )
   );
 
-  const hn = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          console.log({ country });
-          return country?.attributes?.country?.data?.attributes?.name ===
-            "Honduras"
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
-  );
-
-  const sv = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          console.log({ country });
-          return country?.attributes?.country?.data?.attributes?.name ===
-            "ElSalvador"
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let sv = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
+      (country) => {
+        return country?.attributes?.country?.data?.attributes?.name ===
+          "El Salvador"
+          ? (sv += Number(country?.attributes?.cant ?? 0))
+          : sv;
+      }
+    )
   );
 
   const total = { gt, hn, sv };

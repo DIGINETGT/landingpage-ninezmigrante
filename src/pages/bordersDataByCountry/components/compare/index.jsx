@@ -19,7 +19,7 @@ import MapaEEUU from "../../../../assets/MapaEEUU.png";
 import MapaGuatemala from "../../../../assets/MapaGuatemala.png";
 
 // HOOKS
-import  { monthNames } from "../../../../hooks/fetch";
+import { monthNames } from "../../../../hooks/fetch";
 
 // UTILS
 import { year } from "../../../../utils/year";
@@ -28,16 +28,18 @@ import getCountryContent from "../../../../utils/country";
 import {
   GET_DETAINED,
   GET_DETAINED_IN_BORDERDS,
+  GET_DETAINED_IN_BORDERDS_BY_COUNTRY,
+  GET_DETAINED_US_BORDERDS_BY_COUNTRY,
 } from "../../../../utils/query/returned";
-import { compareDateRange } from "../../../../utils/tools";
+import { compareDateRange, isMonthInRange } from "../../../../utils/tools";
 import { useQuery } from "@apollo/client";
+import useReturnedFilteredQuery from "../../../../hooks/query";
 
 const Compare = () => {
-  const [currentPeriod, setCurrentPeriod] = useState([1, 1]);
+  const [currentPeriod, setCurrentPeriod] = useState([0, 0]);
   const [currentYear, setCurrentYear] = useState(year);
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [updateDate, setUpdateDate] = useState("");
 
   const { countryID } = useParams();
 
@@ -45,61 +47,105 @@ const Compare = () => {
 
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { data, loading, error } = useQuery(GET_DETAINED);
-  const total = data?.detainedInBorders?.data?.reduce((acc, item) => {
-    if (
-      compareDateRange({
-        start: currentPeriod[0],
-        end: currentPeriod[1],
-        month: item?.attributes?.month,
-      })
-    ) {
-      acc += item?.attributes?.total;
-    }
+  const data = useReturnedFilteredQuery({
+    year: currentYear,
+    period: currentPeriod,
+  });
+  let total = 0;
+  data?.forEach((report) => {
+    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
+      (contribution) => {
+        total +=
+          contribution.attributes?.returned?.data?.attributes?.total || 0;
+      }
+    );
   });
 
-  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
+  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS_BY_COUNTRY);
 
   // OBTENER DATOS
-  const bordersData = {
-    mx: dataBorder?.country_contributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.country?.data?.attributes?.name === "México"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-    usa: dataBorder?.country_contributions?.data?.reduce(
-      (acc, b) =>
-        b?.attributes?.country?.data?.attributes?.name === "Estados Unidos"
-          ? acc + b?.attributes?.cant
-          : acc,
-      0
-    ),
-  };
+  const bordersData = dataBorder?.detainedInBordersReports?.data;
 
   const dataPerPeriod = {
-    mx: bordersData?.mx
-      ?.filter((item) => {
-        const monthIndex = monthNames.indexOf(item.mes);
-        return (
-          monthIndex >= currentPeriod[0] &&
-          monthIndex <= currentPeriod[1] &&
-          item.paisLocal?.toUpperCase() === countryID.toUpperCase()
-        );
-      })
-      .reduce((acc, item) => acc + item.totalMes, 0),
-    usa: bordersData?.usa
-      ?.filter((item) => {
-        const monthIndex = monthNames.indexOf(item.mes);
-        return (
-          monthIndex >= currentPeriod[0] &&
-          monthIndex <= currentPeriod[1] &&
-          item.paisLocal?.toUpperCase() === countryID.toUpperCase()
-        );
-      })
-      .reduce((acc, item) => acc + item.totalMes, 0),
+    mx: 0,
+    usa: 0,
   };
+  let updateDate = "";
+  bordersData
+    ?.filter((report) => {
+      const [reportYear, reportMonth] = report.attributes?.reportDate
+        .split("-")
+        .map(Number);
+
+      updateDate = new Date(
+        report?.attributes?.updatedAt ?? "0"
+      )?.toLocaleString("en-Gb");
+
+      if (
+        !isMonthInRange(reportMonth, currentPeriod) ||
+        reportYear?.toString() !== currentYear?.toString()
+      ) {
+        return false;
+      }
+
+      // BY MEXICO
+      const countryName = report?.attributes?.country?.data?.attributes?.name;
+      if (countryName?.toLowerCase().replace(/\s+/g, "") !== "méxico")
+        return false;
+
+      return (
+        report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
+          ?.toLowerCase()
+          .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
+      );
+    })
+    .forEach((element) => {
+      const total = element?.attributes?.detained_in_borders?.data?.reduce(
+        (acc, curr) => {
+          return acc + curr?.attributes?.total;
+        },
+        0
+      );
+
+      dataPerPeriod.mx += total;
+    });
+
+  const { data: dataBorderUs } = useQuery(GET_DETAINED_US_BORDERDS_BY_COUNTRY);
+  const bordersDataUS = dataBorderUs?.detainedInBordersReports?.data;
+  const filteredUsData = bordersDataUS?.filter((report) => {
+    const [reportYear, reportMonth] = report.attributes?.reportDate
+      .split("-")
+      .map(Number);
+
+    if (
+      !isMonthInRange(reportMonth, currentPeriod) ||
+      reportYear?.toString() !== currentYear?.toString()
+    ) {
+      return false;
+    }
+
+    const countryName = report?.attributes?.country?.data?.attributes?.name;
+
+    if (countryName?.toLowerCase().replace(/\s+/g, "") !== "estadosunidos")
+      return false;
+
+    return (
+      report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
+        ?.toLowerCase()
+        .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
+    );
+  });
+
+  filteredUsData?.forEach((element) => {
+    const total = element?.attributes?.detained_us_borders?.data?.reduce(
+      (acc, curr) => {
+        return acc + curr?.attributes?.total;
+      },
+      0
+    );
+    console.log(element?.attributes);
+    dataPerPeriod.usa += total;
+  });
 
   const sources = (
     <Stack

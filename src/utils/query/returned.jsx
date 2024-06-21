@@ -614,6 +614,7 @@ export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = gql`
         id
         attributes {
           reportDate
+          updatedAt
           country {
             data {
               attributes {
@@ -621,6 +622,7 @@ export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = gql`
               }
             }
           }
+
           detained_in_borders {
             data {
               attributes {
@@ -631,14 +633,6 @@ export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = gql`
                 noAcompaniados
                 ninos
                 adolescentes
-              }
-            }
-          }
-
-          detained_us_borders {
-            data {
-              attributes {
-                total
               }
             }
           }
@@ -782,6 +776,70 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = gql`
                                       }
                                     }
                                   }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = gql`
+  query {
+    detainedInBordersReports {
+      data {
+        id
+        attributes {
+          updatedAt
+          reportDate
+          country {
+            data {
+              attributes {
+                name
+              }
+            }
+          }
+
+          detained_us_borders {
+            data {
+              attributes {
+                total
+                sanDiego
+                elCentro
+                yuma
+                tucson
+                elPaso
+                bigBend
+                delRio
+                laredo
+                rioGrande
+              }
+            }
+          }
+
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
                                 }
                               }
                             }

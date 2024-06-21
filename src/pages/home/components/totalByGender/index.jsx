@@ -22,33 +22,32 @@ const TotalByGender = () => {
       year.toString()
   );
 
-  const female = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.reduce(
-        (acc, gender) => {
-          return gender?.attributes?.gender?.data?.attributes?.name ===
-            "Femenino"
-            ? acc + gender?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let female = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.forEach(
+      (gender) => {
+        const total =
+          gender?.attributes?.gender?.data?.attributes?.name === "Femenino"
+            ? (female || 0) + +gender?.attributes?.cant
+            : female;
+        female += total;
+      }
+    )
   );
 
-  const male = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.reduce(
-        (acc, gender) => {
-          return gender?.attributes?.gender?.data?.attributes?.name ===
-            "Masculino"
-            ? acc + gender?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
+  let male = 0;
+  returneds?.forEach((returned) =>
+    returned?.attributes?.returned?.data?.attributes?.gender_contributions?.data?.forEach(
+      (gender) => {
+        const total =
+          gender?.attributes?.gender?.data?.attributes?.name === "Masculino"
+            ? (male || 0) + +gender?.attributes?.cant
+            : male;
+        male += total;
+      }
+    )
   );
+
 
   return (
     <Box width="100%">

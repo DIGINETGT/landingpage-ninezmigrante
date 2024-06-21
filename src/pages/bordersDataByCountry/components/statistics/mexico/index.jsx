@@ -42,8 +42,6 @@ const Mexico = () => {
   const [currentYear, setCurrentYear] = useState("");
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [updateDate, setUpdateDate] = useState("");
-
   const containerRef = useRef(null);
 
   const { countryID } = useParams();
@@ -58,6 +56,7 @@ const Mexico = () => {
   // OBTENER DATOS
   const bordersData = dataBorder?.detainedInBordersReports?.data;
 
+  let updateDate = "";
   const dataPerMonth = {
     totalMes: 0,
     female: 0,
@@ -72,6 +71,10 @@ const Mexico = () => {
       const [reportYear, reportMonth] = report.attributes?.reportDate
         .split("-")
         .map(Number);
+
+      updateDate = new Date(
+        report?.attributes?.updatedAt ?? "0"
+      )?.toLocaleString("en-Gb");
 
       if (
         !isMonthInRange(reportMonth, period) ||
@@ -129,7 +132,6 @@ const Mexico = () => {
 
       dataPerMonth.totalMes += total;
     });
-
 
   const sources = (
     <Stack
