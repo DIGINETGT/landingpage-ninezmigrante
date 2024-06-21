@@ -18,7 +18,6 @@ import {
 
 //UTILS
 import depName from "./utils";
-import useFetch from "../../../../../../../../hooks/fetch";
 
 // COMPONENTS
 import ModalMapContent from "./components/modalMapContent";
@@ -38,6 +37,7 @@ const MapModal = ({
   periodId,
   country,
   depTotals,
+  genderDepTotals,
 }) => {
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
@@ -96,6 +96,7 @@ const MapModal = ({
                   year={year}
                   period={period}
                   country={country}
+                  dataRes={genderDepTotals}
                   dep={depName[modalDep]}
                 />
                 <Stack

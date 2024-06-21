@@ -10,7 +10,6 @@ import Femenine from "../../../../assets/femenine.png";
 
 // UTILS
 import { year } from "../../../../utils/year";
-import useFetch from "../../../../hooks/fetch";
 import { useQuery } from "@apollo/client";
 import { GET_RETURNEDS_BY_GENDER } from "../../../../utils/query/returned";
 

@@ -23,7 +23,7 @@ import GraphFooter from "../../../../../components/graphFooter";
 import MapaMexico from "../../../../../assets/MapaMexico.png";
 
 // HOOKS
-import useFetch, { monthNames } from "../../../../../hooks/fetch";
+import { monthNames } from "../../../../../hooks/fetch";
 
 // UTILS
 import { year } from "../../../../../utils/year";
@@ -31,10 +31,14 @@ import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
 import { useQuery } from "@apollo/client";
-import { GET_DETAINED_IN_BORDERDS } from "../../../../../utils/query/returned";
+import {
+  GET_DETAINED_IN_BORDERDS,
+  GET_DETAINED_IN_BORDERDS_BY_COUNTRY,
+} from "../../../../../utils/query/returned";
+import { isMonthInRange } from "../../../../../utils/tools";
 
 const Mexico = () => {
-  const [currentMonth, setCurrentMonth] = useState("");
+  const [period, setPeriod] = useState([]);
   const [currentYear, setCurrentYear] = useState("");
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
@@ -44,20 +48,88 @@ const Mexico = () => {
 
   const { countryID } = useParams();
 
-  const handleMonth = (ev) => setCurrentMonth(ev.target.value);
+  const handleMonth = (range) => {
+    setPeriod(range);
+  };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS);
+  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS_BY_COUNTRY);
 
   // OBTENER DATOS
-  const bordersData = dataBorder?.country_contributions?.data;
+  const bordersData = dataBorder?.detainedInBordersReports?.data;
 
-  const dataPerMonth =
-    bordersData?.find(
-      (item) =>
-        item.mes === currentMonth?.toUpperCase() &&
-        item.paisLocal?.toUpperCase() === countryID.toUpperCase()
-    ) ?? {};
+  const dataPerMonth = {
+    totalMes: 0,
+    female: 0,
+    male: 0,
+    acd: 0,
+    noAcd: 0,
+    f2: 0,
+    f3: 0,
+  };
+  bordersData
+    ?.filter((report) => {
+      const [reportYear, reportMonth] = report.attributes?.reportDate
+        .split("-")
+        .map(Number);
+
+      if (
+        !isMonthInRange(reportMonth, period) ||
+        reportYear?.toString() !== currentYear?.toString()
+      ) {
+        return false;
+      }
+
+      // BY MEXICO
+      const countryName = report?.attributes?.country?.data?.attributes?.name;
+      if (countryName?.toLowerCase().replace(/\s+/g, "") !== "méxico")
+        return false;
+
+      return (
+        report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
+          ?.toLowerCase()
+          .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
+      );
+    })
+    .forEach((element) => {
+      const total = element?.attributes?.detained_in_borders?.data?.reduce(
+        (acc, curr) => {
+          return acc + curr?.attributes?.total;
+        },
+        0
+      );
+
+      dataPerMonth.female +=
+        element?.attributes?.detained_in_borders?.data?.reduce(
+          (acc, curr) => acc + curr?.attributes?.femenino,
+          0
+        );
+      dataPerMonth.male =
+        element?.attributes?.detained_in_borders?.data?.reduce(
+          (acc, curr) => acc + curr?.attributes?.masculino,
+          0
+        );
+      dataPerMonth.acd = element?.attributes?.detained_in_borders?.data?.reduce(
+        (acc, curr) => acc + curr?.attributes?.acompaniados,
+        0
+      );
+      dataPerMonth.noAcd =
+        element?.attributes?.detained_in_borders?.data?.reduce(
+          (acc, curr) => acc + curr?.attributes?.noAcompaniados,
+          0
+        );
+      dataPerMonth.f2 = element?.attributes?.detained_in_borders?.data?.reduce(
+        (acc, curr) => acc + curr?.attributes?.ninos,
+        0
+      );
+      dataPerMonth.f3 = element?.attributes?.detained_in_borders?.data?.reduce(
+        (acc, curr) => acc + curr?.attributes?.adolescentes,
+        0
+      );
+
+      dataPerMonth.totalMes += total;
+    });
+
 
   const sources = (
     <Stack
@@ -126,35 +198,7 @@ const Mexico = () => {
             {/* SELECT YEAR */}
             <YearSelect handleYear={handleYear} currentYear={currentYear} />
 
-            {/* SELECT MONTH */}
-            {/* <Select
-              fontSize="2xl"
-              lineHeight="1.8"
-              fontWeight="600"
-              fontFamily="Times"
-              letterSpacing="1.2px"
-              onChange={handleMonth}
-              bgColor="rgba(255,255,255,0.5)"
-              value={currentMonth || "default"}
-            >
-              <option value="default">Elegir mes</option>
-              <option value="ENERO">Enero</option>
-              <option value="FEBRERO">Febrero</option>
-              <option value="MARZO">Marzo</option>
-              <option value="ABRIL">Abril</option>
-              <option value="MAYO">Mayo</option>
-              <option value="JUNIO">Junio</option>
-              <option value="JULIO">Julio</option>
-              <option value="AGOSTO">Agosto</option>
-              <option value="SEPTIEMBRE">Septiembre</option>
-              <option value="OCTUBRE">Octubre</option>
-              <option value="NOVIEMBRE">Noviembre</option>
-              <option value="DICIEMBRE">Diciembre</option>
-            </Select> */}
-            <MonthPicker
-              handleMonth={handleMonth}
-              currentMonth={currentMonth}
-            />
+            <MonthPicker onAccept={handleMonth} />
           </Stack>
         </Stack>
 
@@ -182,7 +226,7 @@ const Mexico = () => {
               {/* TOTAL MONTH DATA */}
               <Stack direction="row" alignItems="center">
                 <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                  {currentMonth || "Mes"}
+                  {"Mes"}
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
                   {dataPerMonth?.totalMes ?? "0"}
@@ -201,8 +245,8 @@ const Mexico = () => {
                   period={"enero - abril"}
                   year={"2020"}
                   defData={{
-                    female: dataPerMonth?.femenino,
-                    male: dataPerMonth?.masculino,
+                    female: dataPerMonth?.female,
+                    male: dataPerMonth?.male,
                   }}
                 />
 
@@ -211,8 +255,8 @@ const Mexico = () => {
                   period={"enero - abril"}
                   year={"2020"}
                   defData={{
-                    acd: dataPerMonth?.acompaniado,
-                    noAcd: dataPerMonth?.noAcompaniado,
+                    acd: dataPerMonth?.acd,
+                    noAcd: dataPerMonth?.noAcd,
                   }}
                 />
 
@@ -222,8 +266,8 @@ const Mexico = () => {
                   year={"2020"}
                   period={"enero - abril"}
                   defData={{
-                    f2: dataPerMonth?.ninos,
-                    f3: dataPerMonth?.adolescentes,
+                    f2: dataPerMonth?.f2,
+                    f3: dataPerMonth?.f3,
                   }}
                 />
               </Stack>

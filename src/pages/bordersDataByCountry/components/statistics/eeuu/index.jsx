@@ -11,8 +11,6 @@ import DownloadImage from "../../../../../components/downloadImage";
 // ASSETS
 import MapaEEUU from "../../../../../assets/MapaEEUU.png";
 
-// HOOKS
-import useFetch, { monthNames } from "../../../../../hooks/fetch";
 
 // UTILS
 import { year } from "../../../../../utils/year";

@@ -575,6 +575,99 @@ export const GET_DETAINED_IN_BORDERDS = gql`
               }
             }
           }
+
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = gql`
+  query {
+    detainedInBordersReports {
+      data {
+        id
+        attributes {
+          reportDate
+          country {
+            data {
+              attributes {
+                name
+              }
+            }
+          }
+          detained_in_borders {
+            data {
+              attributes {
+                total
+                femenino
+                masculino
+                acompaniados
+                noAcompaniados
+                ninos
+                adolescentes
+              }
+            }
+          }
+
+          detained_us_borders {
+            data {
+              attributes {
+                total
+              }
+            }
+          }
+
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -652,6 +745,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = gql`
                                                 data {
                                                   attributes {
                                                     cant
+                                                    gender {
+                                                      data {
+                                                        attributes {
+                                                          name
+                                                        }
+                                                      }
+                                                    }
                                                     municipality {
                                                       data {
                                                         attributes {

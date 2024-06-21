@@ -12,23 +12,32 @@ import DownloadImage from "../../../../../../components/downloadImage";
 import GraphFooter from "../../../../../../components/graphFooter";
 
 // HOOKS
-import useSortedDepartments from "./hooks";
+import { sortDepartments } from "./hooks";
 
 import ModalContentGT from "../../../../../../components/departments/components/gt";
 import ModalContentHN from "../../../../../../components/departments/components/hn";
 import { colors } from "../../../../../../utils/theme";
 import { year as currentYear } from "../../../../../../utils/year";
 import { monthNames } from "../../../../../../hooks/fetch";
-import getCountryContent from "../../../../../../utils/country";
+import getCountryContent, { getDepartmentData } from "../../../../../../utils/country";
+import ModalContentSV from "../../../../../../components/departments/components/sv";
+import useReturnedFilteredQuery from "../../../../../../hooks/query";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../utils/query/returned";
 
 const Statistics = ({ returns }) => {
   const { countryID } = useParams();
-  const [data, setData] = useState([]);
   const { period, year, list } = returns;
   const containerRef = useRef(null);
 
+  const databorders = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+    year,
+    period,
+    country: countryID,
+  });
+
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  useSortedDepartments(setData, countryID, period, year, list);
+  const data = sortDepartments(list, getDepartmentData(databorders));
 
   const sources = (
     <Stack
@@ -122,7 +131,7 @@ const Statistics = ({ returns }) => {
           direction={{ base: "column", md: "row" }}
         >
           {/* DEPARMENT BOX */}
-          {data.map((department, index) => (
+          {data?.map((department, index) => (
             <Stack
               key={index}
               direction="column"
@@ -166,7 +175,7 @@ const Statistics = ({ returns }) => {
                 alignItems={{ base: "center", md: "flex-start" }}
               >
                 <Text fontFamily="Oswald" fontSize="xl" lineHeight="1">
-                  {department?._id.replace("Department", "")}
+                  {department?.id?.replace("Department", "")}
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
                   {department?.total}

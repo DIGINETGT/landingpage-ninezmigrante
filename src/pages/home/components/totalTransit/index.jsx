@@ -11,7 +11,6 @@ import Family from "../../../../assets/family.png";
 
 // UTILS
 import { year } from "../../../../utils/year";
-import useFetch from "../../../../hooks/fetch";
 import { GET_TRANSIT_REPORTS } from "../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
 

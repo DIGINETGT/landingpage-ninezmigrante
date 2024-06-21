@@ -83,7 +83,7 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
     handleGraphType(result, setGraphType, setChartType);
 
   // DATOS
-  const graphData = useGraphData(period, graphType, chartType);
+  const graphData = useGraphData(period, graphType, chartType, countryID);
 
   const sources = (
     <Stack

@@ -7,47 +7,14 @@ import { Stack, Text, Image } from "@chakra-ui/react";
 import Male from "../../../../../../../../../../assets/male.png";
 import Femenine from "../../../../../../../../../../assets/femenine.png";
 
-import useFetch from "../../../../../../../../../../hooks/fetch";
 
-const ModalContent = ({ period, year, dep, country }) => {
-  const countryID = useParams().countryID || country;
-  const [total, setTotal] = useState(0);
-  const [genders, setGenders] = useState({ female: 0, male: 0 });
+const ModalContent = ({ period, year, country, dataRes }) => {
+  const genders = {
+    male: dataRes.masculino,
+    female: dataRes.femenino,
+  };
 
-  useFetch({
-    url: "/consultas/totalgeneropordepartamento/country/department?anio=selectedYear&periodRange",
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    department: dep,
-    country: countryID,
-    resolve: (data) => {
-      let depGenderTotals = { male: 0, female: 0 };
-      data?.data.forEach((stats) => {
-        const id = stats._id?.toLowerCase();
-        if (id === "femenino" || id === 'f') depGenderTotals.female += stats.total;
-        if (id === "masculino" || id === 'm') depGenderTotals.male += stats.total;
-      });
-      setGenders(depGenderTotals);
-    },
-  });
-
-  useFetch({
-    url: "/consultas/totalpordepartamento/country?anio=selectedYear&periodRange",
-    year,
-    periodStart: period[0],
-    periodEnd: period[1],
-    department: dep,
-    country: countryID,
-    resolve: (data) => {
-      const depTotal = data?.data.find(
-        (stats) =>
-          stats._id.replace("Department", "").toLowerCase()?.trim() ===
-          dep?.toLowerCase()
-      );
-      setTotal(depTotal?.total ?? 0);
-    },
-  });
+  const total = genders.male + genders.female;
 
   return (
     <Stack

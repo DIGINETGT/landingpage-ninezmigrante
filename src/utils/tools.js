@@ -27,3 +27,13 @@ export const compareDateRange = ({ start, end, month }) => {
   const comparedMonth = Number(month?.split("-")?.[1] ?? "0");
   return comparedMonth >= start && comparedMonth <= end;
 };
+
+export const isMonthInRange = (month, period) => {
+  if (Array.isArray(period) && period.length > 1) {
+    const [start, end] = period;
+    return start <= end
+      ? month >= start && month <= end
+      : month >= start || month <= end;
+  }
+  return period?.includes(month);
+};

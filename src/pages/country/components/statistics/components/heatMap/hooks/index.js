@@ -51,11 +51,13 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   const databorders = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
     year,
+    country: countryID,
     period,
   });
 
   const depTotals = {};
   const depSubDepTotals = {};
+  const depSubDepGenderTotals = {};
 
   databorders?.forEach((report) => {
     report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
@@ -74,11 +76,20 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
                 .replace(/[\u0300-\u036f]/g, "");
 
             const muniCant = muni.attributes?.cant || 0;
+            const gender =
+              muni.attributes?.gender?.data?.attributes?.name?.toLowerCase();
 
             depSubDepTotals[depName] = {
               ...depSubDepTotals[depName],
               [subDepName]: depSubDepTotals?.[depName]?.[subDepName]
                 ? depSubDepTotals[depName][subDepName] + muniCant
+                : muniCant,
+            };
+
+            depSubDepGenderTotals[depName] = {
+              ...depSubDepGenderTotals[depName],
+              [gender]: depSubDepGenderTotals?.[depName]?.[gender]
+                ? depSubDepGenderTotals[depName][gender] + muniCant
                 : muniCant,
             };
 
@@ -114,6 +125,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
 
   return {
     depSubDepTotals,
+    depSubDepGenderTotals
   };
 };
 

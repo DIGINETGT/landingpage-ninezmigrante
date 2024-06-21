@@ -13,7 +13,7 @@ import ReturnPath from "./components/returnPath";
 import AgeRanges from "./components/ageRanges";
 import Gender from "./components/gender";
 
-import useFetch, { monthNames } from "../../../../hooks/fetch";
+import { monthNames } from "../../../../hooks/fetch";
 
 import StatisticsContext from "./context";
 import { capitalizeText, compareDateRange } from "../../../../utils/tools";

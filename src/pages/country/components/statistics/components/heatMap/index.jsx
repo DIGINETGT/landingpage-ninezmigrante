@@ -70,7 +70,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
   };
 
   // DATA
-  const { depSubDepTotals } = useHeatColors(
+  const { depSubDepTotals, depSubDepGenderTotals } = useHeatColors(
     setColorScales,
     countryID,
     period,
@@ -130,6 +130,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
           period={period}
           modalDep={modalDep}
           periodId={periodId}
+          genderDepTotals={depSubDepGenderTotals[modalDep]}
           depTotals={depSubDepTotals[modalDep]}
           onCloseModal={onCloseModal}
         />

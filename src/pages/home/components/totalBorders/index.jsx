@@ -11,7 +11,6 @@ import Police from "../../../../assets/police.png";
 
 // UTILS
 import { year } from "../../../../utils/year";
-import useFetch from "../../../../hooks/fetch";
 import {
   GET_DETAINED_IN_BORDERDS,
   GET_RETURNEDS_BY_TRAVEL_CONDITION,

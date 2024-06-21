@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Text, Image } from "@chakra-ui/react";
 
-import useFetch from "../../../../../../hooks/fetch";
 
 // ASSETS
 import Airplane from "../../../../../../assets/airplane.png";
@@ -20,6 +19,7 @@ const ReturnPath = ({ period, year, country }) => {
   const rdata = useReturnedFilteredQuery({
     year,
     period,
+    country,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
   });
 

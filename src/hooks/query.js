@@ -4,29 +4,23 @@ import {
   GET_RETURNEDS,
   GET_RETURNEDS_BY_COUNTRY,
 } from "../utils/query/returned";
+import { isMonthInRange } from "../utils/tools";
 
 const useReturnedFilteredQuery = ({
   query = GET_RETURNEDS_BY_COUNTRY,
   year,
   period,
+  country = "",
 }) => {
-  const { countryID } = useParams();
+  const { countryID: id } = useParams();
+  const countryID = id || country;
+
   const { data } = useQuery(query);
 
   const filteredData = data?.monthlyReports?.data?.filter((report) => {
     const [reportYear, reportMonth] = report.attributes?.reportMonth
       .split("-")
       .map(Number);
-
-    const isMonthInRange = (month, period) => {
-      if (Array.isArray(period) && period.length > 1) {
-        const [start, end] = period;
-        return start <= end
-          ? month >= start && month <= end
-          : month >= start || month <= end;
-      }
-      return period.includes(month);
-    };
 
     if (
       !isMonthInRange(reportMonth, period) ||

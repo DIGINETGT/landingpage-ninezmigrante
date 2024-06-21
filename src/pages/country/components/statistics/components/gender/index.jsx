@@ -9,7 +9,6 @@ import { Box, Stack, Text, Image, Tooltip } from "@chakra-ui/react";
 import Male from "../../../../../../assets/male.png";
 import Femenine from "../../../../../../assets/femenine.png";
 
-import useFetch from "../../../../../../hooks/fetch";
 import {
   GET_BY_GENDER,
   GET_DETAINED,
@@ -24,16 +23,17 @@ const Gender = ({
   period,
   year,
   country,
-  defData: { female = undefined, male = undefined },
+  defData,
 }) => {
   const data = useReturnedFilteredQuery({
     year,
     period,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
+    country,
   });
 
-  let tfemale = 0;
-  let tmale = 0;
+  let tfemale = defData?.female ?? 0;
+  let tmale = defData?.male ?? 0;
 
   data?.forEach((report) => {
     report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
@@ -42,7 +42,7 @@ const Gender = ({
           (genderContribution) => {
             const gender =
               genderContribution.attributes?.gender?.data?.attributes?.name?.toLowerCase();
-            
+
             if (gender === "femenino") {
               tfemale += genderContribution.attributes?.cant || 0;
             } else if (gender === "masculino") {
@@ -79,7 +79,7 @@ const Gender = ({
             <Image src={Femenine} height="50px" />
           </Tooltip>
           <Text fontFamily="Oswald" fontSize="4xl" color="green.700">
-            {female ?? tfemale}
+            {tfemale}
           </Text>
         </Stack>
         <Stack
@@ -101,7 +101,7 @@ const Gender = ({
             <Image src={Male} height="50px" />
           </Tooltip>
           <Text fontFamily="Oswald" fontSize="4xl" color="yellow.700">
-            {male ?? tmale}
+            {tmale}
           </Text>
         </Stack>
       </Stack>

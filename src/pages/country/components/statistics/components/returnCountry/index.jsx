@@ -12,7 +12,6 @@ import Guatemala from "./components/polygons/guatemala";
 import ElSalvador from "./components/polygons/elsalvador";
 import AmericaMap from "./components/polygons/america";
 
-import useFetch from "../../../../../../hooks/fetch";
 import { colors } from "../../../../../../utils/theme";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY } from "../../../../../../utils/query/returned";
 
@@ -40,6 +39,7 @@ const ReturnCountry = ({ period, year, country }) => {
   const rdata = useReturnedFilteredQuery({
     year,
     period,
+    country,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY,
   });
 

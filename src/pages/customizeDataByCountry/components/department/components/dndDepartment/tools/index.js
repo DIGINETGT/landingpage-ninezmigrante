@@ -36,68 +36,55 @@ export const getDataItemStyle = (isDragging) => ({
 export const updateSection = ({
   id,
   dep,
-  period,
-  countryID,
   setDepDataList,
   setDepList,
-  currentYear,
+  depData,
 }) => {
-  // OBTENER TOTALES
-  const url = `${
-    import.meta.env.VITE_APP_API_URL
-  }/consultas/totalgeneropordepartamento/${countryID}/${depName[dep]}?anio=${
-    currentYear ?? year
-  }&inicio=${period[0]}&fin=${period[1]}`;
-  
-  fetch(url)
-    .then((res) => res.json())
-    .then((genderData) => {
-      let depGenderTotals = { male: 0, female: 0 };
+  const depGenderTotalsData = { ...depData }?.depSubDepGenderTotals?.[dep];
+  const depGenderTotals = {
+    male: depGenderTotalsData?.masculino ?? 0,
+    female: depGenderTotalsData?.femenino ?? 0,
+  };
+  console.log(dep, depData, { depGenderTotalsData });
 
-      genderData?.data?.forEach((stats) => {
-        const id = stats._id?.toLowerCase()?.trim();
+  const totalNumber =
+    (depGenderTotals?.female ?? 0) + (depGenderTotals?.male ?? 0);
+  const total = Number.isNaN(totalNumber) ? 0 : totalNumber;
 
-        if (id === "femenino" || id === "f")
-          depGenderTotals.female += stats.total;
-        if (id === "masculino" || id === "m")
-          depGenderTotals.male += stats.total;
+  if (!total) return console.log("NO DATA");
+
+  setDepDataList((prev) => {
+    const tmp = [...prev];
+    tmp[id] = {
+      ...depGenderTotals,
+      name: depName?.[dep],
+      id: dep,
+      total,
+      reload: false,
+    };
+
+    // COLORES
+    setDepList((prevDeps) => {
+      const tmpDeps = [...prevDeps].map((depPath) => ({
+        ...depPath,
+        color: colors?.heatMin?.[100],
+      }));
+
+      tmp.forEach((data, index) => {
+        if (data.name?.length) {
+          const depIndex = tmpDeps.findIndex(
+            (depInfo) => depInfo.id === data.id
+          );
+
+          if (tmpDeps[depIndex]) tmpDeps[depIndex].color = depColors[index];
+        }
       });
 
-      const total = depGenderTotals.female + depGenderTotals.male;
-
-      setDepDataList((prev) => {
-        const tmp = [...prev];
-        tmp[id] = {
-          ...depGenderTotals,
-          name: depName[dep],
-          id: dep,
-          Content: countryDeps[countryID].find((depPath) => depPath.id === dep)
-            .Content,
-          total,
-          reload: false,
-        };
-
-        // COLORES
-        setDepList((prevDeps) => {
-          const tmpDeps = [...prevDeps].map((depPath) => ({
-            ...depPath,
-            color: colors.heatMin[100],
-          }));
-          tmp.forEach((data, index) => {
-            if (data.name?.length) {
-              const depIndex = tmpDeps.findIndex(
-                (depInfo) => depInfo.id === data.id
-              );
-              tmpDeps[depIndex].color = depColors[index];
-            }
-          });
-
-          return tmpDeps;
-        });
-
-        return tmp;
-      });
+      return tmpDeps;
     });
+
+    return tmp;
+  });
 };
 
 /**
@@ -109,6 +96,7 @@ export const onDragEnd = ({
   countryID,
   period,
   setDepList,
+  depData,
   setDepDataList,
 }) => {
   if (!result.destination) return;
@@ -130,6 +118,15 @@ export const onDragEnd = ({
     });
 
     // ACTUALIZAR
-    updateSection({ id, dep, countryID, period, setDepDataList, setDepList });
+    console.log("LOCAL", depData);
+    updateSection({
+      id,
+      dep,
+      countryID,
+      period,
+      setDepDataList,
+      setDepList,
+      depData,
+    });
   }
 };

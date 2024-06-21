@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import useFetch from '../../hooks/fetch';
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Stack,
   Button,
@@ -14,55 +13,43 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-} from '@chakra-ui/react';
-import { DownloadIcon, Search2Icon } from '@chakra-ui/icons';
-import { colors } from '../../utils/theme';
-import { motion } from 'framer-motion';
-import Libreria from '../../assets/libreria.jpg';
+} from "@chakra-ui/react";
+import { DownloadIcon, Search2Icon } from "@chakra-ui/icons";
+import { colors } from "../../utils/theme";
+import { motion } from "framer-motion";
+import Libreria from "../../assets/libreria.jpg";
 
 const DocumentationByCountry = () => {
   const { countryID } = useParams();
   const titulo = countryID.charAt(0).toUpperCase() + countryID.slice(1);
   const [dataByCountry, setDataByCountry] = useState([]);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
 
   const downloadDocument = (id) => () =>
     fetch(`${import.meta.env.VITE_APP_API_URL}/uploads/recursos/${id}`)
       .then((res) => res.blob())
       .then((blob) => {
-        var a = document.createElement('a');
+        var a = document.createElement("a");
         a.href = window.URL.createObjectURL(blob);
         a.download = `${id}`;
         a.click();
       });
 
-  useFetch({
-    url: '/recurso/public',
-    country: countryID,
-    resolve: (data) => {
-      setDataByCountry(
-        data?.recursos?.filter(
-          (source) => source?.categoria?.nombre === countryID?.toUpperCase()
-        ) ?? []
-      );
-    },
-  });
-
-  const keys = ['nombre', 'descripcion'];
+  const keys = ["nombre", "descripcion"];
 
   let dataSearch = dataByCountry?.filter((item) => {
     return keys.some((key) =>
       item[key]
         .toString()
         .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .includes(
           filter
             .toString()
             .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
         )
     );
   });
@@ -128,7 +115,7 @@ const DocumentationByCountry = () => {
                 width="100%"
                 spacing={8}
                 padding="8"
-                direction={{ base: 'column', md: 'row' }}
+                direction={{ base: "column", md: "row" }}
                 key={source.id}
                 alignItems="center"
                 justifyContent="space-between"
@@ -149,7 +136,7 @@ const DocumentationByCountry = () => {
                     </Badge>
                   </Stack>
                 </Stack>
-                {source.archivos === '' ? null : (
+                {source.archivos === "" ? null : (
                   <Button
                     size="xl"
                     padding={4}
@@ -157,7 +144,7 @@ const DocumentationByCountry = () => {
                     rightIcon={<DownloadIcon />}
                     fontFamily="Montserrat Medium"
                     onClick={downloadDocument(source.id)}
-                    _hover={{ bgColor: 'green.700', color: 'white' }}
+                    _hover={{ bgColor: "green.700", color: "white" }}
                   >
                     Descargar
                   </Button>

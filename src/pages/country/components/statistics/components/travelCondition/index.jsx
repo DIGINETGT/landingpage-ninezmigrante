@@ -9,7 +9,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { colors } from "../../../../../../utils/theme";
 
-import useFetch from "../../../../../../hooks/fetch";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
@@ -23,20 +22,16 @@ export const options = {
   },
 };
 
-const TravelCondition = ({
-  period,
-  year,
-  country,
-  defData: { acd = undefined, noAcd = undefined },
-}) => {
+const TravelCondition = ({ period, year, country, defData }) => {
   const rdata = useReturnedFilteredQuery({
     year,
     period,
+    country,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
   });
 
-  let ACD = 0;
-  let NO_ACD = 0;
+  let ACD = defData?.acd ?? 0;
+  let NO_ACD = defData?.noAcd ?? 0;
 
   rdata?.forEach((report) => {
     report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
@@ -63,7 +58,7 @@ const TravelCondition = ({
     labels: ["ACAMPANADOS", "NO ACAMPANADOS"],
     datasets: [
       {
-        data: [acd ?? ACD, noAcd ?? NO_ACD],
+        data: [ACD, NO_ACD],
         backgroundColor: [colors.green[700], colors.blue[700]],
         borderColor: [colors.green[700], colors.blue[700]],
         borderWidth: 1,
@@ -92,7 +87,7 @@ const TravelCondition = ({
               No Acompañados
             </Text>
             <Text fontFamily="Oswald" fontSize="2xl">
-              {noAcd ?? NO_ACD}
+              {NO_ACD}
             </Text>
           </Stack>
 
@@ -103,7 +98,7 @@ const TravelCondition = ({
               Acompañados
             </Text>
             <Text fontFamily="Oswald" fontSize="2xl">
-              {acd ?? ACD}
+              {ACD}
             </Text>
           </Stack>
         </Stack>

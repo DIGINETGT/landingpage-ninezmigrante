@@ -14,9 +14,11 @@ import { Bar } from "react-chartjs-2";
 import { colors } from "../../../../../../utils/theme";
 
 import { Box, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
-import useFetch from "../../../../../../hooks/fetch";
 import { useQuery } from "@apollo/client";
-import { GET_DETAINED, GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP } from "../../../../../../utils/query/returned";
+import {
+  GET_DETAINED,
+  GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
+} from "../../../../../../utils/query/returned";
 import { compareDateRange } from "../../../../../../utils/tools";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
@@ -34,7 +36,7 @@ const AgeRanges = ({
   year,
   country,
   disableFirstAge = false,
-  defData: { f1 = undefined, f2 = undefined, f3 = undefined, f4 = undefined },
+  defData,
 }) => {
   let labels = ["P. INF", "NIÑEZ", "ADOL", "NR"];
   let chartColors = [
@@ -53,11 +55,12 @@ const AgeRanges = ({
   const rdata = useReturnedFilteredQuery({
     year,
     period,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP
+    country,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
   });
 
-  let totalAdolescencia = 0;
-  let totalNinez = 0;
+  let totalAdolescencia = defData?.f3 ?? 0;
+  let totalNinez = defData?.f2 ?? 0;
   let totalNoRegistrados = 0;
   let totalPrimeraInfancia = 0;
 
@@ -98,14 +101,7 @@ const AgeRanges = ({
     totalNinez,
     totalAdolescencia,
     totalNoRegistrados,
-  ]
-
-  console.log({
-    totalAdolescencia,
-    totalNinez,
-    totalNoRegistrados,
-    totalPrimeraInfancia,
-  });
+  ].slice(disableFirstAge ? 1 : 0);
 
   if (disableFirstAge) {
     chartColors = chartColors.slice(1);

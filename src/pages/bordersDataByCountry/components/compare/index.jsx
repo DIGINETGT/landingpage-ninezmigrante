@@ -19,7 +19,7 @@ import MapaEEUU from "../../../../assets/MapaEEUU.png";
 import MapaGuatemala from "../../../../assets/MapaGuatemala.png";
 
 // HOOKS
-import useFetch, { monthNames } from "../../../../hooks/fetch";
+import  { monthNames } from "../../../../hooks/fetch";
 
 // UTILS
 import { year } from "../../../../utils/year";

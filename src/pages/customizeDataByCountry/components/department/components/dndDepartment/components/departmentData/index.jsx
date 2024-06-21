@@ -38,7 +38,7 @@ const DepartmentData = ({
       justifyContent="center"
     >
       <Text>
-        {isDragOver ? "Soltar departamento aquí" : "Sin datos cargados"}
+        {isDragOver ? "Soltar departamento aquí" : "Sin datos"}
       </Text>
     </Stack>
   ) : (
