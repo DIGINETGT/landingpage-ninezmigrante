@@ -42,7 +42,8 @@ const TotalReturns = () => {
           "Guatemala"
           ? (gt += Number(country?.attributes?.cant ?? 0))
           : gt;
-      }
+      },
+      0
     )
   );
 
@@ -54,7 +55,8 @@ const TotalReturns = () => {
           "Honduras"
           ? (hn += Number(country?.attributes?.cant ?? 0))
           : hn;
-      }
+      },
+      0
     )
   );
 
@@ -66,7 +68,8 @@ const TotalReturns = () => {
           "El Salvador"
           ? (sv += Number(country?.attributes?.cant ?? 0))
           : sv;
-      }
+      },
+      0
     )
   );
 

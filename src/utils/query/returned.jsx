@@ -813,16 +813,26 @@ export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = gql`
           detained_us_borders {
             data {
               attributes {
+                elCentroAcompaniados
+                yumaAcompaniados
+                tucsonAcompaniados
+                elPasoAcompaniados
+                bigBendAcompaniados
+                delRioAcompaniados
+                laredoAcompaniados
+                rioGrandeAcompaniados
+                sanDiegoNoAcompaniados
+                elCentroNoAcompaniados
+                yumaNoAcompaniados
+                tucsonNoAcompaniados
+                elPasoNoAcompaniados
+                bigBendNoAcompaniados
+                delRioNoAcompaniados
+                laredoNoAcompaniados
+                rioGrandeNoAcompaniados
+                totalAcompaniados
+                totalNoAcompaniados
                 total
-                sanDiego
-                elCentro
-                yuma
-                tucson
-                elPaso
-                bigBend
-                delRio
-                laredo
-                rioGrande
               }
             }
           }
