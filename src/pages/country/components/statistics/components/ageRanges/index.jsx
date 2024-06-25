@@ -62,7 +62,7 @@ const AgeRanges = ({
   let totalAdolescencia = defData?.f3 ?? 0;
   let totalNinez = defData?.f2 ?? 0;
   let totalNoRegistrados = 0;
-  let totalPrimeraInfancia = 0;
+  let totalPrimeraInfancia = defData?.f1 ?? 0;
 
   rdata?.forEach((report) => {
     report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(

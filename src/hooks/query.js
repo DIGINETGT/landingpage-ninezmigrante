@@ -10,6 +10,7 @@ const useReturnedFilteredQuery = ({
   query = GET_RETURNEDS_BY_COUNTRY,
   year,
   period,
+  useFilters = false,
   country = "",
 }) => {
   const { countryID: id } = useParams();
@@ -34,6 +35,31 @@ const useReturnedFilteredQuery = ({
         ?.toLowerCase()
         .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
     );
+  });
+
+  return filteredData;
+};
+
+export const useTransitFilteredQuery = ({
+  query = GET_RETURNEDS_BY_COUNTRY,
+  year,
+  period,
+  country = "",
+}) => {
+  const { data } = useQuery(query);
+  const filteredData = data?.transitReports?.data?.filter((report) => {
+    const [reportYear, reportMonth] = report.attributes?.reportDate
+      .split("-")
+      .map(Number);
+
+    if (
+      !isMonthInRange(reportMonth, period) ||
+      reportYear?.toString() !== year?.toString()
+    ) {
+      return false;
+    }
+
+    return true;
   });
 
   return filteredData;
