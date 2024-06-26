@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+import parse from "html-react-parser";
 import { useParams } from "react-router-dom";
 import {
   Stack,
@@ -13,20 +15,25 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Link,
 } from "@chakra-ui/react";
 import { DownloadIcon, Search2Icon } from "@chakra-ui/icons";
 import { colors } from "../../utils/theme";
 import { motion } from "framer-motion";
 import Libreria from "../../assets/libreria.jpg";
+import { useTransitFilteredQuery } from "../../hooks/query";
+import { GET_RECURSOS } from "../../utils/query/transit";
+import { useQuery } from "@apollo/client";
 
 const DocumentationByCountry = () => {
   const { countryID } = useParams();
   const titulo = countryID.charAt(0).toUpperCase() + countryID.slice(1);
-  const [dataByCountry, setDataByCountry] = useState([]);
   const [filter, setFilter] = useState("");
 
+  const { data } = useQuery(GET_RECURSOS(countryID));
+
   const downloadDocument = (id) => () =>
-    fetch(`${import.meta.env.VITE_APP_API_URL}/uploads/recursos/${id}`)
+    fetch(id)
       .then((res) => res.blob())
       .then((blob) => {
         var a = document.createElement("a");
@@ -37,22 +44,34 @@ const DocumentationByCountry = () => {
 
   const keys = ["nombre", "descripcion"];
 
-  let dataSearch = dataByCountry?.filter((item) => {
-    return keys.some((key) =>
-      item[key]
-        .toString()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .includes(
-          filter
-            .toString()
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-        )
-    );
-  });
+  const dataByCountry = data?.recursos?.data?.map((item) => ({
+    nombre: item?.attributes?.name,
+    descripcion: item?.attributes?.description,
+    esExterno: item?.attributes?.esExterno,
+    url: item?.attributes?.esExterno
+      ? item?.attributes?.link
+      : item?.attributes?.document?.data?.attributes?.url,
+    subCategoria: item?.attributes?.subcategories?.data?.[0].attributes?.name,
+  }));
+
+  console.log({dataByCountry})
+  let dataSearch =
+    dataByCountry?.filter((item) => {
+      return keys.some((key) =>
+        item[key]
+          .toString()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .includes(
+            filter
+              .toString()
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+          )
+      );
+    }) ?? [];
 
   const MotionFlex = motion(Flex);
 
@@ -108,7 +127,7 @@ const DocumentationByCountry = () => {
             alignItems="center"
             justifyContent="space-around"
           >
-            {dataSearch.map((source) => (
+            {dataSearch?.map((source) => (
               <HStack
                 shadow="md"
                 borderWidth="1px"
@@ -124,30 +143,40 @@ const DocumentationByCountry = () => {
                   <Text fontFamily="Oswald" fontSize="2xl">
                     {source.nombre}
                   </Text>
+
                   <Text fontFamily="Montserrat Medium">
-                    {source.descripcion}
+                    {parse(source.descripcion)}
                   </Text>
                   <Stack direction="row">
                     <Heading color="gray" as="h6" size="xs">
                       Catalogado en:
                     </Heading>
                     <Badge color={colors.green[700]}>
-                      {source.subCategoria.nombre}
+                      {source.subCategoria}
                     </Badge>
                   </Stack>
                 </Stack>
                 {source.archivos === "" ? null : (
-                  <Button
+                  <Link
                     size="xl"
+                    download
+                    as={source?.esExterno ? "a" : "button"}
+                    borderRadius={8}
+                    href={source.url}
                     padding={4}
                     bgColor="#ccc"
-                    rightIcon={<DownloadIcon />}
+                    minW={150}
+                    textAlign="center"
+                    target="_blank"
+                    onClick={
+                      source.esExterno ? null : downloadDocument(source.url)
+                    }
                     fontFamily="Montserrat Medium"
-                    onClick={downloadDocument(source.id)}
                     _hover={{ bgColor: "green.700", color: "white" }}
                   >
                     Descargar
-                  </Button>
+                    <DownloadIcon ml={2} />
+                  </Link>
                 )}
               </HStack>
             ))}

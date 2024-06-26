@@ -286,9 +286,6 @@ const Compare = () => {
               maxWidth="300px"
               spacing="16px"
             >
-              <Text textAlign="center">
-                * Sólo se reportan niños, niñas y adolescentes NO ACOMPAÑADOS
-              </Text>
               <Image
                 src={MapaEEUU}
                 height="120px"

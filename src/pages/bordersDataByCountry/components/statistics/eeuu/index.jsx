@@ -27,6 +27,8 @@ import { isMonthInRange } from "../../../../../utils/tools";
 const excludeFields = [
   "id",
   "total",
+  "totalNoAcompaniados",
+  "totalAcompaniados",
   "anio",
   "createdAt",
   "updatedAt",
@@ -43,6 +45,7 @@ const countyMapping = {
   delRio: "Del Rio",
   laredo: "Laredo",
   rioGrande: "Rio Grande",
+  default: "Otros",
 };
 
 const EEUU = () => {
@@ -67,7 +70,7 @@ const EEUU = () => {
     totalMes: 0,
   };
 
-  const dataPerDeps = {};
+  const dataPerDeps = { acm: {}, noacm: {} };
   let updateDate = "";
   const filteredData = bordersData?.filter((report) => {
     const [reportYear, reportMonth] = report.attributes?.reportDate
@@ -106,18 +109,44 @@ const EEUU = () => {
       0
     );
 
+    console.log(element?.attributes?.detained_us_borders?.data);
+
     element?.attributes?.detained_us_borders?.data?.forEach((dep) => {
       Object.keys(dep.attributes)
         .filter((key) => !excludeFields.includes(key))
         .forEach((key) => {
-          if (!dataPerDeps[countyMapping[key]])
-            dataPerDeps[countyMapping[key]] = 0;
-          dataPerDeps[countyMapping[key]] += dep.attributes[key];
+          const isNoAcomp = key.toLowerCase().includes("noacompaniados")
+            ? "noacm"
+            : "acm";
+
+          console.log(key);
+
+          const countryName =
+            countyMapping[
+              key?.replace("NoAcompaniados", "").replace("Acompaniados", "") ||
+                "default"
+            ] || countyMapping.default;
+
+          if (!dataPerDeps.acm[countryName])
+            dataPerDeps.acm = {
+              ...dataPerDeps.acm,
+              [countryName]: 0,
+            };
+
+          if (!dataPerDeps.noacm[countryName])
+            dataPerDeps.noacm = {
+              ...dataPerDeps.noacm,
+              [countryName]: 0,
+            };
+
+          dataPerDeps[isNoAcomp][countryName] += dep.attributes[key];
         });
     });
 
     dataPerMonth.totalMes += total;
   });
+
+  console.log({ dataPerDeps });
 
   const sources = (
     <Stack
@@ -175,9 +204,6 @@ const EEUU = () => {
             >
               REPORTADOS POR EE.UU.
             </Text>
-            <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
-              Sólo NO ACOMPAÑADOS
-            </Text>
           </Stack>
 
           {/* YEAR AND PERIOD SELECTS */}
@@ -220,23 +246,29 @@ const EEUU = () => {
             </Stack>
 
             {/* DATA BY BORDERS */}
-            <Stack>
-              {Object.entries(dataPerDeps ?? {}).map(([key, value]) => (
-                <Stack
-                  key={`${key}-${value}`}
-                  gap="120px"
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Text fontFamily="Montserrat Medium" fontSize="xl">
-                    {key}
-                  </Text>
-                  <Text fontFamily="Montserrat Medium" fontSize="xl">
-                    {value}
-                  </Text>
-                </Stack>
-              ))}
+            <Stack direction="row" spacing={7}>
+              {Object.entries(dataPerDeps ?? {}).map(([key, value]) => {
+                return (
+                  <Stack>
+                    <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
+                      {key === "noacm" ? "No Acompañados" : "Acompañados"}
+                    </Text>
+
+                    {Object.entries(value).map(([key2, value2]) => {
+                      return (
+                        <Stack direction="row">
+                          <Text fontFamily="Montserrat Medium" fontSize="xl">
+                            {key2}:
+                          </Text>
+                          <Text fontFamily="Montserrat Medium" fontSize="xl">
+                            {value2}
+                          </Text>
+                        </Stack>
+                      );
+                    })}
+                  </Stack>
+                );
+              })}
             </Stack>
           </Stack>
 
