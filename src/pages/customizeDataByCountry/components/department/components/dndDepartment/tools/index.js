@@ -45,7 +45,6 @@ export const updateSection = ({
     male: depGenderTotalsData?.masculino ?? 0,
     female: depGenderTotalsData?.femenino ?? 0,
   };
-  console.log(dep, depData, { depGenderTotalsData });
 
   const totalNumber =
     (depGenderTotals?.female ?? 0) + (depGenderTotals?.male ?? 0);

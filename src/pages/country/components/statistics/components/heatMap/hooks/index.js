@@ -59,8 +59,6 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   const depSubDepTotals = {};
   const depSubDepGenderTotals = {};
 
-console.log("DATHEAT", databorders, countryID)
-
   databorders?.forEach((report) => {
     report.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
       (muni) => {

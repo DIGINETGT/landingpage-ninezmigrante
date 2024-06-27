@@ -9,7 +9,7 @@ const EntryBorderCountry = ({ data }) => {
       const countryName =
         country?.attributes?.entry_border?.data?.attributes?.name;
       const total = country?.attributes?.cant;
-      console.log(country);
+
       map[countryName] = map[countryName] ? map[countryName] + total : total;
 
       return map;

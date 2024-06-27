@@ -45,16 +45,12 @@ const ReturnCountry = ({ period, year, country }) => {
         const countryName =
           countryContribution.attributes?.country?.data?.attributes?.name;
 
-        console.log(countryName, countryContribution?.attributes?.cant);
-
         dataPerCountry[countryName] =
           (dataPerCountry[countryName] ?? 0) +
           +(countryContribution?.attributes?.cant ?? 0);
       }
     );
   });
-
-  console.log({ dataPerCountry });
 
   return (
     <Box width="100%">

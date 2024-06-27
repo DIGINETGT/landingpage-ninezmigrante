@@ -24,8 +24,6 @@ const TotalTransit = () => {
     });
   });
 
-  console.log("TRAFICO", totalCant)
-
   return (
     <Box bg="blue.500" p={{ base: "40px 24px", md: "80px 40px" }}>
       {/* CONTAINER */}

@@ -27,12 +27,6 @@ const Statistics = ({ data }) => {
     const [reportYear, reportMonth] =
       report?.attributes?.reportMonth.split("-");
 
-    console.log(
-      isMonthInRange(+reportMonth, data.period),
-      reportYear?.toString(),
-      data?.year?.toString()
-    );
-
     return (
       isMonthInRange(+reportMonth, data.period) &&
       reportYear?.toString() === data?.year?.toString()
@@ -44,8 +38,6 @@ const Statistics = ({ data }) => {
       acc + +(returned?.attributes?.returned?.data?.attributes?.total ?? 0),
     0
   );
-
-  console.log({ returneds });
 
   return (
     <Stack spacing="40px">

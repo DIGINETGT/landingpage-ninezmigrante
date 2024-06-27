@@ -54,7 +54,6 @@ const DocumentationByCountry = () => {
     subCategoria: item?.attributes?.subcategories?.data?.[0].attributes?.name,
   }));
 
-  console.log({dataByCountry})
   let dataSearch =
     dataByCountry?.filter((item) => {
       return keys.some((key) =>
