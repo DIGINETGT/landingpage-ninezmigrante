@@ -19,6 +19,7 @@ import StatisticsContext from "./context";
 import getCountryContent from "../../../../utils/country";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../hooks/query";
+import { dateToString } from "../../../../utils/tools";
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
@@ -36,9 +37,10 @@ const Statistics = ({ period, year, satisticsRef }) => {
     totalCant += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
-  const updateDate = new Date(
-    data?.[0]?.attributes?.updatedAt?.toString()
-  ).toLocaleString("en-Gb");
+  const updateDate = dateToString(
+    new Date(data?.[0]?.attributes?.updatedAt?.toString())
+  );
+
   const filesUrl =
     data?.[0]?.attributes?.returned?.data?.attributes?.fuentes?.data?.[0]
       ?.attributes?.url;

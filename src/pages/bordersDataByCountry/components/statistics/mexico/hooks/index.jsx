@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { GET_DETAINED_IN_BORDERDS_BY_COUNTRY } from "../../../../../../utils/query/detained";
-import { isMonthInRange } from "../../../../../../utils/tools";
+import { dateToString, isMonthInRange } from "../../../../../../utils/tools";
 
 export const useDetainedMexico = ({ period, currentYear }) => {
   const { countryID } = useParams();
@@ -29,9 +29,7 @@ export const useDetainedMexico = ({ period, currentYear }) => {
         .split("-")
         .map(Number);
 
-      updateDate = new Date(
-        report?.attributes?.updatedAt ?? "0"
-      )?.toLocaleString("en-Gb");
+      updateDate = dateToString(report?.attributes?.updatedAt ?? "0");
 
       if (
         !isMonthInRange(reportMonth, period) ||

@@ -1,3 +1,5 @@
+import moment from "moment-timezone";
+
 /**
  * Toma una matriz, elimina el elemento en startIndex y lo inserta en endIndex.
  * @param list - la matriz de elementos que se van a reordenar
@@ -36,4 +38,9 @@ export const isMonthInRange = (month, period) => {
       : month >= start || month <= end;
   }
   return period?.includes(month);
+};
+
+export const dateToString = (date) => {
+  // TIMEZONE GUATEMALA MOMENT
+  return moment(date).tz("America/Guatemala").format("DD-MM-YYYY");
 };
