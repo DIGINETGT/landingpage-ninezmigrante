@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
 
-// REACT ROUTER DOM
-import { useParams } from "react-router-dom";
-
 //UTILS
 import { month, year } from "../../../../../../../utils/year";
 import { monthNames } from "../../../../../../../hooks/fetch";
 import { defaultItemColors, itemColors } from "../utils";
 import apolloClient from "../../../../../../../utils/apollo";
-import useReturnedFilteredQuery from "../../../../../../../hooks/query";
 import {
-  GET_RETURNEDS,
   GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
   GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
   GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY,
@@ -18,14 +13,6 @@ import {
   GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
 } from "../../../../../../../utils/query/returned";
 import { isMonthInRange } from "../../../../../../../utils/tools";
-
-const endpoints = {
-  gender: "totalporgenero",
-  age: "totalporrangoetario",
-  via: "totalporviaderetorno",
-  condition: "totalporcondiciondeviaje",
-  return: "totalporpaisdeproveniencia",
-};
 
 const datasetLabels = {
   gender: ["Femenino", "Masculino"],
@@ -120,11 +107,11 @@ const useGraphData = (period, graphType, chartType, countryID) => {
   useEffect(() => {
     if (period.length && graphType.length && chartType.length) {
       const selectedQuery = {
-        via: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
-        condition: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
-        return: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY,
-        gender: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
-        age: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
+        via: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryID),
+        condition: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryID),
+        return: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryID),
+        gender: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryID),
+        age: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryID),
       }[graphType];
 
       // PETICIONES
@@ -147,12 +134,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
               return false;
             }
 
-            return (
-              report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
-                ?.toLowerCase()
-                .replace(/\s+/g, "") ===
-              countryID?.toLowerCase().replace(/\s+/g, "")
-            );
+            return true;
           }
         );
 
@@ -165,53 +147,49 @@ const useGraphData = (period, graphType, chartType, countryID) => {
         }[graphType];
 
         filteredData?.forEach((report) => {
-          report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-            (contribution) => {
-              const contributionRawData =
-                contribution.attributes?.returned?.data?.attributes?.[
-                  selectedContribution
-                ]?.data;
+          const contributionRawData =
+            report.attributes?.returned?.data?.attributes?.[
+              selectedContribution
+            ]?.data;
 
-              contributionRawData?.forEach((contributionData) => {
-                const rawData =
-                  contributionData.attributes?.[
-                    selectedContribution?.replace("_contributions", "")
-                  ]?.data?.attributes?.name?.toLowerCase();
+          contributionRawData?.forEach((contributionData) => {
+            const rawData =
+              contributionData.attributes?.[
+                selectedContribution?.replace("_contributions", "")
+              ]?.data?.attributes?.name?.toLowerCase();
 
-                const total = contributionData.attributes?.cant || 0;
+            const total = contributionData.attributes?.cant || 0;
 
-                if (graphType === "gender") {
-                  if (rawData === "femenino") totals.total1 += total;
-                  if (rawData === "masculino") totals.total2 += total;
-                }
-
-                if (graphType === "via") {
-                  if (rawData.includes("terrestre")) totals.total1 += total;
-
-                  if (rawData.includes("aérea")) {
-                    totals.total2 += total;
-                  }
-                }
-
-                if (graphType === "condition") {
-                  if (rawData === "acompañado") totals.total1 += total;
-                  if (rawData === "no acompañado") totals.total2 += total;
-                }
-
-                if (graphType === "return") {
-                  if (rawData === "estados unidos") totals.total1 += total;
-                  if (rawData === "méxico") totals.total2 += total;
-                  if (rawData === "canadá") totals.total3 += total;
-                }
-
-                if (graphType === "age") {
-                  if (rawData === "primera infancia") totals.total1 += total;
-                  if (rawData === "niñez") totals.total2 += total;
-                  if (rawData === "adolescencia") totals.total3 += total;
-                }
-              });
+            if (graphType === "gender") {
+              if (rawData === "femenino") totals.total1 += total;
+              if (rawData === "masculino") totals.total2 += total;
             }
-          );
+
+            if (graphType === "via") {
+              if (rawData.includes("terrestre")) totals.total1 += total;
+
+              if (rawData.includes("aérea")) {
+                totals.total2 += total;
+              }
+            }
+
+            if (graphType === "condition") {
+              if (rawData === "acompañado") totals.total1 += total;
+              if (rawData === "no acompañado") totals.total2 += total;
+            }
+
+            if (graphType === "return") {
+              if (rawData === "estados unidos") totals.total1 += total;
+              if (rawData === "méxico") totals.total2 += total;
+              if (rawData === "canadá") totals.total3 += total;
+            }
+
+            if (graphType === "age") {
+              if (rawData === "primera infancia") totals.total1 += total;
+              if (rawData === "niñez") totals.total2 += total;
+              if (rawData === "adolescencia") totals.total3 += total;
+            }
+          });
         });
 
         return { ...label, ...totals };

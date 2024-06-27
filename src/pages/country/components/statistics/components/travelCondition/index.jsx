@@ -23,36 +23,34 @@ export const options = {
 };
 
 const TravelCondition = ({ period, year, country, defData }) => {
+  const { countryID: id } = useParams();
+  const countryId = country || id;
+
   const rdata = useReturnedFilteredQuery({
     year,
     period,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
+    skip: !!defData?.acd,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryId),
   });
 
   let ACD = defData?.acd ?? 0;
   let NO_ACD = defData?.noAcd ?? 0;
 
   rdata?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
-          (conditionContribution) => {
-            const travelCondition =
-              conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
+    report.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
+      (conditionContribution) => {
+        const travelCondition =
+          conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
 
-            if (travelCondition === "acompañado") {
-              ACD += conditionContribution.attributes?.cant || 0;
-            } else if (travelCondition === "no acompañado") {
-              NO_ACD += conditionContribution.attributes?.cant || 0;
-            }
-          }
-        );
+        if (travelCondition === "acompañado") {
+          ACD += conditionContribution.attributes?.cant || 0;
+        } else if (travelCondition === "no acompañado") {
+          NO_ACD += conditionContribution.attributes?.cant || 0;
+        }
       }
     );
   });
-
-  console.log({ rdata, ACD, NO_ACD });
 
   const data = {
     labels: ["ACAMPANADOS", "NO ACAMPANADOS"],

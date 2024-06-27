@@ -1,46 +1,44 @@
 // REACT
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Text, Image } from "@chakra-ui/react";
-
 
 // ASSETS
 import Airplane from "../../../../../../assets/airplane.png";
 import Bus from "../../../../../../assets/bus.png";
 import {
   GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
-  GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
 } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const ReturnPath = ({ period, year, country }) => {
+  const { countryID: id } = useParams();
+  const countryId = country || id;
+
   const rdata = useReturnedFilteredQuery({
     year,
     period,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
+    skip: false,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryId),
   });
 
   let totalAerea = 0;
   let totalTerrestre = 0;
 
   rdata?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.return_route_contributions?.data?.forEach(
-          (routeContribution) => {
-            const returnRoute =
-              routeContribution.attributes?.return_route?.data?.attributes?.name?.toLowerCase();
+    report.attributes?.returned?.data?.attributes?.return_route_contributions?.data?.forEach(
+      (routeContribution) => {
+        const returnRoute =
+          routeContribution.attributes?.return_route?.data?.attributes?.name?.toLowerCase();
 
-            if (returnRoute.startsWith("aérea")) {
-              totalAerea += routeContribution.attributes?.cant || 0;
-            } else if (returnRoute.startsWith("terrestre")) {
-              totalTerrestre += routeContribution.attributes?.cant || 0;
-            }
-          }
-        );
+        if (returnRoute.startsWith("aérea")) {
+          totalAerea += routeContribution.attributes?.cant || 0;
+        } else if (returnRoute.startsWith("terrestre")) {
+          totalTerrestre += routeContribution.attributes?.cant || 0;
+        }
       }
     );
   });

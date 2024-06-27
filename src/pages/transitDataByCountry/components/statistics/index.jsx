@@ -48,7 +48,14 @@ const Statistics = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [countryID]);
 
-  const dataPerMonth = { totalMes: 0, female: 0, male: 0, f1: 0, f2: 0, f3: 0 };
+  const dataPerMonth = {
+    female: 0,
+    male: 0,
+    f1: 0,
+    f2: 0,
+    f3: 0,
+    f4: 0,
+  };
 
   data?.forEach((element) => {
     const female = element?.attributes?.gender_contributions?.data?.reduce(
@@ -92,12 +99,20 @@ const Statistics = () => {
       0
     );
 
+    const f4 = element?.attributes?.age_group_contributions?.data?.reduce(
+      (acc, curr) =>
+        curr?.attributes?.age_group?.data?.attributes?.name === "No registrados"
+          ? acc + Number(curr?.attributes?.cant ?? 0)
+          : acc,
+      0
+    );
+
     dataPerMonth.female += female;
     dataPerMonth.male += male;
-    dataPerMonth.totalMes += female + male;
     dataPerMonth.f1 += f1;
     dataPerMonth.f2 += f2;
     dataPerMonth.f3 += f3;
+    dataPerMonth.f4 += f4;
   });
 
   return (
@@ -164,7 +179,7 @@ const Statistics = () => {
                   Total en el mes:
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
-                  {dataPerMonth?.totalMes ?? "0"}
+                  {(dataPerMonth?.female ?? 0) + (dataPerMonth?.male ?? 0)}
                 </Text>
               </Stack>
 
@@ -193,6 +208,7 @@ const Statistics = () => {
                     f1: dataPerMonth?.f1,
                     f2: dataPerMonth?.f2,
                     f3: dataPerMonth?.f3,
+                    f4: dataPerMonth?.f4,
                   }}
                 />
               </Stack>
@@ -207,12 +223,12 @@ const Statistics = () => {
             borderRadius="12px"
             padding="40px 24px"
           >
-            <Stack direction="column" >
+            <Stack direction="column">
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
                 Contribución por país
               </Text>
               <Text fontFamily="Oswald" fontSize="xl" lineHeight="1">
-                Y fronteras de entrada
+                Y aduanas de ingreso
               </Text>
             </Stack>
 

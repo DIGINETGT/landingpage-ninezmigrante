@@ -1,5 +1,5 @@
 // REACT
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // CHAKRA UI
 import { Box, Stack, Text, Image, Divider } from "@chakra-ui/react";
@@ -13,7 +13,7 @@ import { GET_RETURNEDS_BY_TRAVEL_CONDITION } from "../../../../utils/query/retur
 import { useQuery } from "@apollo/client";
 
 const TotalByTravelCondition = () => {
-  const { data, loading, error } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
+  const { data } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
 
   const returneds = data?.monthlyReports?.data?.filter(
     (report) =>

@@ -10,31 +10,42 @@ import ReturnCountry from "../../../country/components/statistics/components/ret
 import HeatMap from "../../../country/components/statistics/components/heatMap";
 
 import {
-  GET_DETAINED_IN_BORDERDS,
   GET_RETURNEDS,
+  GET_RETURNEDS_BY_COUNTRY,
 } from "../../../../utils/query/returned";
 
-import  { monthNames } from "../../../../hooks/fetch";
-import { compareDateRange, isMonthInRange } from "../../../../utils/tools";
+import { monthNames } from "../../../../hooks/fetch";
+import { isMonthInRange } from "../../../../utils/tools";
 import { useQuery } from "@apollo/client";
 
 const Statistics = ({ data }) => {
-  const { data: dataReturned } = useQuery(GET_RETURNEDS);
+  const { data: dataReturned } = useQuery(
+    GET_RETURNEDS_BY_COUNTRY(data.country)
+  );
 
   const returneds = dataReturned?.monthlyReports?.data?.filter((report) => {
     const [reportYear, reportMonth] =
       report?.attributes?.reportMonth.split("-");
+
+    console.log(
+      isMonthInRange(+reportMonth, data.period),
+      reportYear?.toString(),
+      data?.year?.toString()
+    );
+
     return (
       isMonthInRange(+reportMonth, data.period) &&
-      reportYear?.toString() !== data?.year?.toString()
+      reportYear?.toString() === data?.year?.toString()
     );
   });
 
   const totalAmount = returneds?.reduce(
     (acc, returned) =>
-      acc + +returned?.attributes?.returned?.data?.attributes?.total,
+      acc + +(returned?.attributes?.returned?.data?.attributes?.total ?? 0),
     0
   );
+
+  console.log({ returneds });
 
   return (
     <Stack spacing="40px">

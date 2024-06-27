@@ -1,6 +1,5 @@
 // REACT
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Text, Image, Tooltip } from "@chakra-ui/react";
@@ -9,47 +8,36 @@ import { Box, Stack, Text, Image, Tooltip } from "@chakra-ui/react";
 import Male from "../../../../../../assets/male.png";
 import Femenine from "../../../../../../assets/femenine.png";
 
-import {
-  GET_BY_GENDER,
-  GET_DETAINED,
-  GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
-  GET_RETURNEDS_BY_GENDER,
-} from "../../../../../../utils/query/returned";
-import { useQuery } from "@apollo/client";
-import { compareDateRange } from "../../../../../../utils/tools";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_GENDER } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
+import { useParams } from "react-router-dom";
 
-const Gender = ({
-  period,
-  year,
-  country,
-  defData,
-}) => {
+const Gender = ({ period, year, country, defData }) => {
+  const { countryID: id } = useParams();
+  const countryId = country || id;
+
   const data = useReturnedFilteredQuery({
     year,
     period,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER,
     country,
+    skip: !!defData?.male,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryId),
   });
 
   let tfemale = defData?.female ?? 0;
   let tmale = defData?.male ?? 0;
 
   data?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.gender_contributions?.data?.forEach(
-          (genderContribution) => {
-            const gender =
-              genderContribution.attributes?.gender?.data?.attributes?.name?.toLowerCase();
+    report.attributes?.returned?.data?.attributes?.gender_contributions?.data?.forEach(
+      (genderContribution) => {
+        const gender =
+          genderContribution.attributes?.gender?.data?.attributes?.name?.toLowerCase();
 
-            if (gender === "femenino") {
-              tfemale += genderContribution.attributes?.cant || 0;
-            } else if (gender === "masculino") {
-              tmale += genderContribution.attributes?.cant || 0;
-            }
-          }
-        );
+        if (gender === "femenino") {
+          tfemale += genderContribution.attributes?.cant || 0;
+        } else if (gender === "masculino") {
+          tmale += genderContribution.attributes?.cant || 0;
+        }
       }
     );
   });

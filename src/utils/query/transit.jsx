@@ -1,19 +1,9 @@
 import { gql } from "@apollo/client";
-import { capitalizeText } from "../tools";
+import { getFilterByCountry } from "./filters";
 
 export const GET_TRANSIT_REPORT = (countryId) => gql`
   query {
-    transitReports(
-      filters: {
-        users_permissions_user: {
-          organization: {
-            department: { country: { name: { eq: "${capitalizeText(
-              countryId
-            )}" } } }
-          }
-        }
-      }
-    ) {
+    transitReports(${getFilterByCountry(countryId)}) {
       data {
         attributes {
           reportDate
@@ -79,17 +69,7 @@ export const GET_TRANSIT_REPORT = (countryId) => gql`
 
 export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
   query {
-    transitReports(
-      filters: {
-        users_permissions_user: {
-          organization: {
-            department: { country: { name: { eq: "${capitalizeText(
-              countryId
-            )}" } } }
-          }
-        }
-      }
-    ) {
+    transitReports(${getFilterByCountry(countryId)}) {
       data {
         attributes {
           reportDate
@@ -156,15 +136,7 @@ export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
 
 export const GET_RECURSOS = (countryId) => gql`
 query {
-  recursos(
-    filters: {
-      users_permissions_user: {
-        organization: { department: { country: { name: { eq: "${capitalizeText(
-          countryId
-        )}" } } } }
-      }
-    }
-  ) {
+  recursos(${getFilterByCountry(countryId)}) {
     data {
       attributes {
         updatedAt

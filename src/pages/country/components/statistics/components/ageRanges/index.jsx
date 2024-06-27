@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,13 +13,8 @@ import { useParams } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { colors } from "../../../../../../utils/theme";
 
-import { Box, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
-import { useQuery } from "@apollo/client";
-import {
-  GET_DETAINED,
-  GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
-} from "../../../../../../utils/query/returned";
-import { compareDateRange } from "../../../../../../utils/tools";
+import { Box, Grid, Stack, Text } from "@chakra-ui/react";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 export const options = {
@@ -38,6 +33,9 @@ const AgeRanges = ({
   disableFirstAge = false,
   defData,
 }) => {
+  const { countryID: id } = useParams();
+  const countryId = country || id;
+
   let labels = ["P. INF", "NIÑEZ", "ADOL", "NR"];
   let chartColors = [
     colors.yellow[700],
@@ -55,43 +53,38 @@ const AgeRanges = ({
   const rdata = useReturnedFilteredQuery({
     year,
     period,
+    skip: !!defData?.f1,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryId),
   });
 
   let totalAdolescencia = defData?.f3 ?? 0;
   let totalNinez = defData?.f2 ?? 0;
-  let totalNoRegistrados = 0;
+  let totalNoRegistrados = defData?.f4 ?? 0;
   let totalPrimeraInfancia = defData?.f1 ?? 0;
 
   rdata?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.age_group_contributions?.data?.forEach(
-          (ageGroupContribution) => {
-            const ageGroup =
-              ageGroupContribution.attributes?.age_group?.data?.attributes?.name?.toLowerCase();
+    report.attributes?.returned?.data?.attributes?.age_group_contributions?.data?.forEach(
+      (ageGroupContribution) => {
+        const ageGroup =
+          ageGroupContribution.attributes?.age_group?.data?.attributes?.name?.toLowerCase();
 
-            switch (ageGroup) {
-              case "adolescencia":
-                totalAdolescencia += ageGroupContribution.attributes?.cant || 0;
-                break;
-              case "niñez":
-                totalNinez += ageGroupContribution.attributes?.cant || 0;
-                break;
-              case "no registrados":
-                totalNoRegistrados +=
-                  ageGroupContribution.attributes?.cant || 0;
-                break;
-              case "primera infancia":
-                totalPrimeraInfancia +=
-                  ageGroupContribution.attributes?.cant || 0;
-                break;
-              default:
-                break;
-            }
-          }
-        );
+        switch (ageGroup) {
+          case "adolescencia":
+            totalAdolescencia += ageGroupContribution.attributes?.cant || 0;
+            break;
+          case "niñez":
+            totalNinez += ageGroupContribution.attributes?.cant || 0;
+            break;
+          case "no registrados":
+            totalNoRegistrados += ageGroupContribution.attributes?.cant || 0;
+            break;
+          case "primera infancia":
+            totalPrimeraInfancia += ageGroupContribution.attributes?.cant || 0;
+            break;
+          default:
+            break;
+        }
       }
     );
   });

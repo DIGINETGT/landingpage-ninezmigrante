@@ -1,16 +1,7 @@
 // REACT
 import React, { useState, useRef } from "react";
-import { useParams } from "react-router-dom";
 
-// CHAKRA UI COMPONENTS
-import {
-  Box,
-  Stack,
-  Text,
-  Image,
-  Select,
-  StackDivider,
-} from "@chakra-ui/react";
+import { Box, Stack, Text, Image } from "@chakra-ui/react";
 
 // COMPONENTS
 import Gender from "../../../../../pages/country/components/statistics/components/gender";
@@ -22,20 +13,13 @@ import GraphFooter from "../../../../../components/graphFooter";
 // ASSETS
 import MapaMexico from "../../../../../assets/MapaMexico.png";
 
-// HOOKS
-import { monthNames } from "../../../../../hooks/fetch";
-
 // UTILS
 import { year } from "../../../../../utils/year";
 import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
-import { useQuery } from "@apollo/client";
-import {
-  GET_DETAINED_IN_BORDERDS,
-  GET_DETAINED_IN_BORDERDS_BY_COUNTRY,
-} from "../../../../../utils/query/returned";
-import { isMonthInRange } from "../../../../../utils/tools";
+
+import { useDetainedMexico } from "./hooks";
 
 const Mexico = () => {
   const [period, setPeriod] = useState([]);
@@ -44,94 +28,15 @@ const Mexico = () => {
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const containerRef = useRef(null);
 
-  const { countryID } = useParams();
-
   const handleMonth = (range) => {
     setPeriod(range);
   };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS_BY_COUNTRY);
-
-  // OBTENER DATOS
-  const bordersData = dataBorder?.detainedInBordersReports?.data;
-
-  let updateDate = "";
-  const dataPerMonth = {
-    totalMes: 0,
-    female: 0,
-    male: 0,
-    acd: 0,
-    noAcd: 0,
-    f2: 0,
-    f3: 0,
-  };
-  bordersData
-    ?.filter((report) => {
-      const [reportYear, reportMonth] = report.attributes?.reportDate
-        .split("-")
-        .map(Number);
-
-      updateDate = new Date(
-        report?.attributes?.updatedAt ?? "0"
-      )?.toLocaleString("en-Gb");
-
-      if (
-        !isMonthInRange(reportMonth, period) ||
-        reportYear?.toString() !== currentYear?.toString()
-      ) {
-        return false;
-      }
-
-      // BY MEXICO
-      const countryName = report?.attributes?.country?.data?.attributes?.name;
-      if (countryName?.toLowerCase().replace(/\s+/g, "") !== "méxico")
-        return false;
-
-      return (
-        report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
-          ?.toLowerCase()
-          .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
-      );
-    })
-    .forEach((element) => {
-      const total = element?.attributes?.detained_in_borders?.data?.reduce(
-        (acc, curr) => {
-          return acc + curr?.attributes?.total;
-        },
-        0
-      );
-
-      dataPerMonth.female +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.femenino,
-          0
-        );
-      dataPerMonth.male =
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.masculino,
-          0
-        );
-      dataPerMonth.acd = element?.attributes?.detained_in_borders?.data?.reduce(
-        (acc, curr) => acc + curr?.attributes?.acompaniados,
-        0
-      );
-      dataPerMonth.noAcd =
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.noAcompaniados,
-          0
-        );
-      dataPerMonth.f2 = element?.attributes?.detained_in_borders?.data?.reduce(
-        (acc, curr) => acc + curr?.attributes?.ninos,
-        0
-      );
-      dataPerMonth.f3 = element?.attributes?.detained_in_borders?.data?.reduce(
-        (acc, curr) => acc + curr?.attributes?.adolescentes,
-        0
-      );
-
-      dataPerMonth.totalMes += total;
-    });
+  const { dataPerMonth, updateDate } = useDetainedMexico({
+    period,
+    currentYear,
+  });
 
   const sources = (
     <Stack

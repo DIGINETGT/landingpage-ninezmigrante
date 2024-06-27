@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Text, Select, Image, Divider } from "@chakra-ui/react";
+import { Box, Stack, Text, Image, Divider } from "@chakra-ui/react";
 
 // COMPONENTS
 import DownloadImage from "../../../../components/downloadImage";
@@ -18,133 +18,42 @@ import MapaMexico from "../../../../assets/MapaMexico.png";
 import MapaEEUU from "../../../../assets/MapaEEUU.png";
 import MapaGuatemala from "../../../../assets/MapaGuatemala.png";
 
-// HOOKS
-import { monthNames } from "../../../../hooks/fetch";
-
 // UTILS
 import { year } from "../../../../utils/year";
 import LastDate from "../../../../components/lastUpdate";
 import getCountryContent from "../../../../utils/country";
-import {
-  GET_DETAINED,
-  GET_DETAINED_IN_BORDERDS,
-  GET_DETAINED_IN_BORDERDS_BY_COUNTRY,
-  GET_DETAINED_US_BORDERDS_BY_COUNTRY,
-} from "../../../../utils/query/returned";
-import { compareDateRange, isMonthInRange } from "../../../../utils/tools";
-import { useQuery } from "@apollo/client";
+import { useDetainedEEUU } from "../statistics/eeuu/hooks";
+import { useDetainedMexico } from "../statistics/mexico/hooks";
 import useReturnedFilteredQuery from "../../../../hooks/query";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
 
 const Compare = () => {
   const [currentPeriod, setCurrentPeriod] = useState([0, 0]);
   const [currentYear, setCurrentYear] = useState(year);
-
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-
   const { countryID } = useParams();
-
   const containerRef = useRef();
 
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const data = useReturnedFilteredQuery({
+  const { dataPerMonth: dataUS, updateDate } = useDetainedEEUU({
+    period: currentPeriod,
+    currentYear,
+  });
+  const { dataPerMonth: dataMx } = useDetainedMexico({
+    period: currentPeriod,
+    currentYear,
+  });
+
+  const returnedData = useReturnedFilteredQuery({
     year: currentYear,
     period: currentPeriod,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID),
   });
-  let total = 0;
-  data?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        total +=
-          contribution.attributes?.returned?.data?.attributes?.total || 0;
-      }
-    );
-  });
+  let totalCant = 0;
 
-  const { data: dataBorder } = useQuery(GET_DETAINED_IN_BORDERDS_BY_COUNTRY);
-
-  // OBTENER DATOS
-  const bordersData = dataBorder?.detainedInBordersReports?.data;
-
-  const dataPerPeriod = {
-    mx: 0,
-    usa: 0,
-  };
-  let updateDate = "";
-  bordersData
-    ?.filter((report) => {
-      const [reportYear, reportMonth] = report.attributes?.reportDate
-        .split("-")
-        .map(Number);
-
-      updateDate = new Date(
-        report?.attributes?.updatedAt ?? "0"
-      )?.toLocaleString("en-Gb");
-
-      if (
-        !isMonthInRange(reportMonth, currentPeriod) ||
-        reportYear?.toString() !== currentYear?.toString()
-      ) {
-        return false;
-      }
-
-      // BY MEXICO
-      const countryName = report?.attributes?.country?.data?.attributes?.name;
-      if (countryName?.toLowerCase().replace(/\s+/g, "") !== "méxico")
-        return false;
-
-      return (
-        report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
-          ?.toLowerCase()
-          .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
-      );
-    })
-    .forEach((element) => {
-      const total = element?.attributes?.detained_in_borders?.data?.reduce(
-        (acc, curr) => {
-          return acc + curr?.attributes?.total;
-        },
-        0
-      );
-
-      dataPerPeriod.mx += total;
-    });
-
-  const { data: dataBorderUs } = useQuery(GET_DETAINED_US_BORDERDS_BY_COUNTRY);
-  const bordersDataUS = dataBorderUs?.detainedInBordersReports?.data;
-  const filteredUsData = bordersDataUS?.filter((report) => {
-    const [reportYear, reportMonth] = report.attributes?.reportDate
-      .split("-")
-      .map(Number);
-
-    if (
-      !isMonthInRange(reportMonth, currentPeriod) ||
-      reportYear?.toString() !== currentYear?.toString()
-    ) {
-      return false;
-    }
-
-    const countryName = report?.attributes?.country?.data?.attributes?.name;
-
-    if (countryName?.toLowerCase().replace(/\s+/g, "") !== "estadosunidos")
-      return false;
-
-    return (
-      report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.name
-        ?.toLowerCase()
-        .replace(/\s+/g, "") === countryID?.toLowerCase().replace(/\s+/g, "")
-    );
-  });
-
-  filteredUsData?.forEach((element) => {
-    const total = element?.attributes?.detained_us_borders?.data?.reduce(
-      (acc, curr) => {
-        return acc + curr?.attributes?.total;
-      },
-      0
-    );
-    console.log(element?.attributes);
-    dataPerPeriod.usa += total;
+  returnedData?.forEach((report) => {
+    totalCant += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
   const sources = (
@@ -267,7 +176,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {total}
+                {totalCant}
               </Text>
             </Stack>
 
@@ -308,7 +217,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataPerPeriod.usa}
+                {dataUS.totalMes}
               </Text>
             </Stack>
 
@@ -335,7 +244,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataPerPeriod.mx}
+                {dataMx.totalMes}
               </Text>
             </Stack>
           </Stack>

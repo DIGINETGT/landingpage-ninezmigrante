@@ -1,7 +1,5 @@
 // REACT
-import React, { useState, useEffect, useRef } from "react";
-
-import { useParams } from "react-router-dom";
+import React, { useState, useRef } from "react";
 
 // CHAKRA UI COMPONENTS
 import {
@@ -13,7 +11,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Box,
 } from "@chakra-ui/react";
 
 //UTILS
@@ -25,9 +22,6 @@ import ModelContent from "./components/modalContent";
 import DownloadTable from "../../../../components/downloadTable";
 import GraphFooter from "../../../../../../../../components/graphFooter";
 import StatisticsContext from "../../../../context";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../../../utils/query/returned";
-import { useQuery } from "@apollo/client";
-import useReturnedFilteredQuery from "../../../../../../../../hooks/query";
 
 const MapModal = ({
   modalDep,

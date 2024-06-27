@@ -19,10 +19,13 @@ import ModalContentHN from "../../../../../../components/departments/components/
 import { colors } from "../../../../../../utils/theme";
 import { year as currentYear } from "../../../../../../utils/year";
 import { monthNames } from "../../../../../../hooks/fetch";
-import getCountryContent, { getDepartmentData } from "../../../../../../utils/country";
+import getCountryContent, {
+  getDepartmentData,
+} from "../../../../../../utils/country";
 import ModalContentSV from "../../../../../../components/departments/components/sv";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../utils/query/returned";
+import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
 
 const Statistics = ({ returns }) => {
   const { countryID } = useParams();
@@ -30,7 +33,7 @@ const Statistics = ({ returns }) => {
   const containerRef = useRef(null);
 
   const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
     year,
     period,
     country: countryID,
@@ -38,6 +41,7 @@ const Statistics = ({ returns }) => {
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const data = sortDepartments(list, getDepartmentData(databorders));
+  if (data.length > 5) data.length = 5;
 
   const sources = (
     <Stack
@@ -175,7 +179,7 @@ const Statistics = ({ returns }) => {
                 alignItems={{ base: "center", md: "flex-start" }}
               >
                 <Text fontFamily="Oswald" fontSize="xl" lineHeight="1">
-                  {department?.id?.replace("Department", "")}
+                  {depName[department?.id?.replace("Department", "")]}
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
                   {department?.total}

@@ -1,110 +1,82 @@
-import React from 'react';
+import React from "react";
 
-import { Box, Stack, Image, Text, Tooltip } from '@chakra-ui/react';
+import { Box, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
 
-import Group from '../../../../assets/group.png';
-import Guatemala from '../../../../assets/guatemala.png';
-import Honduras from '../../../../assets/honduras.png';
-import Salvador from '../../../../assets/salvador.png';
+import Group from "../../../../assets/group.png";
+import Guatemala from "../../../../assets/guatemala.png";
+import Honduras from "../../../../assets/honduras.png";
+import Salvador from "../../../../assets/salvador.png";
 
-import { year } from '../../../../utils/year';
-import { useQuery } from '@apollo/client';
-import { GET_RETURNEDS } from '../../../../utils/query/returned';
+import { year } from "../../../../utils/year";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
+import useReturnedFilteredQuery from "../../../../hooks/query";
 
 const TotalReturns = () => {
-  const { data } = useQuery(GET_RETURNEDS);
+  const dataGt = useReturnedFilteredQuery({
+    year,
+    period: [1, 12],
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("guatemala"),
+  });
+  let gt = 0;
 
-  const returneds = data?.monthlyReports?.data?.filter(
-    (report) =>
-      report?.attributes?.reportMonth?.split('-')?.[0]?.toString() ===
-      year.toString()
-  );
-
-  console.log('SDS', { returneds });
-
-  let totalAmount = 0;
-  returneds?.forEach((returned) => {
-    totalAmount += Number(
-      returned?.attributes?.returned?.data?.attributes?.total ?? 0
-    );
+  dataGt?.forEach((report) => {
+    gt += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
-  const gt = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          return country?.attributes?.country?.data?.attributes?.name ===
-            'Guatemala'
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
-  );
+  const dataHn = useReturnedFilteredQuery({
+    year,
+    period: [1, 12],
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("honduras"),
+  });
+  let hn = 0;
 
-  const hn = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          console.log({ country });
-          return country?.attributes?.country?.data?.attributes?.name ===
-            'Honduras'
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
-  );
+  dataHn?.forEach((report) => {
+    hn += report.attributes?.returned?.data?.attributes?.total || 0;
+  });
 
-  const sv = returneds?.reduce(
-    (_, returned) =>
-      returned?.attributes?.returned?.data?.attributes?.country_contributions?.data?.reduce(
-        (acc, country) => {
-          console.log({ country });
-          return country?.attributes?.country?.data?.attributes?.name ===
-            'ElSalvador'
-            ? acc + country?.attributes?.cant
-            : acc;
-        },
-        0
-      ),
-    0
-  );
+  const dataSv = useReturnedFilteredQuery({
+    year,
+    period: [1, 12],
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("el salvador"),
+  });
+  let sv = 0;
+
+  dataSv?.forEach((report) => {
+    sv += report.attributes?.returned?.data?.attributes?.total || 0;
+  });
 
   const total = { gt, hn, sv };
 
   return (
-    <Box bg="blue.700" p={{ base: '40px 24px', md: '80px 40px' }}>
+    <Box bg="blue.700" p={{ base: "40px 24px", md: "80px 40px" }}>
       {/* CONTAINER */}
       <Stack
         alignItems="center"
         justifyContent="center"
-        gap={{ base: '0px', md: '40px' }}
-        padding={{ base: '16px', md: '24px' }}
-        direction={{ base: 'column', md: 'row' }}
+        gap={{ base: "0px", md: "40px" }}
+        padding={{ base: "16px", md: "24px" }}
+        direction={{ base: "column", md: "row" }}
       >
         {/* DESKTOP IMAGE */}
         <Image
           w="160px"
           h="160px"
           src={Group}
-          display={{ base: 'none', md: 'block' }}
+          display={{ base: "none", md: "block" }}
         />
         {/* DATA */}
         <Stack
           direction="column"
           justifyContent="center"
-          gap={{ base: '24px', md: '0px' }}
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          gap={{ base: "24px", md: "0px" }}
+          alignItems={{ base: "center", md: "flex-start" }}
         >
           {/* TITLE */}
           <Text
             color="white"
             textAlign="center"
             fontFamily="Oswald"
-            fontSize={{ base: '3xl', md: '4xl' }}
+            fontSize={{ base: "3xl", md: "4xl" }}
           >
             Total de niñez migrante retornada {year}
           </Text>
@@ -114,21 +86,21 @@ const TotalReturns = () => {
             w="150px"
             h="150px"
             src={Group}
-            display={{ base: 'block', md: 'none' }}
+            display={{ base: "block", md: "none" }}
           />
 
           {/* GLOBAL DATA */}
           <Text
             color="white"
             fontFamily="Oswald"
-            fontSize={{ base: '5xl', md: '6xl' }}
+            fontSize={{ base: "5xl", md: "6xl" }}
           >
-            {totalAmount}
+            {total.gt + total.hn + total.sv}
           </Text>
 
           {/* DATA PER COUNTRY */}
           <Stack
-            direction={{ base: 'column', md: 'row' }}
+            direction={{ base: "column", md: "row" }}
             spacing="0px"
             width="100%"
           >
@@ -139,9 +111,9 @@ const TotalReturns = () => {
               padding="16px 24px"
               alignItems="center"
               border="1px solid white"
-              width={{ base: '100%', md: '200px' }}
-              spacing={{ base: '40px', md: '16px' }}
-              justifyContent={{ base: 'center', md: 'space-between' }}
+              width={{ base: "100%", md: "200px" }}
+              spacing={{ base: "40px", md: "16px" }}
+              justifyContent={{ base: "center", md: "space-between" }}
             >
               <Tooltip
                 color="black"
@@ -163,7 +135,7 @@ const TotalReturns = () => {
               <Text
                 color="white"
                 fontFamily="Oswald"
-                fontSize={{ base: '3xl', md: '4xl' }}
+                fontSize={{ base: "3xl", md: "4xl" }}
               >
                 {Number.isNaN(total.gt) ? 0 : total.gt}
               </Text>
@@ -176,9 +148,9 @@ const TotalReturns = () => {
               padding="16px 24px"
               alignItems="center"
               border="1px solid white"
-              width={{ base: '100%', md: '200px' }}
-              spacing={{ base: '40px', md: '16px' }}
-              justifyContent={{ base: 'center', md: 'space-between' }}
+              width={{ base: "100%", md: "200px" }}
+              spacing={{ base: "40px", md: "16px" }}
+              justifyContent={{ base: "center", md: "space-between" }}
             >
               <Tooltip
                 color="black"
@@ -200,7 +172,7 @@ const TotalReturns = () => {
               <Text
                 color="white"
                 fontFamily="Oswald"
-                fontSize={{ base: '3xl', md: '4xl' }}
+                fontSize={{ base: "3xl", md: "4xl" }}
               >
                 {Number.isNaN(total.hn) ? 0 : total.hn}
               </Text>
@@ -213,9 +185,9 @@ const TotalReturns = () => {
               padding="16px 24px"
               alignItems="center"
               border="1px solid white"
-              width={{ base: '100%', md: '200px' }}
-              spacing={{ base: '40px', md: '16px' }}
-              justifyContent={{ base: 'center', md: 'space-between' }}
+              width={{ base: "100%", md: "200px" }}
+              spacing={{ base: "40px", md: "16px" }}
+              justifyContent={{ base: "center", md: "space-between" }}
             >
               <Tooltip
                 color="black"
@@ -237,7 +209,7 @@ const TotalReturns = () => {
               <Text
                 color="white"
                 fontFamily="Oswald"
-                fontSize={{ base: '3xl', md: '4xl' }}
+                fontSize={{ base: "3xl", md: "4xl" }}
               >
                 {Number.isNaN(total.sv) ? 0 : total.sv}
               </Text>

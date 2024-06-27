@@ -118,7 +118,6 @@ export const onDragEnd = ({
     });
 
     // ACTUALIZAR
-    console.log("LOCAL", depData);
     updateSection({
       id,
       dep,

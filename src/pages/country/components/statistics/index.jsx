@@ -16,39 +16,33 @@ import Gender from "./components/gender";
 import { monthNames } from "../../../../hooks/fetch";
 
 import StatisticsContext from "./context";
-import { capitalizeText, compareDateRange } from "../../../../utils/tools";
 import getCountryContent from "../../../../utils/country";
-import { useQuery } from "@apollo/client";
-import { GET_DETAINED, GET_RETURNEDS } from "../../../../utils/query/returned";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../hooks/query";
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [departments, setDepartments] = useState([]);
-  const [periodId, setPeriodId] = useState("");
 
-  const data = useReturnedFilteredQuery({ year, period });
+  const data = useReturnedFilteredQuery({
+    year,
+    period,
+    query: GET_RETURNEDS_TOTAL(countryID),
+  });
   let totalCant = 0;
+
   data?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        console.log({ contribution });
-        totalCant +=
-          contribution.attributes?.returned?.data?.attributes?.total || 0;
-      }
-    );
+    totalCant += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
   const updateDate = new Date(
     data?.[0]?.attributes?.updatedAt?.toString()
   ).toLocaleString("en-Gb");
   const filesUrl =
-    data?.[0]?.attributes?.users_permissions_user?.data?.attributes
-      ?.organization?.data?.attributes?.department?.data?.attributes?.country
-      ?.data?.attributes?.country_contributions?.data?.[0]?.attributes?.returned
-      ?.data?.attributes?.fuentes?.data?.[0]?.attributes?.url;
+    data?.[0]?.attributes?.returned?.data?.attributes?.fuentes?.data?.[0]
+      ?.attributes?.url;
+
   const sources = (
     <Box direction="column" margin="auto" maxWidth="800px">
       {getCountryContent({
@@ -194,22 +188,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
           justifyContent="center"
           direction={{ base: "column", md: "row" }}
         >
-          <HeatMap period={period} year={year} periodId={periodId} />
-          <Stack direction="column" spacing={4}>
-            {departments.map((department, depIndex) => (
-              <Stack
-                spacing={8}
-                direction="row"
-                key={`${department._id}_${depIndex}`}
-                justifyContent="space-between"
-              >
-                <Text fontFamily="Montserrat Medium">
-                  {capitalizeText(department.name?.toLowerCase())}
-                </Text>
-                <Text fontFamily="Montserrat Medium">{department.total}</Text>
-              </Stack>
-            ))}
-          </Stack>
+          <HeatMap period={period} year={year} periodId="1" />
         </Stack>
 
         <Stack direction="column" margin="auto" maxWidth="800px">

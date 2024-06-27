@@ -7,11 +7,10 @@ import { Stack, Text, Image } from "@chakra-ui/react";
 import Male from "../../../../../../../../../../assets/male.png";
 import Femenine from "../../../../../../../../../../assets/femenine.png";
 
-
 const ModalContent = ({ period, year, country, dataRes }) => {
   const genders = {
-    male: dataRes.masculino,
-    female: dataRes.femenino,
+    male: dataRes?.masculino,
+    female: dataRes?.femenino,
   };
 
   const total = genders.male + genders.female;
@@ -28,7 +27,7 @@ const ModalContent = ({ period, year, country, dataRes }) => {
           Total
         </Text>
         <Text fontFamily="Oswald" fontSize="5xl">
-          {total}
+          {Number.isNaN(total) ? 0 : total}
         </Text>
       </Stack>
 

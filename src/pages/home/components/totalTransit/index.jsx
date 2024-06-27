@@ -15,16 +15,16 @@ import { GET_TRANSIT_REPORTS } from "../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
 
 const TotalTransit = () => {
-  const { data, loading, error } = useQuery(GET_TRANSIT_REPORTS);
+  const { data } = useQuery(GET_TRANSIT_REPORTS);
 
-  // Recorre los datos devueltos por el query
   let totalCant = 0;
   data?.transitReports?.data.forEach((report) => {
-    report.attributes?.country_contributions?.data.forEach((contribution) => {
-      // Suma los valores de "cant"
+    report.attributes?.gender_contributions?.data.forEach((contribution) => {
       totalCant += contribution.attributes.cant;
     });
   });
+
+  console.log("TRAFICO", totalCant)
 
   return (
     <Box bg="blue.500" p={{ base: "40px 24px", md: "80px 40px" }}>

@@ -1,5 +1,5 @@
 // REACT
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMPONENTS
@@ -18,57 +18,43 @@ import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY } from "../../../../../../u
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const countryImages = {
-  eu: { Image: EEUU },
-  mx: { Image: Mexico },
-  nextCountryG: { Image: Guatemala },
-  nextCountryH: { Image: ElSalvador },
+  ["Estados Unidos"]: { Image: EEUU },
+  ["México"]: { Image: Mexico },
+  ["Guatemala"]: { Image: Guatemala },
+  ["El Salvador"]: { Image: ElSalvador },
   others: { Image: AmericaMap },
 };
 
-const defaultTotals = {
-  eu: { name: "", total: 0 },
-  mx: { name: "", total: 0 },
-  nextCountryG: { name: "", total: 0 },
-  nextCountryH: { name: "", total: 0 },
-  others: { name: "", total: 0 },
-};
-
 const ReturnCountry = ({ period, year, country }) => {
-  const countryID = useParams().countryID || country;
+  const { countryID: id } = useParams();
+  const countryId = country || id;
 
   const rdata = useReturnedFilteredQuery({
     year,
     period,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY,
+    skip: false,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryId),
   });
 
-  let totalEstadosUnidos = 0;
-  let totalMexico = 0;
+  const dataPerCountry = {};
 
   rdata?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.country_contributions?.data?.forEach(
-          (countryContribution) => {
-            const countryName =
-              countryContribution.attributes?.country?.data?.attributes?.name;
+    report.attributes?.returned?.data?.attributes?.country_contributions?.data?.forEach(
+      (countryContribution) => {
+        const countryName =
+          countryContribution.attributes?.country?.data?.attributes?.name;
 
-            if (countryName === "Estados Unidos") {
-              totalEstadosUnidos += countryContribution.attributes?.cant || 0;
-            } else if (countryName === "México") {
-              totalMexico += countryContribution.attributes?.cant || 0;
-            }
-          }
-        );
+        console.log(countryName, countryContribution?.attributes?.cant);
+
+        dataPerCountry[countryName] =
+          (dataPerCountry[countryName] ?? 0) +
+          +(countryContribution?.attributes?.cant ?? 0);
       }
     );
   });
 
-  const total = {
-    eu: { name: "Estados Unidos", total: totalEstadosUnidos },
-    mx: { name: "México", total: totalMexico },
-  };
+  console.log({ dataPerCountry });
 
   return (
     <Box width="100%">
@@ -84,12 +70,12 @@ const ReturnCountry = ({ period, year, country }) => {
         direction={{ base: "column", md: "row" }}
         alignItems={{ base: "center", md: "flex-end" }}
       >
-        {Object.entries(total)
+        {Object.entries(dataPerCountry)
           .sort((a, b) => b[1].total - a[1].total)
-          .map((country, index) => {
-            const Map = countryImages[country[0]].Image;
+          .map(([country, total], index) => {
+            const Map = countryImages?.[country]?.Image;
 
-            return country[1].total > 0 ? (
+            return total > 0 ? (
               <Stack
                 gap="24px"
                 direction="column"
@@ -97,7 +83,7 @@ const ReturnCountry = ({ period, year, country }) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                {<Map color={colors.heat[countryID][900 - index * 100]} />}
+                {<Map color={colors.heat[countryId][900 - index * 100]} />}
 
                 <Stack
                   spacing="8px"
@@ -106,10 +92,10 @@ const ReturnCountry = ({ period, year, country }) => {
                   justifyContent="space-between"
                 >
                   <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
-                    {country[1].name}
+                    {country}
                   </Text>
                   <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                    {country[1].total}
+                    {total}
                   </Text>
                 </Stack>
               </Stack>

@@ -1,5 +1,5 @@
 // REACT
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Image, Text, Tooltip } from "@chakra-ui/react";
@@ -11,20 +11,15 @@ import Police from "../../../../assets/police.png";
 
 // UTILS
 import { year } from "../../../../utils/year";
-import {
-  GET_DETAINED_IN_BORDERDS,
-  GET_RETURNEDS_BY_TRAVEL_CONDITION,
-} from "../../../../utils/query/returned";
+import { GET_DETAINED_IN_BORDERDS } from "../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
 
 const TotalBorders = () => {
-  const { data, loading, error } = useQuery(GET_DETAINED_IN_BORDERDS);
+  const { data } = useQuery(GET_DETAINED_IN_BORDERDS);
 
-  // Inicializa las variables para las sumas
   let totalDetainedInMexicoBorders = 0;
   let totalDetainedInUSBorders = 0;
 
-  // Recorre los datos devueltos por el query
   data?.detainedInBordersReports?.data.forEach((report) => {
     if (
       report.attributes?.reportDate?.split("-")?.[0]?.toString() !==
@@ -46,12 +41,6 @@ const TotalBorders = () => {
       });
     }
   });
-
-  console.log(
-    "Total Detained in Mexico Borders:",
-    totalDetainedInMexicoBorders
-  );
-  console.log("Total Detained in US Borders:", totalDetainedInUSBorders);
 
   return (
     <Box bg="blue.700" p={{ base: "40px 24px", md: "80px 40px" }}>

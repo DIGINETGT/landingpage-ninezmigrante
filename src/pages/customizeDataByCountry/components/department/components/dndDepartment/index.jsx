@@ -47,7 +47,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [currentYear, setYear] = useState(year);
 
   const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
     year,
     period,
     country: countryID,

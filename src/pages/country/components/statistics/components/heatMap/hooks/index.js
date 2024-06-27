@@ -49,9 +49,9 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   };
 
   const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
-    year,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
     country: countryID,
+    year,
     period,
   });
 
@@ -59,45 +59,43 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   const depSubDepTotals = {};
   const depSubDepGenderTotals = {};
 
+console.log("DATHEAT", databorders, countryID)
+
   databorders?.forEach((report) => {
-    report.attributes?.users_permissions_user?.data?.attributes?.organization?.data?.attributes?.department?.data?.attributes?.country?.data?.attributes?.country_contributions?.data?.forEach(
-      (contribution) => {
-        contribution.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
-          (muni) => {
-            const subDepName =
-              muni.attributes?.municipality?.data?.attributes?.name;
+    report.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
+      (muni) => {
+        const subDepName =
+          muni.attributes?.municipality?.data?.attributes?.name;
 
-            const depName =
-              muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
-                ?.toLowerCase()
-                .replaceAll(" ", "")
-                .replaceAll("department", "")
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
+        const depName =
+          muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
+            ?.toLowerCase()
+            .replaceAll(" ", "")
+            .replaceAll("department", "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
 
-            const muniCant = muni.attributes?.cant || 0;
-            const gender =
-              muni.attributes?.gender?.data?.attributes?.name?.toLowerCase();
+        const muniCant = muni.attributes?.cant || 0;
+        const gender =
+          muni.attributes?.gender?.data?.attributes?.name?.toLowerCase();
 
-            depSubDepTotals[depName] = {
-              ...depSubDepTotals[depName],
-              [subDepName]: depSubDepTotals?.[depName]?.[subDepName]
-                ? depSubDepTotals[depName][subDepName] + muniCant
-                : muniCant,
-            };
+        depSubDepTotals[depName] = {
+          ...depSubDepTotals[depName],
+          [subDepName]: depSubDepTotals?.[depName]?.[subDepName]
+            ? depSubDepTotals[depName][subDepName] + muniCant
+            : muniCant,
+        };
 
-            depSubDepGenderTotals[depName] = {
-              ...depSubDepGenderTotals[depName],
-              [gender]: depSubDepGenderTotals?.[depName]?.[gender]
-                ? depSubDepGenderTotals[depName][gender] + muniCant
-                : muniCant,
-            };
+        depSubDepGenderTotals[depName] = {
+          ...depSubDepGenderTotals[depName],
+          [gender]: depSubDepGenderTotals?.[depName]?.[gender]
+            ? depSubDepGenderTotals[depName][gender] + muniCant
+            : muniCant,
+        };
 
-            depTotals[depName] = depTotals[depName]
-              ? depTotals[depName] + muniCant
-              : muniCant;
-          }
-        );
+        depTotals[depName] = depTotals[depName]
+          ? depTotals[depName] + muniCant
+          : muniCant;
       }
     );
   });
@@ -125,7 +123,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
 
   return {
     depSubDepTotals,
-    depSubDepGenderTotals
+    depSubDepGenderTotals,
   };
 };
 

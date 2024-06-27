@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { getFilterByCountry } from "./filters";
 
 export const GET_RETURNEDS = gql`
   query {
@@ -13,20 +14,6 @@ export const GET_RETURNEDS = gql`
               id
               attributes {
                 total
-                country_contributions {
-                  data {
-                    attributes {
-                      cant
-                      country {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
               }
             }
           }
@@ -108,13 +95,92 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL = (country) => gql`
+query {
+  monthlyReports(${getFilterByCountry(country)}) {
+    data {
+      attributes {
+        reportMonth
+        updatedAt
+        returned {
+          data {
+            attributes {
+              total
+              fuentes {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+        users_permissions_user {
+          data {
+            attributes {
+              organization {
+                data {
+                  attributes {
+                    department {
+                      data {
+                        attributes {
+                          country {
+                            data {
+                              attributes {
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)}) {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                total
+                country_contributions {
+                  data {
+                    attributes {
+                      returned {
+                        data {
+                          attributes {
+                            total
+                            fuentes {
+                              data {
+                                attributes {
+                                  url
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -128,26 +194,6 @@ export const GET_RETURNEDS_BY_COUNTRY = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -166,13 +212,40 @@ export const GET_RETURNEDS_BY_COUNTRY = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)}) {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                fuentes {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+                gender_contributions {
+                  data {
+                    attributes {
+                       cant
+                       gender {
+                         data {
+                           attributes {
+                             name
+                           }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -186,40 +259,6 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              gender_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    gender {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -238,13 +277,40 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)}) {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                fuentes {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+                travel_condition_contributions {
+                  data {
+                    attributes {
+                      cant
+                      travel_condition {
+                        data {
+                          attributes {
+                              name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -258,40 +324,6 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              travel_condition_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    travel_condition {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -310,13 +342,41 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)}) {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                total
+                fuentes {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+                age_group_contributions {
+                  data {
+                    attributes {
+                      cant
+                      age_group {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -330,40 +390,6 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              age_group_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    age_group {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -382,13 +408,40 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)}) {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                fuentes {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+                return_route_contributions {
+                  data {
+                    attributes {
+                      cant
+                      return_route {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -402,40 +455,6 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              return_route_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    return_route {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -454,13 +473,33 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (country) => gql`
   query {
-    monthlyReports {
+    monthlyReports(${getFilterByCountry(country)})  {
       data {
         attributes {
           reportMonth
           updatedAt
+          returned {
+            data {
+              attributes {
+                country_contributions {
+                  data {
+                    attributes {
+                      cant
+                      country {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
           users_permissions_user {
             data {
               attributes {
@@ -474,40 +513,6 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = gql`
                               data {
                                 attributes {
                                   name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              country_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    country {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
                                 }
                               }
                             }
@@ -524,6 +529,92 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = gql`
       }
     }
   }
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
+  query {
+    monthlyReports(${getFilterByCountry(country)}) {
+    data {
+      attributes {
+        updatedAt
+        reportMonth
+        returned {
+          data {
+            attributes {
+              fuentes {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+              municipality_contributions {
+                data {
+                  attributes {
+                    cant
+                    gender {
+                      data {
+                        attributes {
+                          name
+                        }
+                      }
+                    }
+                    municipality {
+                      data {
+                        attributes {
+                          name
+                          department {
+                            data {
+                              attributes {
+                                name
+                                country {
+                                  data {
+                                    attributes {
+                                      name
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        users_permissions_user {
+          data {
+            attributes {
+              organization {
+                data {
+                  attributes {
+                    department {
+                      data {
+                        attributes {
+                          country {
+                            data {
+                              attributes {
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 `;
 
 export const GET_TRANSIT_REPORTS = gql`
@@ -533,7 +624,7 @@ export const GET_TRANSIT_REPORTS = gql`
         id
         attributes {
           reportDate
-          country_contributions {
+          gender_contributions {
             data {
               attributes {
                 cant
@@ -560,6 +651,7 @@ export const GET_DETAINED_IN_BORDERDS = gql`
               }
             }
           }
+
           detained_in_borders {
             data {
               attributes {
@@ -571,267 +663,6 @@ export const GET_DETAINED_IN_BORDERDS = gql`
           detained_us_borders {
             data {
               attributes {
-                total
-              }
-            }
-          }
-
-          users_permissions_user {
-            data {
-              attributes {
-                organization {
-                  data {
-                    attributes {
-                      department {
-                        data {
-                          attributes {
-                            country {
-                              data {
-                                attributes {
-                                  name
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = gql`
-  query {
-    detainedInBordersReports {
-      data {
-        id
-        attributes {
-          reportDate
-          updatedAt
-          country {
-            data {
-              attributes {
-                name
-              }
-            }
-          }
-
-          detained_in_borders {
-            data {
-              attributes {
-                total
-                femenino
-                masculino
-                acompaniados
-                noAcompaniados
-                ninos
-                adolescentes
-              }
-            }
-          }
-
-          users_permissions_user {
-            data {
-              attributes {
-                organization {
-                  data {
-                    attributes {
-                      department {
-                        data {
-                          attributes {
-                            country {
-                              data {
-                                attributes {
-                                  name
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_DETAINED = gql`
-  query {
-    detainedInBorders {
-      data {
-        id
-        attributes {
-          total
-          month
-        }
-      }
-    }
-  }
-`;
-
-export const GET_BY_GENDER = gql`
-  query {
-    genderContributions {
-      data {
-        attributes {
-          cant
-          gender {
-            data {
-              attributes {
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = gql`
-  query {
-    monthlyReports {
-      data {
-        attributes {
-          updatedAt
-          reportMonth
-          users_permissions_user {
-            data {
-              attributes {
-                organization {
-                  data {
-                    attributes {
-                      department {
-                        data {
-                          attributes {
-                            country {
-                              data {
-                                attributes {
-                                  name
-                                  country_contributions {
-                                    data {
-                                      attributes {
-                                        returned {
-                                          data {
-                                            attributes {
-                                              total
-                                              fuentes {
-                                                data {
-                                                  attributes {
-                                                    url
-                                                  }
-                                                }
-                                              }
-                                              municipality_contributions {
-                                                data {
-                                                  attributes {
-                                                    cant
-                                                    gender {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                        }
-                                                      }
-                                                    }
-                                                    municipality {
-                                                      data {
-                                                        attributes {
-                                                          name
-                                                          department {
-                                                            data {
-                                                              attributes {
-                                                                name
-                                                                country {
-                                                                  data {
-                                                                    attributes {
-                                                                      name
-                                                                    }
-                                                                  }
-                                                                }
-                                                              }
-                                                            }
-                                                          }
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = gql`
-  query {
-    detainedInBordersReports {
-      data {
-        id
-        attributes {
-          updatedAt
-          reportDate
-          country {
-            data {
-              attributes {
-                name
-              }
-            }
-          }
-
-          detained_us_borders {
-            data {
-              attributes {
-                elCentroAcompaniados
-                yumaAcompaniados
-                tucsonAcompaniados
-                elPasoAcompaniados
-                bigBendAcompaniados
-                delRioAcompaniados
-                laredoAcompaniados
-                rioGrandeAcompaniados
-                sanDiegoNoAcompaniados
-                elCentroNoAcompaniados
-                yumaNoAcompaniados
-                tucsonNoAcompaniados
-                elPasoNoAcompaniados
-                bigBendNoAcompaniados
-                delRioNoAcompaniados
-                laredoNoAcompaniados
-                rioGrandeNoAcompaniados
-                totalAcompaniados
-                totalNoAcompaniados
                 total
               }
             }
