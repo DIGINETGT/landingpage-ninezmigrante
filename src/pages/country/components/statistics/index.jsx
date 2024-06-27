@@ -28,7 +28,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
   const data = useReturnedFilteredQuery({
     year,
     period,
-    query: GET_RETURNEDS_TOTAL(countryID),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID),
   });
   let totalCant = 0;
 
