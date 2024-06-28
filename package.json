@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --port 5174",
-    "build": "vite build",
+    "build": "npx vite build",
     "prestart": "npm run build",
-    "start": "vite preview --host --port 8080"
+    "start": "npx vite preview --host --port 8080"
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
