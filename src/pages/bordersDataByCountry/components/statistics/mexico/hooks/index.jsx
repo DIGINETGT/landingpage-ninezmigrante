@@ -11,7 +11,7 @@ export const useDetainedMexico = ({ period, currentYear }) => {
   );
 
   // OBTENER DATOS
-  const bordersData = dataBorder?.detainedInBordersReports?.data;
+  const bordersData = [...(dataBorder?.detainedInBordersReports?.data ?? [])];
 
   let updateDate = "";
   const dataPerMonth = {
@@ -23,67 +23,64 @@ export const useDetainedMexico = ({ period, currentYear }) => {
     f2: 0,
     f3: 0,
   };
-  bordersData
-    ?.filter((report) => {
-      const [reportYear, reportMonth] = report.attributes?.reportDate
-        .split("-")
-        .map(Number);
 
-      updateDate = dateToString(report?.attributes?.updatedAt ?? "0");
+  bordersData?.forEach((element) => {
+    const filteredData =
+      element.attributes?.detained_in_borders?.data?.filter((report) => {
+        const [reportYear, reportMonth] = report?.attributes?.month
+          ?.split("-")
+          .map(Number);
 
-      if (
-        !isMonthInRange(reportMonth, period) ||
-        reportYear?.toString() !== currentYear?.toString()
-      ) {
-        return false;
-      }
+        if (
+          !isMonthInRange(reportMonth, period) ||
+          reportYear?.toString() !== currentYear?.toString()
+        ) {
+          return false;
+        }
 
-      // BY MEXICO
-      const countryName = report?.attributes?.country?.data?.attributes?.name;
-      if (countryName?.toLowerCase().replace(/\s+/g, "") !== "méxico")
-        return false;
+        return true;
+      }) ?? [];
 
-      return true;
-    })
-    .forEach((element) => {
-      const total =
-        element?.attributes?.detained_in_borders?.data?.reduce((acc, curr) => {
-          return acc + curr?.attributes?.total;
-        }, 0) ?? 0;
+    updateDate = dateToString(
+      new Date(element?.attributes?.updatedAt?.toString())
+    );
 
-      dataPerMonth.female +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.femenino,
-          0
-        ) ?? 0;
-      dataPerMonth.male +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.masculino,
-          0
-        ) ?? 0;
-      dataPerMonth.acd +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.acompaniados,
-          0
-        ) ?? 0;
-      dataPerMonth.noAcd +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.noAcompaniados,
-          0
-        ) ?? 0;
-      dataPerMonth.f2 +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.ninos,
-          0
-        ) ?? 0;
-      dataPerMonth.f3 +=
-        element?.attributes?.detained_in_borders?.data?.reduce(
-          (acc, curr) => acc + curr?.attributes?.adolescentes,
-          0
-        ) ?? 0;
+    const total =
+      filteredData?.reduce((acc, curr) => {
+        return acc + curr?.attributes?.total;
+      }, 0) ?? 0;
 
-      dataPerMonth.totalMes += dataPerMonth.female + dataPerMonth.male;
-    });
+    dataPerMonth.female +=
+      filteredData?.reduce(
+        (acc, curr) => acc + curr?.attributes?.femenino,
+        0
+      ) ?? 0;
+    dataPerMonth.male +=
+      filteredData?.reduce(
+        (acc, curr) => acc + curr?.attributes?.masculino,
+        0
+      ) ?? 0;
+    dataPerMonth.acd +=
+      filteredData?.reduce(
+        (acc, curr) => acc + curr?.attributes?.acompaniados,
+        0
+      ) ?? 0;
+    dataPerMonth.noAcd +=
+      filteredData?.reduce(
+        (acc, curr) => acc + curr?.attributes?.noAcompaniados,
+        0
+      ) ?? 0;
+    dataPerMonth.f2 +=
+      filteredData?.reduce((acc, curr) => acc + curr?.attributes?.ninos, 0) ??
+      0;
+    dataPerMonth.f3 +=
+      filteredData?.reduce(
+        (acc, curr) => acc + curr?.attributes?.adolescentes,
+        0
+      ) ?? 0;
+
+    dataPerMonth.totalMes += total;
+  });
 
   return { dataPerMonth, updateDate };
 };

@@ -16,7 +16,7 @@ import { isMonthInRange } from "../../../../../../../utils/tools";
 
 const datasetLabels = {
   gender: ["Femenino", "Masculino"],
-  age: ["Primera infancia", "Niñez", "Adolescencia"],
+  age: ["Primera infancia", "Niñez", "Adolescencia", "No registrado"],
   via: ["Terrestre", "Aérea"],
   condition: ["Acompañado", "No acompañado"],
   return: ["Estados Unidos", "México", "Canada"],
@@ -116,7 +116,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
 
       // PETICIONES
       const requests = localData.map(async (label) => {
-        let totals = { total1: 0, total2: 0, total3: 0 };
+        let totals = { total1: 0, total2: 0, total3: 0, total4: 0 };
         const { data: queryData } = await apolloClient.query({
           query: selectedQuery,
           variables: {},
@@ -188,6 +188,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
               if (rawData === "primera infancia") totals.total1 += total;
               if (rawData === "niñez") totals.total2 += total;
               if (rawData === "adolescencia") totals.total3 += total;
+              if (rawData === "no registrados") totals.total4 += total;
             }
           });
         });
@@ -227,7 +228,20 @@ const useGraphData = (period, graphType, chartType, countryID) => {
                 backgroundColor:
                   chartType === "area" ? itemColors[2] : defaultItemColors[2],
               },
-            ].flat(Boolean),
+              datasetLabels?.[graphType]?.[3]
+                ? {
+                    fill: true,
+                    label: datasetLabels[graphType][3],
+                    data: data.map((totals) => totals?.total4),
+                    backgroundColor:
+                      chartType === "area"
+                        ? itemColors[3]
+                        : defaultItemColors[3],
+                  }
+                : undefined,
+            ]
+              .flat(Boolean)
+              .filter(Boolean),
           };
           setGraphData(newGraphData);
         })

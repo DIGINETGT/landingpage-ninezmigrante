@@ -12,6 +12,7 @@ import LastDate from "../../../../../components/lastUpdate";
 import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
 import { useDetainedEEUU } from "./hooks";
+import { monthNames } from "../../../../../hooks/fetch";
 
 const EEUU = () => {
   const [currentYear, setCurrentYear] = useState("");
@@ -108,7 +109,7 @@ const EEUU = () => {
             bgColor="#fff"
             padding="40px 24px"
             borderRadius="12px"
-            alignItems="flex-start"
+            alignItems="center"
             justifyContent="space-between"
             direction={{ base: "column", md: "row" }}
           >
@@ -120,7 +121,12 @@ const EEUU = () => {
             {/* TOTAL MONTH DATA */}
             <Stack>
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                {"Mes"}
+                {`Total ${monthNames[period[0]] + " - " ?? ""} ${
+                  monthNames[period[1]] ?? ""
+                }`}
+              </Text>
+              <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+                {currentYear ?? ""}
               </Text>
               <Text fontFamily="Oswald" fontSize="6xl" lineHeight="1">
                 {dataPerMonth?.totalMes ?? "0"}

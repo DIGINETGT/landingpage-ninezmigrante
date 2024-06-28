@@ -31,6 +31,7 @@ const MapModal = ({
   periodId,
   country,
   depTotals,
+  departmentTotal,
   genderDepTotals,
 }) => {
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
@@ -88,6 +89,7 @@ const MapModal = ({
               >
                 <ModelContent
                   year={year}
+                  total={departmentTotal}
                   period={period}
                   country={country}
                   dataRes={genderDepTotals}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTransitFilteredQuery } from "../../../../hooks/query";
 import {
@@ -14,11 +14,19 @@ import AgeRanges from "../../../country/components/statistics/components/ageRang
 import LastDate from "../../../../components/lastUpdate";
 import ReturnCountry from "../entryBorders/components/returnCountry";
 import EntryBorderCountry from "../entryBorders/components/entryBorders";
+import { dateToString } from "../../../../utils/tools";
+import GraphFooter from "../../../../components/graphFooter";
+import DownloadTable from "../../../country/components/statistics/components/downloadTable";
+import DownloadImage from "../../../../components/downloadImage";
 
 const Statistics = () => {
   const [period, setPeriod] = useState([]);
   const [currentYear, setCurrentYear] = useState("");
   const { countryID } = useParams();
+  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
+
+  const satisticsRef = useRef(null);
+
   const data = useTransitFilteredQuery({
     period,
     query: GET_TRANSIT_REPORT(countryID),
@@ -57,6 +65,7 @@ const Statistics = () => {
     f4: 0,
   };
 
+  let updateDate = "";
   data?.forEach((element) => {
     const female = element?.attributes?.gender_contributions?.data?.reduce(
       (acc, curr) =>
@@ -64,6 +73,10 @@ const Statistics = () => {
           ? acc + curr?.attributes?.cant
           : acc,
       0
+    );
+
+    updateDate = dateToString(
+      new Date(element?.attributes?.updatedAt?.toString())
     );
 
     const male = element?.attributes?.gender_contributions?.data?.reduce(
@@ -115,8 +128,14 @@ const Statistics = () => {
     dataPerMonth.f4 += f4;
   });
 
+  console.log({ data });
+
   return (
-    <Box width="100%" padding={{ base: "24px 40px", md: "80px 40px" }}>
+    <Box
+      width="100%"
+      padding={{ base: "24px 40px", md: "80px 40px" }}
+      ref={satisticsRef}
+    >
       <Stack
         gap="24px"
         width="100%"
@@ -147,15 +166,17 @@ const Statistics = () => {
           </Stack>
 
           {/* YEAR AND PERIOD SELECTS */}
-          <Stack
-            width={{ base: "100%", md: "50%" }}
-            direction={{ base: "column", md: "row" }}
-          >
-            {/* SELECT YEAR */}
-            <YearSelect handleYear={handleYear} currentYear={currentYear} />
+          {!isScreenShotTime && (
+            <Stack
+              width={{ base: "100%", md: "50%" }}
+              direction={{ base: "column", md: "row" }}
+            >
+              {/* SELECT YEAR */}
+              <YearSelect handleYear={handleYear} currentYear={currentYear} />
 
-            <MonthPicker onAccept={handleMonth} />
-          </Stack>
+              <MonthPicker onAccept={handleMonth} />
+            </Stack>
+          )}
         </Stack>
 
         <Stack spacing={5} direction="row" padding="40px" alignItems="stretch">
@@ -245,9 +266,13 @@ const Statistics = () => {
         </Stack>
 
         {/* SOURCES */}
-        <LastDate
-          updateDate={new Date().toLocaleString("en-Gb")}
-          isScreenShotTime={false}
+        <LastDate updateDate={updateDate} isScreenShotTime={false} />
+
+        {isScreenShotTime && <GraphFooter responsive />}
+        <DownloadImage
+          label=""
+          containerRef={satisticsRef}
+          onSS={setIsScreenShotTime}
         />
       </Stack>
     </Box>

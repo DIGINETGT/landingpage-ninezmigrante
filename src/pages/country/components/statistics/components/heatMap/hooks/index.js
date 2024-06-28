@@ -6,7 +6,10 @@ import HeatMapContext from "../context";
 import { colors } from "../../../../../../../utils/theme";
 import getCountryContent from "../../../../../../../utils/country";
 import useReturnedFilteredQuery from "../../../../../../../hooks/query";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../../utils/query/returned";
+import {
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
+} from "../../../../../../../utils/query/returned";
 
 /**
  * Devuelve un objeto de mapa de calor con un color y una función onClick si la propiedad disabledHeat
@@ -48,6 +51,34 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     });
   };
 
+  const databordersCapital = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
+    country: countryID,
+    year,
+    period,
+  });
+
+  const depTotals = {};
+
+  databordersCapital?.forEach((report) => {
+    report.attributes?.returned?.data?.attributes?.department_contributions?.data?.forEach(
+      (department) => {
+        const departmentName =
+          department?.attributes?.department?.data?.attributes?.name
+            ?.toLowerCase()
+            .replaceAll(" ", "")
+            .replaceAll("department", "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") || "Otros";
+
+        const departmentTotal = department?.attributes?.cant || 0;
+
+        depTotals[departmentName] =
+          (depTotals[departmentName] || 0) + departmentTotal;
+      }
+    );
+  });
+
   const databorders = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
     country: countryID,
@@ -55,7 +86,6 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     period,
   });
 
-  const depTotals = {};
   const depSubDepTotals = {};
   const depSubDepGenderTotals = {};
 
@@ -63,7 +93,8 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     report.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
       (muni) => {
         const subDepName =
-          muni.attributes?.municipality?.data?.attributes?.name;
+          muni.attributes?.municipality?.data?.attributes?.department?.data
+            ?.attributes?.name;
 
         const depName =
           muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
@@ -90,10 +121,6 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
             ? depSubDepGenderTotals[depName][gender] + muniCant
             : muniCant,
         };
-
-        depTotals[depName] = depTotals[depName]
-          ? depTotals[depName] + muniCant
-          : muniCant;
       }
     );
   });
@@ -120,6 +147,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   }, [countryID, period, year]);
 
   return {
+    depTotals,
     depSubDepTotals,
     depSubDepGenderTotals,
   };

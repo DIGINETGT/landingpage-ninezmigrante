@@ -87,10 +87,20 @@ const ReturnCountry = ({ period, year, country }) => {
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+                  <Text
+                    fontFamily="Oswald"
+                    fontSize="md"
+                    lineHeight="1"
+                    textAlign="center"
+                  >
                     {country}
                   </Text>
-                  <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+                  <Text
+                    fontFamily="Oswald"
+                    fontSize="3xl"
+                    lineHeight="1"
+                    textAlign="center"
+                  >
                     {total}
                   </Text>
                 </Stack>

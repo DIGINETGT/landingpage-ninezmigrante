@@ -18,12 +18,14 @@ export const itemColors = [
   "rgba(51, 132, 169, 0.5)",
   "rgba(117, 184, 65, 0.5)",
   "rgba(226, 175, 29, 0.5)",
+  "rgba(0,0, 0, 0.7)",
 ];
 
 export const defaultItemColors = [
   colors.blue[700],
   colors.green[700],
   colors.yellow[700],
+  "#555",
 ];
 
 export const graphDataTypes = {
@@ -163,7 +165,7 @@ export const customDataChart = [
 
 export const datasetLabels = {
   gender: ["Femenino", "Masculino"],
-  age: ["Primera infancia", "Niñez", "Adolescencia"],
+  age: ["Primera infancia", "Niñez", "Adolescencia", "No registrado"],
   via: ["Terrestre", "Aérea"],
   condition: ["Acompañado", "No acompañado"],
   return: ["Estados Unidos", "México", "Canada"],

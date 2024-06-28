@@ -535,6 +535,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
   query {
     monthlyReports(${getFilterByCountry(country)}) {
     data {
+      id
       attributes {
         updatedAt
         reportMonth
@@ -577,6 +578,73 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
                               }
                             }
                           }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        users_permissions_user {
+          data {
+            attributes {
+              organization {
+                data {
+                  attributes {
+                    department {
+                      data {
+                        attributes {
+                          country {
+                            data {
+                              attributes {
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL = (country) => gql`
+  query {
+  monthlyReports(${getFilterByCountry(country)}) {
+    data {
+      id  
+      attributes {
+        updatedAt
+        reportMonth
+        returned {
+          data {
+            attributes {
+              fuentes {
+                data {
+                  attributes {
+                    url
+                  }
+                }
+              }
+              department_contributions(pagination: { limit: -1 }) {
+                data {
+                  id
+                  attributes {
+                    cant
+                    department {
+                      data {
+                        attributes {
+                          name
                         }
                       }
                     }

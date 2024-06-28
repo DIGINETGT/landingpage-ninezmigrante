@@ -7,6 +7,7 @@ const excludeFields = [
   "id",
   "total",
   "anio",
+  "month",
   "createdAt",
   "updatedAt",
   "__typename",
@@ -44,38 +45,32 @@ export const useDetainedEEUU = ({ period, currentYear }) => {
   const dataPerDeps = { acm: {}, noacm: {} };
   let updateDate = "";
 
-  const filteredData = bordersData?.filter((report) => {
-    const [reportYear, reportMonth] = report.attributes?.reportDate
-      .split("-")
-      .map(Number);
+  bordersData?.forEach((element) => {
+    const filteredData =
+      element.attributes?.detained_us_borders?.data?.filter((report) => {
+        const [reportYear, reportMonth] = report?.attributes?.month
+          ?.split("-")
+          .map(Number);
 
-    updateDate = dateToString(new Date(report?.attributes?.updatedAt ?? "0"));
+        if (
+          !isMonthInRange(reportMonth, period) ||
+          reportYear?.toString() !== currentYear?.toString()
+        ) {
+          return false;
+        }
 
-    if (
-      !isMonthInRange(reportMonth, period) ||
-      reportYear?.toString() !== currentYear?.toString()
-    ) {
-      return false;
-    }
+        return true;
+      }) ?? [];
 
-    // BY MEXICO
-    const countryName = report?.attributes?.country?.data?.attributes?.name;
-
-    if (countryName?.toLowerCase().replace(/\s+/g, "") !== "estadosunidos")
-      return false;
-
-    return true;
-  });
-
-  filteredData?.forEach((element) => {
-    const total = element?.attributes?.detained_us_borders?.data?.reduce(
-      (acc, curr) => {
-        return acc + curr?.attributes?.total;
-      },
-      0
+    updateDate = dateToString(
+      new Date(element?.attributes?.updatedAt?.toString())
     );
 
-    element?.attributes?.detained_us_borders?.data?.forEach((dep) => {
+    const total = filteredData?.reduce((acc, curr) => {
+      return acc + +(curr?.attributes?.total ?? 0);
+    }, 0);
+
+    filteredData?.forEach((dep) => {
       Object.keys(dep.attributes)
         .filter((key) => !excludeFields.includes(key))
         .forEach((key) => {

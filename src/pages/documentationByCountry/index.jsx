@@ -20,7 +20,6 @@ import {
 import { DownloadIcon, Search2Icon } from "@chakra-ui/icons";
 import { colors } from "../../utils/theme";
 import { motion } from "framer-motion";
-import Libreria from "../../assets/libreria.jpg";
 import { useTransitFilteredQuery } from "../../hooks/query";
 import { GET_RECURSOS } from "../../utils/query/transit";
 import { useQuery } from "@apollo/client";
