@@ -11,7 +11,7 @@ import BarChartIcon from "../../../../../../../assets/bar-chart.svg";
 import ConditionIcon from "../../../../../../../assets/charts/condicion.svg";
 import AgeGroupIcon from "../../../../../../../assets/charts/edad.svg";
 import GenderIcon from "../../../../../../../assets/charts/genero.svg";
-import CountryIcon from "../../../../../../../assets/charts/pais.svg";
+import CountryIcon from "../../../../../../../assets/charts/pais.png";
 import ViaIcon from "../../../../../../../assets/charts/via.svg";
 
 export const itemColors = [
