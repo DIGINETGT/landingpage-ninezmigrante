@@ -142,7 +142,7 @@ const EEUU = () => {
                       {key === "noacm" ? "No Acompañados" : "Acompañados"}
                     </Text>
 
-                    {Object.entries(value).map(([key2, value2]) => {
+                    {Object.entries(value ?? {}).map(([key2, value2]) => {
                       return (
                         <Stack direction="row">
                           <Text

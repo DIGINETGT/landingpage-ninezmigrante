@@ -39,6 +39,7 @@ export const updateSection = ({
   setDepDataList,
   setDepList,
   depData,
+  depDataCapital,
 }) => {
   const depGenderTotalsData = { ...depData }?.depSubDepGenderTotals?.[dep];
   const depGenderTotals = {
@@ -46,11 +47,10 @@ export const updateSection = ({
     female: depGenderTotalsData?.femenino ?? 0,
   };
 
-  const totalNumber =
-    (depGenderTotals?.female ?? 0) + (depGenderTotals?.male ?? 0);
-  const total = Number.isNaN(totalNumber) ? 0 : totalNumber;
+  console.log({ depData });
 
-  if (!total) return console.log("NO DATA");
+  const totalNumber = depDataCapital?.depTotals?.[dep];
+  const total = Number.isNaN(totalNumber) ? 0 : totalNumber;
 
   setDepDataList((prev) => {
     const tmp = [...prev];
@@ -95,6 +95,7 @@ export const onDragEnd = ({
   countryID,
   period,
   setDepList,
+  depDataCapital,
   depData,
   setDepDataList,
 }) => {
@@ -125,6 +126,7 @@ export const onDragEnd = ({
       setDepDataList,
       setDepList,
       depData,
+      depDataCapital,
     });
   }
 };

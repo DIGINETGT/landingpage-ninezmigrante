@@ -126,10 +126,12 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   });
 
   useEffect(() => {
-    const filteredData = Object.entries(depTotals).map(([dep, total]) => ({
-      id: dep,
-      total,
-    }));
+    const filteredData = Object.entries(depTotals ?? {}).map(
+      ([dep, total]) => ({
+        id: dep,
+        total,
+      })
+    );
 
     const totales = filteredData.map((department) => department.total);
     const scales = {};

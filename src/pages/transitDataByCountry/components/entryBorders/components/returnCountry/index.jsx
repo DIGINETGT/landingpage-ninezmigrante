@@ -14,8 +14,8 @@ const ReturnCountry = ({ data }) => {
     }, {}) ?? {};
 
   return (
-    <Stack spacing={6} px={2} borderRight="2px solid #555" width='100%'>
-      {Object.entries(filteredData)?.map(([name, total], index) => {
+    <Stack spacing={6} px={2} borderRight="2px solid #555" width="100%">
+      {Object.entries(filteredData ?? {})?.map(([name, total], index) => {
         return total > 0 ? (
           <Stack
             gap="24px"

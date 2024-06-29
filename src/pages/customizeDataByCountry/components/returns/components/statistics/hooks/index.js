@@ -12,7 +12,7 @@ import { useEffect } from "react";
 export const sortDepartments = (list, databorders) => {
   let total = 0;
   const depTotals = databorders.depTotals;
-  const data = Object.entries(depTotals).sort((a, b) =>
+  const data = Object.entries(depTotals ?? {}).sort((a, b) =>
     list === "asc" || list === "default" || list?.length === 0
       ? b[1] - a[1]
       : a[1] - b[1]

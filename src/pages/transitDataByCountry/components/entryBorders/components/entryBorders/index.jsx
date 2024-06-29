@@ -17,7 +17,7 @@ const EntryBorderCountry = ({ data }) => {
 
   return (
     <Stack px={5} spacing={5} width="100%">
-      {Object.entries(filteredData)?.map(([name, total], index) => {
+      {Object.entries(filteredData ?? {})?.map(([name, total], index) => {
         return total > 0 ? (
           <Stack
             direction="row"

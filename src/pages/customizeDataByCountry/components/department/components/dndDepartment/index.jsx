@@ -35,9 +35,13 @@ import MonthPicker from "../../../../../../components/monthPicker";
 import { monthNames } from "../../../../../../hooks/fetch";
 import getCountryContent, {
   getDepartmentData,
+  getDepartmentDataCapital,
 } from "../../../../../../utils/country";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../utils/query/returned";
+import {
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
+} from "../../../../../../utils/query/returned";
 
 const DnDDepartment = ({ country = "guatemala" }) => {
   // PROPS DE DEPARTAMENTOS
@@ -45,6 +49,13 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [depList, setDepList] = useState(countryDeps[countryID]);
   const [period, setPeriod] = useState([1, 1]);
   const [currentYear, setYear] = useState(year);
+
+  const dataBordersCapital = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
+    year,
+    period,
+    country: countryID,
+  });
 
   const databorders = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
@@ -54,6 +65,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   });
 
   const depData = getDepartmentData(databorders);
+  const depDataCapital = getDepartmentDataCapital(dataBordersCapital);
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
@@ -80,6 +92,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
       period,
       countryID,
       setDepList,
+      depDataCapital,
       setDepDataList,
       depData,
     });
@@ -89,8 +102,10 @@ const DnDDepartment = ({ country = "guatemala" }) => {
     period,
     countryID,
     setDepList,
+    depData,
     depDataList,
     setDepDataList,
+    depDataCapital,
     currentYear,
   });
 
@@ -274,6 +289,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
                     <DepartmentData
                       index={0}
                       item={item}
+                      total={depDataCapital}
                       setDepDataList={setDepDataList}
                       isDragOver={snapshot.isDraggingOver}
                     />

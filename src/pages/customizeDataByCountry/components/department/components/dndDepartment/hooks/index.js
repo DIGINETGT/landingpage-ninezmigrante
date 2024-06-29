@@ -9,6 +9,8 @@ export const usePeriodReload = ({
   countryID,
   setDepList,
   depDataList,
+  depData,
+  depDataCapital,
   setDepDataList,
   currentYear,
 }) => {
@@ -22,6 +24,8 @@ export const usePeriodReload = ({
           dep: data.id,
           period,
           countryID,
+          depData,
+          depDataCapital,
           setDepDataList,
           setDepList,
           currentYear,

@@ -66,7 +66,7 @@ const ReturnCountry = ({ period, year, country }) => {
         direction={{ base: "column", md: "row" }}
         alignItems={{ base: "center", md: "flex-end" }}
       >
-        {Object.entries(dataPerCountry)
+        {Object.entries(dataPerCountry ?? {})
           .sort((a, b) => b[1].total - a[1].total)
           .map(([country, total], index) => {
             const Map = countryImages?.[country]?.Image;

@@ -14,7 +14,6 @@ const getCountryContent = ({ countryID, content, capitalize }) => {
 };
 
 export const getDepartmentData = (databorders) => {
-  const depTotals = {};
   const depSubDepTotals = {};
   const depSubDepGenderTotals = {};
 
@@ -49,6 +48,30 @@ export const getDepartmentData = (databorders) => {
             ? depSubDepGenderTotals[depName][gender] + muniCant
             : muniCant,
         };
+      }
+    );
+  });
+
+  return {
+    depSubDepTotals,
+    depSubDepGenderTotals,
+  };
+};
+
+export const getDepartmentDataCapital = (databorders) => {
+  const depTotals = {};
+
+  databorders?.forEach((report) => {
+    report.attributes?.returned?.data?.attributes?.department_contributions?.data?.forEach(
+      (muni) => {
+        const depName = muni.attributes?.department?.data?.attributes?.name
+          ?.toLowerCase()
+          .replaceAll(" ", "")
+          .replaceAll("department", "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        const muniCant = muni.attributes?.cant || 0;
 
         depTotals[depName] = depTotals[depName]
           ? depTotals[depName] + muniCant
@@ -59,8 +82,6 @@ export const getDepartmentData = (databorders) => {
 
   return {
     depTotals,
-    depSubDepTotals,
-    depSubDepGenderTotals,
   };
 };
 

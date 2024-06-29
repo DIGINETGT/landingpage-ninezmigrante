@@ -30,16 +30,6 @@ const DocumentationByCountry = () => {
 
   const { data } = useQuery(GET_RECURSOS(countryID));
 
-  const downloadDocument = (id) => () =>
-    fetch(id)
-      .then((res) => res.blob())
-      .then((blob) => {
-        var a = document.createElement("a");
-        a.href = window.URL.createObjectURL(blob);
-        a.download = `${id}`;
-        a.click();
-      });
-
   const keys = ["nombre", "descripcion"];
 
   const dataByCountry = data?.recursos?.data?.map((item) => ({
@@ -149,7 +139,6 @@ const DocumentationByCountry = () => {
                   <Link
                     size="xl"
                     download
-                    as={source?.esExterno ? "a" : "button"}
                     borderRadius={8}
                     href={source.url}
                     padding={4}
@@ -157,9 +146,7 @@ const DocumentationByCountry = () => {
                     minW={150}
                     textAlign="center"
                     target="_blank"
-                    onClick={
-                      source.esExterno ? null : downloadDocument(source.url)
-                    }
+                    rel="noreferrer noopener"
                     fontFamily="Montserrat Medium"
                     _hover={{ bgColor: "green.700", color: "white" }}
                   >

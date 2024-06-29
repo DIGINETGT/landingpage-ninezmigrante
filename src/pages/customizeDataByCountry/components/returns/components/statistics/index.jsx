@@ -21,10 +21,11 @@ import { year as currentYear } from "../../../../../../utils/year";
 import { monthNames } from "../../../../../../hooks/fetch";
 import getCountryContent, {
   getDepartmentData,
+  getDepartmentDataCapital,
 } from "../../../../../../utils/country";
 import ModalContentSV from "../../../../../../components/departments/components/sv";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT } from "../../../../../../utils/query/returned";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT, GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL } from "../../../../../../utils/query/returned";
 import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
 
 const Statistics = ({ returns }) => {
@@ -32,15 +33,15 @@ const Statistics = ({ returns }) => {
   const { period, year, list } = returns;
   const containerRef = useRef(null);
 
-  const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
+  const dataBordersCapital = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
     year,
     period,
     country: countryID,
   });
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const data = sortDepartments(list, getDepartmentData(databorders));
+  const data = sortDepartments(list, getDepartmentDataCapital(dataBordersCapital));
   if (data.length > 5) data.length = 5;
 
   const sources = (

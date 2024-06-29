@@ -42,8 +42,17 @@ const Statistics = ({ period, year, satisticsRef }) => {
   );
 
   const filesUrl =
-    data?.[0]?.attributes?.returned?.data?.attributes?.fuentes?.data?.[0]
-      ?.attributes?.url;
+    data
+      ?.map((report) => {
+        const [_, month] = report?.attributes?.reportMonth
+          ?.split("-")
+          ?.map(Number);
+
+        return report?.attributes?.returned?.data?.attributes?.fuentes?.data?.map(
+          (file) => ({ name: monthNames[month], url: file?.attributes?.url })
+        );
+      })
+      ?.flat() ?? [];
 
   const sources = (
     <Box direction="column" margin="auto" maxWidth="800px">
@@ -216,7 +225,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
 
         {isScreenShotTime && <GraphFooter responsive />}
 
-        <DownloadTable url={filesUrl} satisticsRef={satisticsRef} />
+        <DownloadTable files={filesUrl} satisticsRef={satisticsRef} />
       </Box>
     </StatisticsContext.Provider>
   );
