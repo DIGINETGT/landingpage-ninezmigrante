@@ -38,7 +38,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
   });
 
   const updateDate = dateToString(
-    new Date(data?.[0]?.attributes?.updatedAt?.toString())
+    new Date(data?.[0]?.attributes?.updatedAt?.toString() ?? 0)
   );
 
   const filesUrl =

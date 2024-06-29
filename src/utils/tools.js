@@ -40,7 +40,14 @@ export const isMonthInRange = (month, period) => {
   return period?.includes(month);
 };
 
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
+}
+
 export const dateToString = (date) => {
   // TIMEZONE GUATEMALA MOMENT
-  return moment(date).tz("America/Guatemala").format("DD-MM-YYYY");
+  console.log(date, isValidDate(date));
+  return moment(isValidDate(date) ? new Date() : date)
+    .tz("America/Guatemala")
+    .format("DD-MM-YYYY");
 };
