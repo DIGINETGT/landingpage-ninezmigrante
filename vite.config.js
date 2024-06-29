@@ -15,6 +15,7 @@ export default defineConfig({
     outDir: path.join(__dirname, "dist"),
     chunkSizeWarningLimit: 3000,
     sourcemap: false,
+    minify: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
