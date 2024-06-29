@@ -6,11 +6,15 @@ import path from "path";
 export default defineConfig({
   server: {
     port: 8080,
+    watch: {
+      followSymlinks: true,
+    },
   },
   plugins: [react()],
   build: {
     outDir: path.join(__dirname, "dist"),
     chunkSizeWarningLimit: 3000,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
