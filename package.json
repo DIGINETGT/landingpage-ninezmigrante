@@ -15,7 +15,6 @@
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "chart.js": "^3.8.0",
-    "framer-motion": "^6.3.11",
     "graphql": "^16.6.0",
     "html-react-parser": "^5.1.10",
     "html2canvas": "^1.4.1",

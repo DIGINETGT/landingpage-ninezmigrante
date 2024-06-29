@@ -19,7 +19,6 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, Search2Icon } from "@chakra-ui/icons";
 import { colors } from "../../utils/theme";
-import { motion } from "framer-motion";
 import { useTransitFilteredQuery } from "../../hooks/query";
 import { GET_RECURSOS } from "../../utils/query/transit";
 import { useQuery } from "@apollo/client";
@@ -71,8 +70,6 @@ const DocumentationByCountry = () => {
       );
     }) ?? [];
 
-  const MotionFlex = motion(Flex);
-
   const searchText = (event) => {
     return setFilter(event.target.value);
   };
@@ -110,13 +107,7 @@ const DocumentationByCountry = () => {
             />
           </InputGroup>
         </Stack>
-        <MotionFlex
-          py={3}
-          px={3}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileInView={{ opacity: 1 }}
-        >
+        <Stack py={3} px={3}>
           <Stack
             w="100%"
             padding="10px 0px 10px 0px"
@@ -179,7 +170,7 @@ const DocumentationByCountry = () => {
               </HStack>
             ))}
           </Stack>
-        </MotionFlex>
+        </Stack>
       </Stack>
     </Box>
   );
