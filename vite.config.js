@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: path.join(__dirname, "dist"),
+    chunkSizeWarningLimit: 3000,
     rollupOptions: {
       onwarn(warning, warn) {
         if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
