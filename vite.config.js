@@ -12,6 +12,17 @@ export default defineConfig({
     outDir: path.join(__dirname, "dist"),
     chunkSizeWarningLimit: 3000,
     rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return id
+              .toString()
+              .split("node_modules/")[1]
+              .split("/")[0]
+              .toString();
+          }
+        },
+      },
       onwarn(warning, warn) {
         if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
           return;
