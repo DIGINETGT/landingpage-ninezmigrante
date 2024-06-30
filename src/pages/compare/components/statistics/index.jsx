@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Stack, Text } from "@chakra-ui/react";
 
@@ -15,10 +15,10 @@ import {
 } from "../../../../utils/query/returned";
 
 import { monthNames } from "../../../../hooks/fetch";
-import { isMonthInRange } from "../../../../utils/tools";
+import { dateToString, isMonthInRange } from "../../../../utils/tools";
 import { useQuery } from "@apollo/client";
 
-const Statistics = ({ data }) => {
+const Statistics = ({ data, setUpdateDate }) => {
   const { data: dataReturned } = useQuery(
     GET_RETURNEDS_BY_COUNTRY(data.country)
   );
@@ -38,6 +38,14 @@ const Statistics = ({ data }) => {
       acc + +(returned?.attributes?.returned?.data?.attributes?.total ?? 0),
     0
   );
+
+  const lastUpdate =
+    dataReturned?.monthlyReports?.data?.[0]?.attributes?.updatedAt;
+
+  useEffect(() => {
+    const date = dateToString(new Date(lastUpdate?.toString() ?? 0));
+    setUpdateDate(date);
+  }, [lastUpdate]);
 
   return (
     <Stack spacing="40px">

@@ -102,7 +102,7 @@ const DepartmentData = ({
 
         {/* TOTAL */}
         <Text fontFamily="Oswald" fontSize="2em" fontWeight="500">
-          {item.total}
+          {item.total ?? 'N/D'}
         </Text>
 
         {/* TOTAL MUJERES */}

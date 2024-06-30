@@ -129,7 +129,7 @@ const EEUU = () => {
                 {currentYear ?? ""}
               </Text>
               <Text fontFamily="Oswald" fontSize="6xl" lineHeight="1">
-                {dataPerMonth?.totalMes ?? "0"}
+                {dataPerMonth?.totalMes ?? "N/D"}
               </Text>
             </Stack>
 

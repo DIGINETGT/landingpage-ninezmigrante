@@ -1,39 +1,39 @@
 // REACT
-import React from 'react';
+import React from "react";
 
 // CHAKRA UI
-import { Box, Stack, VStack, Text, Image } from '@chakra-ui/react';
+import { Box, Stack, VStack, Text, Image } from "@chakra-ui/react";
 
 // ICONS
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon } from "@chakra-ui/icons";
 
 // ROUTER
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 // IMAGES
-import MapaGuatemala from '../../../../assets/MapaGuatemala.svg';
-import MapaHonduras from '../../../../assets/MapaHonduras.svg';
-import MapaElSalvador from '../../../../assets/MapaElSalvador.svg';
+import MapaGuatemala from "../../../../assets/MapaGuatemala.svg";
+import MapaHonduras from "../../../../assets/MapaHonduras.svg";
+import MapaElSalvador from "../../../../assets/MapaElSalvador.svg";
 
 const CountrySelect = () => {
   return (
     <Box
       bgColor="blue.500"
       height="100%"
-      padding={{ base: '40px 24px 80px 24px', md: '80px 40px 120px 40px' }}
+      padding={{ base: "40px 24px 80px 24px", md: "80px 40px 120px 40px" }}
     >
       <Stack
         justifyContent="center"
         alignItems="center"
         spacing="18px"
-        marginBottom={{ base: '40px', md: '60px' }}
+        marginBottom={{ base: "40px", md: "60px" }}
       >
         <Text
           lineHeight="1"
           color="gray.700"
           fontFamily="Oswald"
           textAlign="center"
-          fontSize={{ base: '3xl', md: '5xl' }}
+          fontSize={{ base: "3xl", md: "5xl" }}
         >
           Niñez y adolescencia en tránsito
         </Text>
@@ -42,7 +42,7 @@ const CountrySelect = () => {
           color="gray.600"
           fontFamily="Montserrat Medium"
           textAlign="center"
-          fontSize={{ base: 'xl', md: '2xl' }}
+          fontSize={{ base: "xl", md: "2xl" }}
         >
           Selecciona un país:
         </Text>
@@ -52,16 +52,16 @@ const CountrySelect = () => {
         height="100%"
         alignItems="center"
         justifyContent="center"
-        gap={{ base: '40px', md: '120px' }}
-        direction={{ base: 'column', md: 'row' }}
+        gap={{ base: "40px", md: "120px" }}
+        direction={{ base: "column", md: "row" }}
       >
         {/* GUATEMALA OPTION */}
-        <Link to="/transit/guatemala">
+        <Link to="/transit/gt">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"
               src={MapaGuatemala}
-              height={{ base: '200px', md: '240px' }}
+              height={{ base: "200px", md: "240px" }}
             />
 
             <Stack direction="row" alignItems="center" spacing="16px">
@@ -74,12 +74,12 @@ const CountrySelect = () => {
         </Link>
 
         {/* HONDURAS OPTION */}
-        <Link to="/transit/honduras">
+        <Link to="/transit/hn">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"
               src={MapaHonduras}
-              height={{ base: '160px', md: '240px' }}
+              height={{ base: "160px", md: "240px" }}
             />
 
             <Stack direction="row" alignItems="center" spacing="16px">
@@ -91,12 +91,12 @@ const CountrySelect = () => {
           </VStack>
         </Link>
 
-        <Link to="/transit/elsalvador">
+        <Link to="/transit/sv">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"
               src={MapaElSalvador}
-              height={{ base: '160px', md: '240px' }}
+              height={{ base: "160px", md: "240px" }}
             />
 
             <Stack direction="row" alignItems="center" spacing="16px">

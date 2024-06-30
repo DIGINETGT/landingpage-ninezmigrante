@@ -1,4 +1,11 @@
-const getCountryContent = ({ countryID, content, capitalize }) => {
+const countryByCode = {
+  gt: "guatemala",
+  sv: "elsalvador",
+  hn: "honduras",
+};
+const getCountryContent = ({ countryID: id, content, capitalize }) => {
+  let countryID = countryByCode[id?.toLowerCase() ?? "gt"] ?? "guatemala";
+
   if (capitalize) {
     if (countryID === "elsalvador") return "El Salvador";
     return countryID.substring(0, 1).toUpperCase() + countryID.substring(1);
@@ -66,7 +73,7 @@ export const getDepartmentDataCapital = (databorders) => {
       (muni) => {
         const depName = muni.attributes?.department?.data?.attributes?.name
           ?.toLowerCase()
-          .replaceAll(" ", "")
+          .replaceAll(" ", "_")
           .replaceAll("department", "")
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");

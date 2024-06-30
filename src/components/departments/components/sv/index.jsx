@@ -46,15 +46,15 @@ const ModalContentSV = ({ id, customColor = "", disableHeat = false }) => {
         <Cuscatlan customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "lalibertad" && (
+      {id === "la_libertad" && (
         <LaLibertad customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "lapaz" && (
+      {id === "la_paz" && (
         <LaPaz customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "launion" && (
+      {id === "la_union" && (
         <LaUnion customColor={customColor} disableHeat={disableHeat} />
       )}
 
@@ -62,19 +62,19 @@ const ModalContentSV = ({ id, customColor = "", disableHeat = false }) => {
         <Morazan customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "sanmiguel" && (
+      {id === "san_miguel" && (
         <SanMiguel customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "sansalvador" && (
+      {id === "san_salvador" && (
         <SanSalvador customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "santaana" && (
+      {id === "santa_ana" && (
         <SantaAna customColor={customColor} disableHeat={disableHeat} />
       )}
 
-      {id === "sanvicente" && (
+      {id === "san_vicente" && (
         <SanVicente customColor={customColor} disableHeat={disableHeat} />
       )}
 

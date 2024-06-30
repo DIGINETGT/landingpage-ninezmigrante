@@ -199,7 +199,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
           justifyContent="center"
           direction={{ base: "column", md: "row" }}
         >
-          <HeatMap period={period} year={year} periodId="1" />
+          <HeatMap files={filesUrl} period={period} year={year} periodId="1" />
         </Stack>
 
         <Stack direction="column" margin="auto" maxWidth="800px">

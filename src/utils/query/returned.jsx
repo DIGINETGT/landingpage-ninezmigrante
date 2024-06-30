@@ -491,6 +491,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (country) => gql`
                         data {
                           attributes {
                             name
+                            map {
+                              data {
+                                attributes {
+                                  url
+                                }
+                              }
+                            }
                           }
                         }
                       }

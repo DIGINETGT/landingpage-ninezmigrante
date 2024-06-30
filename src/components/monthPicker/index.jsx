@@ -35,7 +35,7 @@ const MonthPicker = ({ onAccept, minWidth }) => {
   const [ranges, setRanges] = useState([0, 0]);
   const [isFirstClick, setIsFirstClick] = useState(true);
 
-  const { onOpen, onClose, isOpen } = useDisclosure();
+  const { onOpen, onClose: onCloseDisclosure, isOpen } = useDisclosure();
 
   const handleClick = (index) => () => {
     if (isFirstClick) {
@@ -64,12 +64,12 @@ const MonthPicker = ({ onAccept, minWidth }) => {
   };
 
   const closeAndSend = () => {
-    onClose();
+    onCloseDisclosure();
     onAccept(ranges.map((range) => range + 1));
   };
 
   return (
-    <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+    <Popover isOpen={isOpen} onOpen={onOpen} onClose={closeAndSend}>
       <PopoverTrigger>
         <HStack
           rounded="md"

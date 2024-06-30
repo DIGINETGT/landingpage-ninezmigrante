@@ -18,6 +18,7 @@ import { dateToString } from "../../../../utils/tools";
 import GraphFooter from "../../../../components/graphFooter";
 import DownloadTable from "../../../country/components/statistics/components/downloadTable";
 import DownloadImage from "../../../../components/downloadImage";
+import { monthNames } from "../../../../hooks/fetch";
 
 const Statistics = () => {
   const [period, setPeriod] = useState([]);
@@ -26,6 +27,7 @@ const Statistics = () => {
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
   const satisticsRef = useRef(null);
+  let files = [];
 
   const data = useTransitFilteredQuery({
     period,
@@ -76,8 +78,17 @@ const Statistics = () => {
     );
 
     updateDate = dateToString(
-      new Date(element?.attributes?.updatedAt?.toString())
+      new Date(element?.attributes?.updatedAt?.toString() ?? 0)
     );
+
+    const reportMonth = element?.attributes?.reportDate?.split("-")?.[1] ?? "0";
+
+    element?.attributes?.fuentes?.data?.forEach((fuente) => {
+      files.push({
+        url: fuente?.attributes?.url ?? "",
+        name: monthNames[Number(reportMonth)],
+      });
+    });
 
     const male = element?.attributes?.gender_contributions?.data?.reduce(
       (acc, curr) =>
@@ -127,8 +138,6 @@ const Statistics = () => {
     dataPerMonth.f3 += f3;
     dataPerMonth.f4 += f4;
   });
-
-  console.log({ data });
 
   return (
     <Box
@@ -268,12 +277,9 @@ const Statistics = () => {
         {/* SOURCES */}
         <LastDate updateDate={updateDate} isScreenShotTime={false} />
 
+        {!isScreenShotTime && <DownloadTable files={files} />}
+
         {isScreenShotTime && <GraphFooter responsive />}
-        <DownloadImage
-          label=""
-          containerRef={satisticsRef}
-          onSS={setIsScreenShotTime}
-        />
       </Stack>
     </Box>
   );

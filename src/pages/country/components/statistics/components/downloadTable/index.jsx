@@ -22,7 +22,7 @@ import StatisticsContext from "../../context";
 const DownloadTable = ({ satisticsRef, files }) => {
   const { setIsScreenShotTime } = useContext(StatisticsContext);
 
-  let data = files ?? Array.from({ length: 3 }).fill({});
+  let data = files ?? [];
 
   // DOWNLOAD
   const downloadFile = (url) => () =>

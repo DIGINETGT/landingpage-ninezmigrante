@@ -8,6 +8,15 @@ export const GET_TRANSIT_REPORT = (countryId) => gql`
         attributes {
           reportDate
           updatedAt
+          
+          fuentes {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+
           gender_contributions {
             data {
               attributes {
@@ -74,6 +83,15 @@ export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
         attributes {
           reportDate
           updatedAt
+
+          fuentes {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          
           entry_border_contributions {
             data {
               attributes {

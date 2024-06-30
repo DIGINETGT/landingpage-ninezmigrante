@@ -290,7 +290,10 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
                 fontFamily="Oswald"
                 lineHeight={{ base: "1.5", md: "1" }}
                 textAlign={{ base: "center", md: "left" }}
-              >{`TOTAL DE NIÑEZ Y ADOLESCENCIA RETORNADA - ${countryID.toUpperCase()}`}</Text>
+              >{`TOTAL DE NIÑEZ Y ADOLESCENCIA RETORNADA - ${getCountryContent({
+                countryID,
+                capitalize: true,
+              })}`}</Text>
               <Text
                 fontSize="2xl"
                 lineHeight="1"

@@ -30,6 +30,7 @@ const MapModal = ({
   period,
   periodId,
   country,
+  files,
   depTotals,
   departmentTotal,
   genderDepTotals,
@@ -128,7 +129,11 @@ const MapModal = ({
 
             {isScreenShotTime && <GraphFooter responsive />}
 
-            <DownloadTable satisticsRef={satisticsRef} periodId={periodId} />
+            <DownloadTable
+              satisticsRef={satisticsRef}
+              periodId={periodId}
+              files={files}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -62,7 +62,7 @@ const MobileNavbar = () => {
                 </Stack>
               </Link>
 
-              <Link to="/country/guatemala">
+              <Link to="/country/gt">
                 <Stack direction="row" alignItems="center">
                   <Icon as={ChevronRightIcon} color="gray.600" />
                   <Text fontFamily="Montserrat Medium" color="gray.600">
@@ -71,7 +71,7 @@ const MobileNavbar = () => {
                 </Stack>
               </Link>
 
-              <Link to="/country/honduras">
+              <Link to="/country/hn">
                 <Stack direction="row" alignItems="center">
                   <Icon as={ChevronRightIcon} color="gray.600" />
                   <Text fontFamily="Montserrat Medium" color="gray.600">
@@ -80,29 +80,11 @@ const MobileNavbar = () => {
                 </Stack>
               </Link>
 
-              <Link to="/country/honduras">
+              <Link to="/country/hn">
                 <Stack direction="row" alignItems="center">
                   <Icon as={ChevronRightIcon} color="gray.600" />
                   <Text fontFamily="Montserrat Medium" color="gray.600">
                     El Salvador
-                  </Text>
-                </Stack>
-              </Link>
-
-              <Link to="/country/honduras">
-                <Stack direction="row" alignItems="center">
-                  <Icon as={ChevronRightIcon} color="gray.600" />
-                  <Text fontFamily="Montserrat Medium" color="gray.600">
-                    Costa Rica
-                  </Text>
-                </Stack>
-              </Link>
-
-              <Link to="/country/honduras">
-                <Stack direction="row" alignItems="center">
-                  <Icon as={ChevronRightIcon} color="gray.600" />
-                  <Text fontFamily="Montserrat Medium" color="gray.600">
-                    Panamá
                   </Text>
                 </Stack>
               </Link>

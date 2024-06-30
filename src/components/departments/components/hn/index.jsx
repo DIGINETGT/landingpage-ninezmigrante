@@ -52,22 +52,22 @@ const ModalContentHN = ({ id, customColor = "", disableHeat = false }) => {
       {id === "cortes" && (
         <Cortes customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "elparaiso" && (
+      {id === "el_paraiso" && (
         <ElParaiso customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "franciscomorazan" && (
+      {id === "francisco_morazan" && (
         <Francis customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "graciasadios" && (
+      {id === "gracias_a_dios" && (
         <Gracias customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "intibuca" && (
         <Intibuca customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "islasbahia" && (
+      {id === "islas_bahia" && (
         <IslasBahia customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "lapaz" && (
+      {id === "la_paz" && (
         <LaPaz customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "lempira" && (
@@ -79,7 +79,7 @@ const ModalContentHN = ({ id, customColor = "", disableHeat = false }) => {
       {id === "olancho" && (
         <Olancho customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "santabarbara" && (
+      {id === "santa_barbara" && (
         <SantaBarbara customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "valle" && (

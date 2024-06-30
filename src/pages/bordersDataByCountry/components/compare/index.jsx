@@ -217,7 +217,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataUS.totalMes}
+                {dataUS.totalMes??'N/D'}
               </Text>
             </Stack>
 
@@ -244,7 +244,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataMx.totalMes}
+                {dataMx.totalMes??'N/D'}
               </Text>
             </Stack>
           </Stack>

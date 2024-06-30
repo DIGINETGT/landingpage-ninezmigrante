@@ -22,10 +22,10 @@ import { colors } from "../../utils/theme";
 import { useTransitFilteredQuery } from "../../hooks/query";
 import { GET_RECURSOS } from "../../utils/query/transit";
 import { useQuery } from "@apollo/client";
+import getCountryContent from "../../utils/country";
 
 const DocumentationByCountry = () => {
   const { countryID } = useParams();
-  const titulo = countryID.charAt(0).toUpperCase() + countryID.slice(1);
   const [filter, setFilter] = useState("");
 
   const { data } = useQuery(GET_RECURSOS(countryID));
@@ -79,7 +79,10 @@ const DocumentationByCountry = () => {
           size="lg"
           fontFamily="Oswald"
         >
-          {`Documentos de ${titulo}`}
+          {`Documentos de ${getCountryContent({
+            countryID,
+            capitalize: true,
+          })}`}
         </Heading>
         <Divider orientation="horizontal" />
         <Stack>

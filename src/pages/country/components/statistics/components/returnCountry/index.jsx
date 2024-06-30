@@ -1,6 +1,7 @@
 // REACT
 import React from "react";
 import { useParams } from "react-router-dom";
+import { ReactSVG } from "react-svg";
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Text, Image } from "@chakra-ui/react";
@@ -38,12 +39,16 @@ const ReturnCountry = ({ period, year, country }) => {
   });
 
   const dataPerCountry = {};
+  const dataMaps = {};
 
   rdata?.forEach((report) => {
     report.attributes?.returned?.data?.attributes?.country_contributions?.data?.forEach(
       (countryContribution) => {
         const countryName =
           countryContribution.attributes?.country?.data?.attributes?.name;
+
+        dataMaps[countryName] =
+          countryContribution.attributes?.country?.data?.attributes?.map?.data?.attributes?.url;
 
         dataPerCountry[countryName] =
           (dataPerCountry[countryName] ?? 0) +
@@ -69,8 +74,6 @@ const ReturnCountry = ({ period, year, country }) => {
         {Object.entries(dataPerCountry ?? {})
           .sort((a, b) => b[1].total - a[1].total)
           .map(([country, total], index) => {
-            const Map = countryImages?.[country]?.Image;
-
             return total > 0 ? (
               <Stack
                 gap="24px"
@@ -79,7 +82,7 @@ const ReturnCountry = ({ period, year, country }) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                {<Map color={colors.heat[countryId][900 - index * 100]} />}
+                <ReactSVG src={dataMaps?.[country] ?? ""} />
 
                 <Stack
                   spacing="8px"

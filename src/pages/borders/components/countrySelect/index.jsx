@@ -56,7 +56,7 @@ const CountrySelect = () => {
         direction={{ base: "column", md: "row" }}
       >
         {/* GUATEMALA OPTION */}
-        <Link to="/borders/guatemala">
+        <Link to="/borders/gt">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"
@@ -74,7 +74,7 @@ const CountrySelect = () => {
         </Link>
 
         {/* HONDURAS OPTION */}
-        <Link to="/borders/honduras">
+        <Link to="/borders/hn">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"
@@ -91,7 +91,7 @@ const CountrySelect = () => {
           </VStack>
         </Link>
 
-        <Link to="/borders/elsalvador">
+        <Link to="/borders/sv">
           <VStack spacing="24px" alignItems="center" justifyContent="center">
             <Image
               maxWidth="500px"

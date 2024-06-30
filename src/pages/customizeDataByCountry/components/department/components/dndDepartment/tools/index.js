@@ -47,8 +47,6 @@ export const updateSection = ({
     female: depGenderTotalsData?.femenino ?? 0,
   };
 
-  console.log({ depData });
-
   const totalNumber = depDataCapital?.depTotals?.[dep];
   const total = Number.isNaN(totalNumber) ? 0 : totalNumber;
 

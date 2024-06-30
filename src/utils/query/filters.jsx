@@ -6,8 +6,8 @@ export const getFilterByCountry = (country) =>
         organization: {
             department: { 
                 country: { 
-                    name: { 
-                        eq: "${capitalizeText(country)}" 
+                    isoCode: { 
+                        eq: "${country?.toUpperCase() ?? ''}" 
                     }
                 } 
             }

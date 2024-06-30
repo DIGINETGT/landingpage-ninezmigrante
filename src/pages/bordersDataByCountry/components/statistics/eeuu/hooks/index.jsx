@@ -63,7 +63,7 @@ export const useDetainedEEUU = ({ period, currentYear }) => {
       }) ?? [];
 
     updateDate = dateToString(
-      new Date(element?.attributes?.updatedAt?.toString())
+      new Date(element?.attributes?.updatedAt?.toString() ?? 0)
     );
 
     const total = filteredData?.reduce((acc, curr) => {

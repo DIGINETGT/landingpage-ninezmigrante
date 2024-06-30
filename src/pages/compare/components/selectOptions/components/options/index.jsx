@@ -14,15 +14,15 @@ const countryImages = {
     src: LogoNinezMigrante,
     height: '200px',
   },
-  guatemala: {
+  gt: {
     src: MapaGuatemala,
     height: '240px',
   },
-  honduras: {
+  hn: {
     src: MapaHonduras,
     height: '100%',
   },
-  elsalvador: {
+  sv: {
     src: MapaSalvador,
     height: '100%',
   },
@@ -80,9 +80,9 @@ const Options = ({ id, onChange, satisticsRef }) => {
         bgColor="rgba(255,255,255,0.5)"
       >
         <option value="default">Elegir país</option>
-        <option value="guatemala">Guatemala</option>
-        <option value="honduras">Honduras</option>
-        <option value="elsalvador">El Salvador</option>
+        <option value="gt">Guatemala</option>
+        <option value="hn">Honduras</option>
+        <option value="sv">El Salvador</option>
       </Select>
 
       {/* SELECT YEAR */}

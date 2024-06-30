@@ -17,7 +17,7 @@ import HeatMapSV from "./components/sv";
 import HeatMapHN from "./components/hn";
 import getCountryContent from "../../../../../../utils/country";
 
-const HeatMap = ({ period, year, country, periodId }) => {
+const HeatMap = ({ period, year, country, periodId, files }) => {
   const countryID = useParams().countryID || country;
 
   //SCALE
@@ -26,15 +26,15 @@ const HeatMap = ({ period, year, country, periodId }) => {
       countryID,
       content: {
         guatemala: {
-          color: "rgba(146,189,87",
+          color: "rgba(146,189,87,1.0)",
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
         honduras: {
-          color: "rgba(221,184,65",
+          color: "rgba(221,184,65,1.0)",
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
         elsalvador: {
-          color: "rgba(221,184,65",
+          color: "rgba(96, 134, 167,1.0)",
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
       },
@@ -56,7 +56,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
     setModalDep(name);
     setColorScales((prevScales) => ({
       ...prevScales,
-      [name]: colors.heat[countryID][900],
+      [name]: colors?.heat?.[countryID]?.[900],
     }));
   };
 
@@ -70,12 +70,8 @@ const HeatMap = ({ period, year, country, periodId }) => {
   };
 
   // DATA
-  const { depTotals, depSubDepTotals, depSubDepGenderTotals } = useHeatColors(
-    setColorScales,
-    countryID,
-    period,
-    year
-  );
+  const { depTotals, depSubDepTotals, depSubDepGenderTotals } =
+    useHeatColors(setColorScales, countryID, period, year);
 
   return (
     <HeatMapContext.Provider value={{ colorScales, onClick }}>
@@ -94,13 +90,13 @@ const HeatMap = ({ period, year, country, periodId }) => {
         <Box>
           <HStack spacing={0}>
             <Box height="30px" width="30px" background={colors.heatMin[100]} />
-            {Object.values(scale?.heat?.levelHeat ?? {}).map((color) => {
+            {Object.values(scale?.heat?.levelHeat ?? {}).map((opacity) => {
               return (
                 <Box
                   height="30px"
                   width="30px"
-                  key={color}
-                  background={`${scale.heat.color}, ${color})`}
+                  key={opacity}
+                  background={scale.heat.color?.replace("1.0", opacity)}
                 />
               );
             })}
@@ -126,6 +122,7 @@ const HeatMap = ({ period, year, country, periodId }) => {
 
         <MapModal
           country={country}
+          files={files}
           year={year}
           period={period}
           modalDep={modalDep}

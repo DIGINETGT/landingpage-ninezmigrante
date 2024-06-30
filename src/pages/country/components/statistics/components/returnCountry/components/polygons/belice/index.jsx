@@ -17,7 +17,7 @@ const Belice = () => {
       <g id="Background"></g>
       <g id="Belize">
         <path
-          fill={colors.heat.guatemala[500]}
+          fill={colors.heat.gt[500]}
           className="cls-1"
           d="M703.84,274.48l-2.53-7.24l-1.76-2.69l-1.88,1.61l1.67,1.57l0.52,3.8l-0.14,9.13l0.33-0.77l0.39-0.6
 		l0.57-0.43l0.86-0.25l0.05,0.5l-0.05,1.55h1.03l-0.03-3.57l0.26-1.48L703.84,274.48z M663.09,250.79l-1.41-1.99l-2.8-2.06

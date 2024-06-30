@@ -17,7 +17,7 @@ const Guatemala = ({ color }) => {
       <g id="Background"></g>
       <g id="Guatemala_-_Regions_copy">
         <polygon
-          fill={color ?? colors.heat.guatemala[600]}
+          fill={color ?? colors.heat.gt[600]}
           className="cls-1"
           points="581.96,301.45 582.91,301.11 580.1,299.94 576.54,296.92 575.69,296.54 572.96,294.16 
 		564.64,290.39 560.41,286.96 558.72,286.02 556.38,283.64 555.45,283.09 553.15,282.13 551.92,281.44 550.76,282.75 551.75,283.95 

@@ -40,19 +40,19 @@ const Footer = () => {
               </Text>
             </Link>
 
-            <Link to="/country/guatemala">
+            <Link to="/country/gt">
               <Text fontFamily="Montserrat Medium" color="gray.600">
                 Guatemala
               </Text>
             </Link>
 
-            <Link to="/country/honduras">
+            <Link to="/country/hn">
               <Text fontFamily="Montserrat Medium" color="gray.600">
                 Honduras
               </Text>
             </Link>
 
-            <Link to="/country/elsalvador">
+            <Link to="/country/sv">
               <Text fontFamily="Montserrat Medium" color="gray.600">
                 El Salvador
               </Text>

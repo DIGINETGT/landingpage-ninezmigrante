@@ -47,6 +47,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
       content: {
         guatemala: `rgba(146,189,87, ${escala})`,
         honduras: `rgba(221,184,65, ${escala})`,
+        elsalvador: `rgba(96, 134, 167, ${escala})`,
       },
     });
   };
@@ -93,8 +94,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     report.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
       (muni) => {
         const subDepName =
-          muni.attributes?.municipality?.data?.attributes?.department?.data
-            ?.attributes?.name;
+          muni.attributes?.municipality?.data?.attributes?.name;
 
         const depName =
           muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name

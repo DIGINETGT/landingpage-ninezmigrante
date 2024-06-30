@@ -25,7 +25,10 @@ import getCountryContent, {
 } from "../../../../../../utils/country";
 import ModalContentSV from "../../../../../../components/departments/components/sv";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT, GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL } from "../../../../../../utils/query/returned";
+import {
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
+  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
+} from "../../../../../../utils/query/returned";
 import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
 
 const Statistics = ({ returns }) => {
@@ -41,7 +44,10 @@ const Statistics = ({ returns }) => {
   });
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const data = sortDepartments(list, getDepartmentDataCapital(dataBordersCapital));
+  const data = sortDepartments(
+    list,
+    getDepartmentDataCapital(dataBordersCapital)
+  );
   if (data.length > 5) data.length = 5;
 
   const sources = (
@@ -151,23 +157,21 @@ const Statistics = ({ returns }) => {
                       <ModalContentGT
                         disableHeat
                         id={department.id}
-                        customColor={[colors.heat.guatemala[900 - index * 100]]}
+                        customColor={[colors.heat.gt[900 - index * 100]]}
                       />
                     ),
                     honduras: (
                       <ModalContentHN
                         disableHeat
                         id={department.id}
-                        customColor={[colors.heat.honduras[900 - index * 100]]}
+                        customColor={[colors.heat.hn[900 - index * 100]]}
                       />
                     ),
                     elsalvador: (
                       <ModalContentSV
                         disableHeat
                         id={department.id}
-                        customColor={[
-                          colors.heat.elsalvador[900 - index * 100],
-                        ]}
+                        customColor={[colors.heat.sv[900 - index * 100]]}
                       />
                     ),
                   },
@@ -183,7 +187,7 @@ const Statistics = ({ returns }) => {
                   {depName[department?.id?.replace("Department", "")]}
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
-                  {department?.total}
+                  {department?.total ?? "N/D"}
                 </Text>
               </Stack>
             </Stack>

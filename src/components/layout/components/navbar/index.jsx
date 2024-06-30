@@ -128,7 +128,7 @@ const Navbar = () => {
                 </Text>
               </MenuButton>
               <MenuList bgColor="gray.100" border="none">
-                <Link to="/country/guatemala">
+                <Link to="/country/gt">
                   <MenuItem
                     color="gray.600"
                     fontFamily="Montserrat Medium"
@@ -137,7 +137,7 @@ const Navbar = () => {
                     Guatemala
                   </MenuItem>
                 </Link>
-                <Link to="/country/honduras">
+                <Link to="/country/hn">
                   <MenuItem
                     color="gray.600"
                     fontFamily="Montserrat Medium"
@@ -146,7 +146,7 @@ const Navbar = () => {
                     Honduras
                   </MenuItem>
                 </Link>
-                <Link to="/country/elsalvador">
+                <Link to="/country/sv">
                   <MenuItem
                     color="gray.600"
                     fontFamily="Montserrat Medium"

@@ -2,7 +2,7 @@ import { colors } from "../../../../../../../utils/theme";
 
 const color = colors.heatMin[100];
 const countryDeps = {
-  guatemala: [
+  gt: [
     { id: "quetzaltenango", color },
     { id: "huehuetenango", color },
     { id: "chimaltenango", color },
@@ -26,7 +26,7 @@ const countryDeps = {
     { id: "izabal", color },
     { id: "peten", color },
   ],
-  honduras: [
+  hn: [
     { id: "atlantida", color },
     { id: "choluteca", color },
     { id: "colon", color },
@@ -47,7 +47,7 @@ const countryDeps = {
     { id: "yoro", color },
   ],
 
-  elsalvador: [
+  sv: [
     { id: "ahuachapan", color },
     { id: "cabanas", color },
     { id: "chalatenango", color },

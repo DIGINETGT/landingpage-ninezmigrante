@@ -42,7 +42,7 @@ export const useDetainedMexico = ({ period, currentYear }) => {
       }) ?? [];
 
     updateDate = dateToString(
-      new Date(element?.attributes?.updatedAt?.toString())
+      new Date(element?.attributes?.updatedAt?.toString() ?? 0)
     );
 
     const total =

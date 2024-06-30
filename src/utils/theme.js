@@ -6,7 +6,7 @@ export const colors = {
     700: "#3384A9",
   },
   heat: {
-    guatemala: {
+    gt: {
       100: "#6b8695",
       200: "#96afbc",
       300: "#bac6ce",
@@ -17,7 +17,7 @@ export const colors = {
       800: "#9bc265",
       900: "#92bd57",
     },
-    honduras: {
+    hn: {
       100: "#507986",
       200: "#78a1ae",
       300: "#9eb7c0",
@@ -28,7 +28,7 @@ export const colors = {
       800: "#dec466",
       900: "#ddb841",
     },
-    elsalvador: {
+    sv: {
       100: "#2f4872",
       200: "#3b577f",
       300: "#46678c",
