@@ -14,21 +14,10 @@ export default defineConfig({
   build: {
     sourcemap: false,
     rollupOptions: {
-      maxParallelFileOps: 2,
+      maxParallelFileOps: 1,
       cache: false,
-      external: ['react', 'react-dom'],
       output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM'
-        },
-        sourcemap: true,
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        },
-        inlineDynamicImports: false,
+        sourcemap: false,
         sourcemapIgnoreList: (relativeSourcePath) => {
           const normalizedPath = path.normalize(relativeSourcePath);
           return normalizedPath.includes('node_modules');
