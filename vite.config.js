@@ -10,20 +10,23 @@ export default defineConfig({
       followSymlinks: true,
     },
   },
+  resolve: {
+    extensions: [".js", ".jsx", ".json"],
+  },
   plugins: [react()],
   build: {
     sourcemap: false,
     rollupOptions: {
-      maxParallelFileOps: 1,
+      maxParallelFileOps: 2,
       cache: false,
       output: {
         sourcemap: false,
         sourcemapIgnoreList: (relativeSourcePath) => {
           const normalizedPath = path.normalize(relativeSourcePath);
-          return normalizedPath.includes('node_modules');
+          return normalizedPath.includes("node_modules");
         },
-      }
-    }
+      },
+    },
   },
   esbuild: {
     logOverride: { "this-is-undefined-in-esm": "silent" },
