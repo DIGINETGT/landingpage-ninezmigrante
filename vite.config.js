@@ -12,29 +12,29 @@ export default defineConfig({
   },
   plugins: [react()],
   build: {
-    outDir: path.join(__dirname, "dist"),
-    chunkSizeWarningLimit: 3000,
     sourcemap: false,
-    minify: false,
     rollupOptions: {
+      maxParallelFileOps: 2,
+      cache: false,
+      external: ['react', 'react-dom'],
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            return id
-              .toString()
-              .split("node_modules/")[1]
-              .split("/")[0]
-              .toString();
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        },
+        sourcemap: true,
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            return 'vendor';
           }
         },
-      },
-      onwarn(warning, warn) {
-        if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
-          return;
-        }
-        warn(warning);
-      },
-    },
+        inlineDynamicImports: false,
+        sourcemapIgnoreList: (relativeSourcePath) => {
+          const normalizedPath = path.normalize(relativeSourcePath);
+          return normalizedPath.includes('node_modules');
+        },
+      }
+    }
   },
   esbuild: {
     logOverride: { "this-is-undefined-in-esm": "silent" },
