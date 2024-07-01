@@ -18,7 +18,7 @@ import { monthNames } from "../../../../hooks/fetch";
 import { dateToString, isMonthInRange } from "../../../../utils/tools";
 import { useQuery } from "@apollo/client";
 
-const Statistics = ({ data, setUpdateDate }) => {
+const Statistics = ({ data, setUpdateDate, id, setFiles }) => {
   const { data: dataReturned } = useQuery(
     GET_RETURNEDS_BY_COUNTRY(data?.country ?? "")
   );
@@ -42,10 +42,30 @@ const Statistics = ({ data, setUpdateDate }) => {
   const lastUpdate =
     dataReturned?.monthlyReports?.data?.[0]?.attributes?.updatedAt;
 
+  let files = returneds
+    ?.map((report) => {
+      return report?.attributes?.returned?.data?.attributes?.fuentes?.data?.map(
+        (file) => {
+          const [year, month] = report?.attributes?.reportMonth
+            .split("-")
+            ?.map(Number) ?? [0, 0];
+          return {
+            name: `Data ${id}: ${monthNames[month]} - ${year}`,
+            file: file,
+          };
+        }
+      );
+    })
+    .flat();
+
+  let filesLength = files?.length ?? 0;
+
   useEffect(() => {
     const date = dateToString(new Date(lastUpdate?.toString() ?? 0));
     setUpdateDate(date);
-  }, [lastUpdate]);
+
+    setFiles((prevFiles) => ({ ...prevFiles, [id]: files }));
+  }, [lastUpdate, filesLength]);
 
   return (
     <Stack spacing="40px">

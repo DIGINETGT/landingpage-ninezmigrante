@@ -19,6 +19,11 @@ const ComparePage = () => {
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [updateDate, setUpdateDate] = useState("");
+  const [files, setFiles] = useState({
+    1: [],
+    2: [],
+    3: [],
+  })
   const [periodId, setPeriodId] = useState("");
 
   const satisticsRef = useRef(null);
@@ -106,12 +111,16 @@ const ComparePage = () => {
           >
             <Statistics
               data={options["1"]}
+              id="1"
+              setFiles={setFiles}
               setUpdateDate={setUpdateDate}
               setPeriodId={setPeriodId}
             />
             {(countValue === "2" || countValue === "3") && (
               <Statistics
                 data={options["2"]}
+                setFiles={setFiles}
+                id="2"
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
               />
@@ -119,6 +128,8 @@ const ComparePage = () => {
             {countValue === "3" && (
               <Statistics
                 data={options["3"]}
+                id="3"
+                setFiles={setFiles}
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
               />
@@ -131,7 +142,7 @@ const ComparePage = () => {
             isScreenShotTime={isScreenShotTime}
           />
           {isScreenShotTime && <GraphFooter responsive />}
-          <DownloadTable satisticsRef={satisticsRef} periodId={periodId} />
+          <DownloadTable files={[...files[1], ...files[2], ...files[3]]} satisticsRef={satisticsRef} periodId={periodId} />
         </Box>
       )}
     </StatisticsContext.Provider>

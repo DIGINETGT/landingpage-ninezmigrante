@@ -5,7 +5,7 @@ import useHeatmap from "../../../../hooks";
 import { Tooltip } from "@chakra-ui/react";
 
 const SanMarcos = () => {
-  const { color, onClick } = useHeatmap("sanmarcos");
+  const { color, onClick } = useHeatmap("san_marcos");
 
   return (
     <Tooltip label="San Marcos" placement="auto">

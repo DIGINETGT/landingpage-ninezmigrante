@@ -43,16 +43,16 @@ const ModalContentGT = ({ modalDep }) => {
       {modalDep === "chimaltenango" && <Chimaltenango />}
       {modalDep === "suchitepequez" && <Suchitepequez />}
       {modalDep === "sacatepequez" && <Sacatepequez />}
-      {modalDep === "altaverapaz" && <AltaVerapaz />}
-      {modalDep === "bajaverapaz" && <BajaVerapaz />}
+      {modalDep === "alta_verapaz" && <AltaVerapaz />}
+      {modalDep === "baja_verapaz" && <BajaVerapaz />}
       {modalDep === "totonicapan" && <Totonicapan />}
       {modalDep === "retalhuleu" && <Retalhuleu />}
       {modalDep === "chiquimula" && <Chiquimula />}
       {modalDep === "guatemala" && <Guatemala />}
-      {modalDep === "santarosa" && <SantaRosa />}
+      {modalDep === "santa_rosa" && <SantaRosa />}
       {modalDep === "escuintla" && <Escuintla />}
-      {modalDep === "sanmarcos" && <SanMarcos />}
-      {modalDep === "elprogreso" && <Progreso />}
+      {modalDep === "san_marcos" && <SanMarcos />}
+      {modalDep === "el_progreso" && <Progreso />}
       {modalDep === "jutiapa" && <Jutiapa />}
       {modalDep === "zacapa" && <Zacapa />}
       {modalDep === "jalapa" && <Jalapa />}

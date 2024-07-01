@@ -5,7 +5,7 @@ import useHeatmap from "../../../../../../pages/country/components/statistics/co
 import { Tooltip } from "@chakra-ui/react";
 
 const Francis = ({ customColor = "", disableHeat = false }) => {
-  let { color, onClick } = useHeatmap("franciscomorazan", disableHeat);
+  let { color, onClick } = useHeatmap("francisco_morazan", disableHeat);
   color = customColor || color;
 
   return (

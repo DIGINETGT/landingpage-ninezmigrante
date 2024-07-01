@@ -158,6 +158,15 @@ export const GET_RETURNEDS_BY_COUNTRY = (country) => gql`
             data {
               attributes {
                 total
+
+                fuentes {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+                
                 country_contributions {
                   data {
                     attributes {

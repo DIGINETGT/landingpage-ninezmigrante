@@ -58,10 +58,10 @@ const ModalContentGT = ({ id, customColor = "", disableHeat = false }) => {
       {id === "sacatepequez" && (
         <Sacatepequez customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "altaverapaz" && (
+      {id === "alta_verapaz" && (
         <AltaVerapaz customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "bajaverapaz" && (
+      {id === "baja_verapaz" && (
         <BajaVerapaz customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "totonicapan" && (
@@ -76,16 +76,16 @@ const ModalContentGT = ({ id, customColor = "", disableHeat = false }) => {
       {id === "guatemala" && (
         <Guatemala customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "santarosa" && (
+      {id === "santa_rosa" && (
         <SantaRosa customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "escuintla" && (
         <Escuintla customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "sanmarcos" && (
+      {id === "san_marcos" && (
         <SanMarcos customColor={customColor} disableHeat={disableHeat} />
       )}
-      {id === "elprogreso" && (
+      {id === "el_progreso" && (
         <Progreso customColor={customColor} disableHeat={disableHeat} />
       )}
       {id === "jutiapa" && (
