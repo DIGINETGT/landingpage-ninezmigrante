@@ -565,7 +565,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
                   }
                 }
               }
-              municipality_contributions {
+              municipality_contributions(pagination: { limit: -1 }) {
                 data {
                   attributes {
                     cant
