@@ -82,7 +82,11 @@ const ReturnCountry = ({ period, year, country }) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                <ReactSVG src={dataMaps?.[country] ?? ""} />
+                <ReactSVG
+                  height={60}
+                  width={60}
+                  src={dataMaps?.[country] ?? ""}
+                />
 
                 <Stack
                   spacing="8px"

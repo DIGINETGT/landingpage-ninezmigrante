@@ -5,7 +5,7 @@ import useHeatmap from "../../../../../../pages/country/components/statistics/co
 import { Tooltip } from "@chakra-ui/react";
 
 const Comayagua = ({ customColor = "", disableHeat = false }) => {
-  let { color, onClick } = useHeatmap("lapaz", disableHeat);
+  let { color, onClick } = useHeatmap("la_paz", disableHeat);
   color = customColor || color;
 
   return (

@@ -1,12 +1,17 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import {
-  GET_RETURNEDS,
-  GET_RETURNEDS_BY_COUNTRY,
-} from "../utils/query/returned";
+import { GET_RETURNEDS_BY_COUNTRY } from "../utils/query/returned";
 import { isMonthInRange } from "../utils/tools";
+import { monthNames } from "./fetch";
 
-const useReturnedFilteredQuery = ({ query, year, period, country, skip }) => {
+const useReturnedFilteredQuery = ({
+  query,
+  year,
+  period,
+  country,
+  skip,
+  filesRef,
+}) => {
   if (skip) return [];
 
   const { countryID: id } = useParams();
@@ -15,8 +20,21 @@ const useReturnedFilteredQuery = ({ query, year, period, country, skip }) => {
 
   const { data } = useQuery(defQuery);
 
+  const files = [];
   const filteredData =
     data?.monthlyReports?.data?.filter((report) => {
+      report?.attributes?.returned?.data?.attributes?.fuentes?.data?.forEach(
+        (fuente) => {
+          const [, month] =
+            report?.attributes?.reportMonth.split("-")?.map(Number) ?? 0;
+
+          files.push({
+            url: fuente?.attributes?.url ?? "",
+            name: monthNames[month],
+          });
+        }
+      );
+
       const [reportYear, reportMonth] = report.attributes?.reportMonth
         .split("-")
         .map(Number);
@@ -30,6 +48,8 @@ const useReturnedFilteredQuery = ({ query, year, period, country, skip }) => {
 
       return true;
     }) ?? [];
+
+  if (filesRef?.current) filesRef.current = files;
 
   return filteredData;
 };

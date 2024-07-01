@@ -41,6 +41,23 @@ const depName = {
   santa_barbara: "Santa Bárbara",
   valle: "Valle",
   yoro: "Yoro",
+
+  // SALVAD
+  ahuachapan: "Ahuachapán",
+  cabanas: "Cabañas",
+  chalatenango: "Chalatenango",
+  cuscatlan: "Cuscatlán",
+  la_libertad: "La Libertad",
+  la_paz: "La Paz",
+  la_union: "La Unión",
+  morazan: "Morazán",
+  san_miguel: "San Miguel",
+  san_salvador: "San Salvador",
+  san_vicente: "San Vicente",
+  santa_ana: "Santa Ana",
+  sonsonate: "Sonsonate",
+  usulutan: "Usulután",
+  
 };
 
 export default depName;

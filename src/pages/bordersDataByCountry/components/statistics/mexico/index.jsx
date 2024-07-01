@@ -20,12 +20,14 @@ import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
 
 import { useDetainedMexico } from "./hooks";
+import { monthNames } from "../../../../../hooks/fetch";
+import DownloadTable from "../../../../country/components/statistics/components/downloadTable";
 
 const Mexico = () => {
   const [period, setPeriod] = useState([]);
   const [currentYear, setCurrentYear] = useState("");
 
-  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
+  const [isScreenShotTime] = useState(false);
   const containerRef = useRef(null);
 
   const handleMonth = (range) => {
@@ -33,7 +35,7 @@ const Mexico = () => {
   };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { dataPerMonth, updateDate } = useDetainedMexico({
+  const { dataPerMonth, updateDate, files } = useDetainedMexico({
     period,
     currentYear,
   });
@@ -133,7 +135,9 @@ const Mexico = () => {
               {/* TOTAL MONTH DATA */}
               <Stack direction="row" alignItems="center">
                 <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                  {"Mes"}
+                  {`Total ${
+                    period?.[0] ? monthNames?.[period[0]] + " - " ?? "" : ""
+                  } ${monthNames[period[1]] ?? ""}`}
                 </Text>
                 <Text fontFamily="Oswald" fontSize="4xl" lineHeight="1">
                   {dataPerMonth?.totalMes ?? "N/D"}
@@ -189,11 +193,9 @@ const Mexico = () => {
           />
           {isScreenShotTime && <GraphFooter responsive />}
 
-          <DownloadImage
-            label=""
-            containerRef={containerRef}
-            onSS={setIsScreenShotTime}
-          />
+          {!isScreenShotTime && (
+            <DownloadTable files={files} satisticsRef={containerRef} />
+          )}
         </Box>
       </Stack>
     </Box>

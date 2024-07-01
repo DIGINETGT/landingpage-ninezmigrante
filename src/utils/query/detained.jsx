@@ -9,6 +9,13 @@ export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = (country) => gql`
       attributes {
         reportDate
         updatedAt
+        fuentes {
+          data {
+            attributes {
+              url
+            }
+          } 
+        }
         country {
           data {
             attributes {
@@ -70,6 +77,15 @@ export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (country) => gql`
         attributes {
           updatedAt
           reportDate
+
+          fuentes {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+
           country {
             data {
               attributes {

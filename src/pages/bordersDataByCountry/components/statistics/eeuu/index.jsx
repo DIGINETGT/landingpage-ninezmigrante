@@ -13,6 +13,7 @@ import YearSelect from "../../../../../components/yearSelect";
 import MonthPicker from "../../../../../components/monthPicker";
 import { useDetainedEEUU } from "./hooks";
 import { monthNames } from "../../../../../hooks/fetch";
+import DownloadTable from "../../../../country/components/statistics/components/downloadTable";
 
 const EEUU = () => {
   const [currentYear, setCurrentYear] = useState("");
@@ -26,7 +27,7 @@ const EEUU = () => {
   };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { dataPerDeps, dataPerMonth, updateDate } = useDetainedEEUU({
+  const { dataPerDeps, dataPerMonth, updateDate, files } = useDetainedEEUU({
     period,
     currentYear,
   });
@@ -121,9 +122,9 @@ const EEUU = () => {
             {/* TOTAL MONTH DATA */}
             <Stack>
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                {`Total ${monthNames[period[0]] + " - " ?? ""} ${
-                  monthNames[period[1]] ?? ""
-                }`}
+                {`Total ${
+                  period?.[0] ? monthNames?.[period[0]] + " - " ?? "" : ""
+                } ${monthNames[period[1]] ?? ""}`}
               </Text>
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
                 {currentYear ?? ""}
@@ -176,11 +177,9 @@ const EEUU = () => {
           />
           {isScreenShotTime && <GraphFooter responsive />}
 
-          <DownloadImage
-            label=""
-            containerRef={containerRef}
-            onSS={setIsScreenShotTime}
-          />
+          {!isScreenShotTime && (
+            <DownloadTable files={files} satisticsRef={containerRef} />
+          )}
         </Box>
       </Stack>
     </Box>

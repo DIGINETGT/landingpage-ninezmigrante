@@ -36,6 +36,7 @@ const TravelCondition = ({ period, year, country, defData }) => {
 
   let ACD = defData?.acd ?? 0;
   let NO_ACD = defData?.noAcd ?? 0;
+  let UN_REGISTRED = defData?.unRegistred ?? 0;
 
   rdata?.forEach((report) => {
     report.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
@@ -43,22 +44,26 @@ const TravelCondition = ({ period, year, country, defData }) => {
         const travelCondition =
           conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
 
+          console.log(travelCondition)
+
         if (travelCondition === "acompañado") {
           ACD += conditionContribution.attributes?.cant || 0;
         } else if (travelCondition === "no acompañado") {
           NO_ACD += conditionContribution.attributes?.cant || 0;
+        } else if (travelCondition === "otros") {
+          UN_REGISTRED += conditionContribution.attributes?.cant || 0;
         }
       }
     );
   });
 
   const data = {
-    labels: ["ACAMPANADOS", "NO ACAMPANADOS"],
+    labels: ["ACAMPANADOS", "NO ACAMPANADOS", "OTROS"],
     datasets: [
       {
-        data: [ACD, NO_ACD],
-        backgroundColor: [colors.green[700], colors.blue[700]],
-        borderColor: [colors.green[700], colors.blue[700]],
+        data: [ACD, NO_ACD, UN_REGISTRED],
+        backgroundColor: [colors.green[700], colors.blue[700], colors.yellow[700]],
+        borderColor: [colors.green[700], colors.blue[700], colors.yellow[700]],
         borderWidth: 1,
       },
     ],
@@ -97,6 +102,16 @@ const TravelCondition = ({ period, year, country, defData }) => {
             </Text>
             <Text fontFamily="Oswald" fontSize="2xl">
               {ACD}
+            </Text>
+          </Stack>
+
+          <Stack direction="row" alignItems="center">
+            <Box bgColor="yellow.700" width="18px" height="18px" />
+            <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+              Otros
+            </Text>
+            <Text fontFamily="Oswald" fontSize="2xl">
+              {UN_REGISTRED}
             </Text>
           </Stack>
         </Stack>

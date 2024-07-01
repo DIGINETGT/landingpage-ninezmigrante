@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { GET_DETAINED_IN_BORDERDS_BY_COUNTRY } from "../../../../../../utils/query/detained";
 import { dateToString, isMonthInRange } from "../../../../../../utils/tools";
+import { monthNames } from "../../../../../../hooks/fetch";
 
 export const useDetainedMexico = ({ period, currentYear }) => {
   const { countryID } = useParams();
@@ -24,7 +25,18 @@ export const useDetainedMexico = ({ period, currentYear }) => {
     f3: 0,
   };
 
+  const files = [];
   bordersData?.forEach((element) => {
+    element?.attributes?.fuentes?.data?.forEach((fuente) => {
+      const [_, reportMonth] =
+        element?.attributes?.reportDate?.split("-")?.map(Number) ?? 0;
+
+      files.push({
+        url: fuente?.attributes?.url ?? "",
+        name: monthNames[Number(reportMonth)],
+      });
+    });
+
     const filteredData =
       element.attributes?.detained_in_borders?.data?.filter((report) => {
         const [reportYear, reportMonth] = report?.attributes?.month
@@ -82,5 +94,5 @@ export const useDetainedMexico = ({ period, currentYear }) => {
     dataPerMonth.totalMes += total;
   });
 
-  return { dataPerMonth, updateDate };
+  return { dataPerMonth, updateDate, files };
 };

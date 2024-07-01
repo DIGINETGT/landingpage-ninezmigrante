@@ -64,41 +64,47 @@ const DownloadTable = ({ satisticsRef, files }) => {
             </AccordionButton>
 
             <AccordionPanel mt={2} width="100%" bgColor="rgba(0,0,0,.04)" p={5}>
-              {data?.map((file, fileIndex) => {
-                const isLastElement = fileIndex === (data?.length ?? 1) - 1;
+              {(data?.length ?? 0) > 0 ? (
+                data?.map((file, fileIndex) => {
+                  const isLastElement = fileIndex === (data?.length ?? 1) - 1;
 
-                return (
-                  <Stack
-                    data-html2canvas-ignore="true"
-                    gap="24px"
-                    width="100%"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    borderBottomColor="#ccc"
-                    pb={5}
-                    borderBottomWidth={isLastElement ? "0px" : "1px"}
-                    marginBottom={isLastElement ? "0px" : "24px"}
-                    direction={{ base: "column", md: "row" }}
-                  >
-                    <Text fontFamily="Oswald" fontSize="2xl">
-                      {`REPORTE DE ${file?.name}`}
-                    </Text>
-                    <Button
-                      size="lg"
-                      as="a"
-                      href={file?.url}
-                      bgColor="#ccc"
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      rightIcon={<DownloadIcon />}
-                      fontFamily="Montserrat Medium"
-                      _hover={{ bgColor: "green.700", color: "white" }}
+                  return (
+                    <Stack
+                      data-html2canvas-ignore="true"
+                      gap="24px"
+                      width="100%"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      borderBottomColor="#ccc"
+                      pb={5}
+                      borderBottomWidth={isLastElement ? "0px" : "1px"}
+                      marginBottom={isLastElement ? "0px" : "24px"}
+                      direction={{ base: "column", md: "row" }}
                     >
-                      Descargar
-                    </Button>
-                  </Stack>
-                );
-              })}
+                      <Text fontFamily="Oswald" fontSize="2xl">
+                        {`REPORTE DE ${file?.name}`}
+                      </Text>
+                      <Button
+                        size="lg"
+                        as="a"
+                        href={file?.url}
+                        bgColor="#ccc"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        rightIcon={<DownloadIcon />}
+                        fontFamily="Montserrat Medium"
+                        _hover={{ bgColor: "green.700", color: "white" }}
+                      >
+                        Descargar
+                      </Button>
+                    </Stack>
+                  );
+                })
+              ) : (
+                <Text variant="h6" align="center">
+                  Sin fuente de datos.
+                </Text>
+              )}
             </AccordionPanel>
           </AccordionItem>
 

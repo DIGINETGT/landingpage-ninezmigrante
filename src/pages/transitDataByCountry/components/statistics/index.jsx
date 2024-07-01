@@ -261,7 +261,7 @@ const Statistics = () => {
             >
               <Stack direction="column">
                 <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                  Contribución por país
+                  País de origen
                 </Text>
               </Stack>
 

@@ -26,6 +26,7 @@ import { useDetainedEEUU } from "../statistics/eeuu/hooks";
 import { useDetainedMexico } from "../statistics/mexico/hooks";
 import useReturnedFilteredQuery from "../../../../hooks/query";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
+import DownloadTable from "../../../country/components/statistics/components/downloadTable";
 
 const Compare = () => {
   const [currentPeriod, setCurrentPeriod] = useState([0, 0]);
@@ -36,16 +37,22 @@ const Compare = () => {
 
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { dataPerMonth: dataUS, updateDate } = useDetainedEEUU({
+  const {
+    dataPerMonth: dataUS,
+    updateDate,
+    files: filesUs,
+  } = useDetainedEEUU({
     period: currentPeriod,
     currentYear,
   });
-  const { dataPerMonth: dataMx } = useDetainedMexico({
+  const { dataPerMonth: dataMx, files: filesMx } = useDetainedMexico({
     period: currentPeriod,
     currentYear,
   });
 
+  const filesRef = useRef([]);
   const returnedData = useReturnedFilteredQuery({
+    filesRef,
     year: currentYear,
     period: currentPeriod,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID),
@@ -55,6 +62,8 @@ const Compare = () => {
   returnedData?.forEach((report) => {
     totalCant += report.attributes?.returned?.data?.attributes?.total || 0;
   });
+
+  let combinedFiles = [...filesMx, ...filesUs, ...filesRef.current];
 
   const sources = (
     <Stack
@@ -217,7 +226,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataUS.totalMes??'N/D'}
+                {dataUS.totalMes ?? "N/D"}
               </Text>
             </Stack>
 
@@ -244,7 +253,7 @@ const Compare = () => {
                 fontFamily="Oswald"
                 fontSize={{ base: "4xl", md: "6xl" }}
               >
-                {dataMx.totalMes??'N/D'}
+                {dataMx.totalMes ?? "N/D"}
               </Text>
             </Stack>
           </Stack>
@@ -257,11 +266,9 @@ const Compare = () => {
 
           {isScreenShotTime && <GraphFooter responsive />}
 
-          <DownloadImage
-            label="Descargar imagen de la comparación"
-            containerRef={containerRef}
-            onSS={setIsScreenShotTime}
-          />
+          {!isScreenShotTime && (
+            <DownloadTable satisticsRef={containerRef} files={combinedFiles} />
+          )}
         </Box>
       </Stack>
     </Box>

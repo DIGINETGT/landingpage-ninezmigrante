@@ -39,16 +39,16 @@ const ModalContentHN = ({ modalDep }) => {
       {modalDep === "comayagua" && <Comayagua />}
       {modalDep === "copan" && <Copan />}
       {modalDep === "cortes" && <Cortes />}
-      {modalDep === "elparaiso" && <ElParaiso />}
+      {modalDep === "el_paraiso" && <ElParaiso />}
       {modalDep === "francis" && <Francis />}
       {modalDep === "gracias" && <Gracias />}
       {modalDep === "intibuca" && <Intibuca />}
-      {modalDep === "islasbahia" && <IslasBahia />}
-      {modalDep === "lapaz" && <LaPaz />}
+      {modalDep === "islas_bahia" && <IslasBahia />}
+      {modalDep === "la_paz" && <LaPaz />}
       {modalDep === "lempira" && <Lempira />}
       {modalDep === "ocotepeque" && <Ocotepeque />}
       {modalDep === "olancho" && <Olancho />}
-      {modalDep === "santabarbara" && <SantaBarbara />}
+      {modalDep === "santa_barbara" && <SantaBarbara />}
       {modalDep === "valle" && <Valle />}
       {modalDep === "yoro" && <Yoro />}
     </svg>
