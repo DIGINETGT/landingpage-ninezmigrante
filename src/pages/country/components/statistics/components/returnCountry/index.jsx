@@ -83,8 +83,10 @@ const ReturnCountry = ({ period, year, country }) => {
                 justifyContent="center"
               >
                 <ReactSVG
-                  height={60}
-                  width={60}
+                  style={{ width: 60, height: 60 }}
+                  beforeInjection={(svg) => {
+                    svg.setAttribute("style", "width: 100%; height: 100%");
+                  }}
                   src={dataMaps?.[country] ?? ""}
                 />
 

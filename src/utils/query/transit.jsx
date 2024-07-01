@@ -115,6 +115,13 @@ export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
                   data {
                     attributes {
                       name
+                      map {
+                        data {
+                          attributes {
+                            url
+                          }
+                        }
+                      }
                     }
                   }
                 }

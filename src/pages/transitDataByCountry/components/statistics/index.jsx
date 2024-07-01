@@ -1,28 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useTransitFilteredQuery } from '../../../../hooks/query';
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useTransitFilteredQuery } from "../../../../hooks/query";
 import {
   GET_TRANSIT_REPORT,
   GET_TRANSIT_REPORT_ENTRY_BORDERS,
-} from '../../../../utils/query/transit';
+} from "../../../../utils/query/transit";
 
-import { Box, Stack, Text } from '@chakra-ui/react';
-import YearSelect from '../../../../components/yearSelect';
-import MonthPicker from '../../../../components/monthPicker';
-import Gender from '../../../country/components/statistics/components/gender';
-import AgeRanges from '../../../country/components/statistics/components/ageRanges';
-import LastDate from '../../../../components/lastUpdate';
-import ReturnCountry from '../entryBorders/components/returnCountry';
-import EntryBorderCountry from '../entryBorders/components/entryBorders';
-import { dateToString } from '../../../../utils/tools';
-import GraphFooter from '../../../../components/graphFooter';
-import DownloadTable from '../../../country/components/statistics/components/downloadTable';
-import DownloadImage from '../../../../components/downloadImage';
-import { monthNames } from '../../../../hooks/fetch';
+import Airplane from "../../../../assets/airplane.png";
+
+import { Box, Image, Stack, Text } from "@chakra-ui/react";
+import YearSelect from "../../../../components/yearSelect";
+import MonthPicker from "../../../../components/monthPicker";
+import Gender from "../../../country/components/statistics/components/gender";
+import AgeRanges from "../../../country/components/statistics/components/ageRanges";
+import LastDate from "../../../../components/lastUpdate";
+import ReturnCountry from "../entryBorders/components/returnCountry";
+import EntryBorderCountry from "../entryBorders/components/entryBorders";
+import { dateToString } from "../../../../utils/tools";
+import GraphFooter from "../../../../components/graphFooter";
+import DownloadTable from "../../../country/components/statistics/components/downloadTable";
+import DownloadImage from "../../../../components/downloadImage";
+import { monthNames } from "../../../../hooks/fetch";
 
 const Statistics = () => {
   const [period, setPeriod] = useState([]);
-  const [currentYear, setCurrentYear] = useState('');
+  const [currentYear, setCurrentYear] = useState("");
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
@@ -45,6 +47,15 @@ const Statistics = () => {
     ?.map((report) => report?.attributes?.country_contributions?.data)
     .flat();
 
+  const dataMaps = {};
+  countryContributions?.forEach((countryContribution) => {
+    const countryName =
+      countryContribution?.attributes?.country?.data?.attributes?.name;
+
+    dataMaps[countryName] =
+      countryContribution?.attributes?.country?.data?.attributes?.map?.data?.attributes?.url;
+  });
+
   const entryBordersContributions = dataEntry
     ?.map((report) => report?.attributes?.entry_border_contributions?.data)
     .flat();
@@ -55,7 +66,7 @@ const Statistics = () => {
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [countryID]);
 
   const dataPerMonth = {
@@ -67,11 +78,11 @@ const Statistics = () => {
     f4: 0,
   };
 
-  let updateDate = '';
+  let updateDate = "";
   data?.forEach((element) => {
     const female = element?.attributes?.gender_contributions?.data?.reduce(
       (acc, curr) =>
-        curr?.attributes?.gender?.data?.attributes?.name === 'Femenino'
+        curr?.attributes?.gender?.data?.attributes?.name === "Femenino"
           ? acc + curr?.attributes?.cant
           : acc,
       0
@@ -81,18 +92,18 @@ const Statistics = () => {
       new Date(element?.attributes?.updatedAt?.toString() ?? 0)
     );
 
-    const reportMonth = element?.attributes?.reportDate?.split('-')?.[1] ?? '0';
+    const reportMonth = element?.attributes?.reportDate?.split("-")?.[1] ?? "0";
 
     element?.attributes?.fuentes?.data?.forEach((fuente) => {
       files.push({
-        url: fuente?.attributes?.url ?? '',
+        url: fuente?.attributes?.url ?? "",
         name: monthNames[Number(reportMonth)],
       });
     });
 
     const male = element?.attributes?.gender_contributions?.data?.reduce(
       (acc, curr) =>
-        curr?.attributes?.gender?.data?.attributes?.name === 'Masculino'
+        curr?.attributes?.gender?.data?.attributes?.name === "Masculino"
           ? acc + curr?.attributes?.cant
           : acc,
       0
@@ -101,7 +112,7 @@ const Statistics = () => {
     const f1 = element?.attributes?.age_group_contributions?.data?.reduce(
       (acc, curr) =>
         curr?.attributes?.age_group?.data?.attributes?.name ===
-        'Primera infancia'
+        "Primera infancia"
           ? acc + Number(curr?.attributes?.cant ?? 0)
           : acc,
       0
@@ -109,7 +120,7 @@ const Statistics = () => {
 
     const f2 = element?.attributes?.age_group_contributions?.data?.reduce(
       (acc, curr) =>
-        curr?.attributes?.age_group?.data?.attributes?.name === 'Niñez'
+        curr?.attributes?.age_group?.data?.attributes?.name === "Niñez"
           ? acc + Number(curr?.attributes?.cant ?? 0)
           : acc,
       0
@@ -117,7 +128,7 @@ const Statistics = () => {
 
     const f3 = element?.attributes?.age_group_contributions?.data?.reduce(
       (acc, curr) =>
-        curr?.attributes?.age_group?.data?.attributes?.name === 'Adolescencia'
+        curr?.attributes?.age_group?.data?.attributes?.name === "Adolescencia"
           ? acc + Number(curr?.attributes?.cant ?? 0)
           : acc,
       0
@@ -125,7 +136,7 @@ const Statistics = () => {
 
     const f4 = element?.attributes?.age_group_contributions?.data?.reduce(
       (acc, curr) =>
-        curr?.attributes?.age_group?.data?.attributes?.name === 'No registrados'
+        curr?.attributes?.age_group?.data?.attributes?.name === "No registrados"
           ? acc + Number(curr?.attributes?.cant ?? 0)
           : acc,
       0
@@ -142,7 +153,7 @@ const Statistics = () => {
   return (
     <Box
       width="100%"
-      padding={{ base: '24px 40px', md: '80px 40px' }}
+      padding={{ base: "24px 40px", md: "80px 40px" }}
       ref={satisticsRef}
     >
       <Stack
@@ -157,18 +168,18 @@ const Statistics = () => {
         <Stack
           width="100%"
           alignItems="center"
-          direction={{ base: 'column', md: 'row' }}
-          justifyContent={{ base: 'center', md: 'space-between' }}
+          direction={{ base: "column", md: "row" }}
+          justifyContent={{ base: "center", md: "space-between" }}
         >
           {/* YEAR AND TITLE */}
-          <Stack width={{ base: '100%', md: '50%' }}>
+          <Stack width={{ base: "100%", md: "50%" }}>
             <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
               {currentYear}
             </Text>
             <Text
               fontSize="4xl"
               fontFamily="Oswald"
-              lineHeight={{ base: '1.2', md: '1' }}
+              lineHeight={{ base: "1.2", md: "1" }}
             >
               NIÑEZ EN TRÁNSITO
             </Text>
@@ -177,8 +188,8 @@ const Statistics = () => {
           {/* YEAR AND PERIOD SELECTS */}
           {!isScreenShotTime && (
             <Stack
-              width={{ base: '100%', md: '50%' }}
-              direction={{ base: 'column', md: 'row' }}
+              width={{ base: "100%", md: "50%" }}
+              direction={{ base: "column", md: "row" }}
             >
               {/* SELECT YEAR */}
               <YearSelect handleYear={handleYear} currentYear={currentYear} />
@@ -202,11 +213,11 @@ const Statistics = () => {
             alignItems="center"
             borderRadius="12px"
             justifyContent="space-between"
-            direction={{ base: 'column', md: 'row' }}
+            direction={{ base: "column", md: "row" }}
           >
             <Stack
               direction="column"
-              alignItems={{ base: 'center', md: 'flex-start' }}
+              alignItems={{ base: "center", md: "flex-start" }}
             >
               {/* TOTAL MONTH DATA */}
               <Stack direction="row" alignItems="center">
@@ -223,7 +234,7 @@ const Statistics = () => {
                 gap="48px"
                 padding="24px 0px"
                 alignItems="flex-start"
-                direction={{ base: 'column', md: 'row' }}
+                direction={{ base: "column", md: "row" }}
               >
                 {/* GENDER COMPONENT */}
                 <Gender
@@ -269,9 +280,12 @@ const Statistics = () => {
                 width="100%"
                 alignItems="center"
                 justifyContent="space-between"
-                direction={{ base: 'column', md: 'row' }}
+                direction={{ base: "column", md: "row" }}
               >
-                <ReturnCountry data={countryContributions} />
+                <ReturnCountry
+                  data={countryContributions}
+                  dataMaps={dataMaps}
+                />
               </Stack>
             </Stack>
 
@@ -283,7 +297,8 @@ const Statistics = () => {
               padding="40px"
               borderRadius="12px"
             >
-              <Stack direction="column">
+              <Stack direction="row" spacing={4} alignItems="center">
+                <Image src={Airplane} height="40px" />
                 <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
                   Aduanas de ingreso
                 </Text>
@@ -293,7 +308,7 @@ const Statistics = () => {
                 width="100%"
                 alignItems="center"
                 justifyContent="space-between"
-                direction={{ base: 'column', md: 'row' }}
+                direction={{ base: "column", md: "row" }}
               >
                 <EntryBorderCountry data={entryBordersContributions} />
               </Stack>
