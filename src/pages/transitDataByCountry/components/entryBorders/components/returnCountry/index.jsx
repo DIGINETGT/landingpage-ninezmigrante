@@ -38,7 +38,7 @@ const ReturnCountry = ({ data, dataMaps }) => {
             <Stack spacing="8px" direction="column" alignItems="center">
               <ReactSVG
                 style={{ width: 60, height: 60 }}
-                afterInjection={(svg) => {
+                beforeInjection={(svg) => {
                   svg.setAttribute(
                     "fill",
                     colors?.heat?.[id]?.[900 - index * 100]
