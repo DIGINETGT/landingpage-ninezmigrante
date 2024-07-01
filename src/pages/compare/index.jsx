@@ -10,9 +10,11 @@ import StatisticsContext from "../country/components/statistics/context";
 import LastDate from "../../components/lastUpdate";
 
 const ComparePage = () => {
+  const [countValue, setCountValue] = useState("0");
   const [options, setOptions] = useState({
     1: { country: "", year: 0, period: [1, 1], files: [] },
     2: { country: "", year: 0, period: [1, 1], files: [] },
+    3: { country: "", year: 0, period: [1, 1], files: [] },
   });
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
@@ -58,8 +60,9 @@ const ComparePage = () => {
         fontFamily="Montserrat Medium"
         fontSize={{ base: "xs", md: "sm" }}
       >
-        Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de
-        Niñez Migrante Guatemala-Honduras
+        Esta información ha sido procesada por: Monitoreo de niñez y
+        adolescencia migrante -Monitoreo Binacional de Niñez Migrante
+        Guatemala-Honduras
       </Text>
 
       <Text
@@ -81,10 +84,14 @@ const ComparePage = () => {
     <StatisticsContext.Provider
       value={{ isScreenShotTime, setIsScreenShotTime }}
     >
-      <SelectOptions onChange={onChange} satisticsRef={satisticsRef} />
-      {Object.values(options).every((option) =>
-        Object.values(option).every((value) => value !== "")
-      ) && (
+      <SelectOptions
+        countValue={countValue}
+        setCountValue={setCountValue}
+        onChange={onChange}
+        satisticsRef={satisticsRef}
+      />
+
+      {countValue !== "0" && options["1"]?.country !== "" && (
         <Box
           ref={satisticsRef}
           bgColor={isScreenShotTime ? "#fff" : "#eee"}
@@ -102,16 +109,20 @@ const ComparePage = () => {
               setUpdateDate={setUpdateDate}
               setPeriodId={setPeriodId}
             />
-            <Statistics
-              data={options["2"]}
-              setUpdateDate={setUpdateDate}
-              setPeriodId={setPeriodId}
-            />
-            <Statistics
-              data={options["3"]}
-              setUpdateDate={setUpdateDate}
-              setPeriodId={setPeriodId}
-            />
+            {(countValue === "2" || countValue === "3") && (
+              <Statistics
+                data={options["2"]}
+                setUpdateDate={setUpdateDate}
+                setPeriodId={setPeriodId}
+              />
+            )}
+            {countValue === "3" && (
+              <Statistics
+                data={options["3"]}
+                setUpdateDate={setUpdateDate}
+                setPeriodId={setPeriodId}
+              />
+            )}
           </Stack>
 
           <LastDate

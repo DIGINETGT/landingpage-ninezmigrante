@@ -4,9 +4,12 @@ import { Box, Select, Stack, Text } from "@chakra-ui/react";
 
 import Options from "./components/options";
 
-const SelectOptions = ({ onChange, satisticsRef }) => {
-  const [countValue, setCountValue] = useState("0");
-
+const SelectOptions = ({
+  onChange,
+  satisticsRef,
+  countValue,
+  setCountValue,
+}) => {
   const handleChange = (ev) => setCountValue(ev.target.value || "0");
 
   return (
@@ -28,28 +31,33 @@ const SelectOptions = ({ onChange, satisticsRef }) => {
         </Text>
       </Stack>
 
-        <Stack width={350} spacing={4} direction="row" alignItems="center" mb={10}>
-          <Text fontFamily="Montserrat Medium" fontSize="2xl">
-            ¿Cuantos países deseas comparar?
-          </Text>
-          <Select
-            name="count"
-            fontSize="2xl"
-            lineHeight="1.8"
-            fontWeight="600"
-            width={100}
-            height="70px"
-            fontFamily="Times"
-            letterSpacing="1.2px"
-            onChange={handleChange}
-            bgColor="rgba(255,255,255,0.5)"
-          >
-            <option value="0">-</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </Select>
-        </Stack>
-      
+      <Stack
+        width={350}
+        spacing={4}
+        direction="row"
+        alignItems="center"
+        mb={10}
+      >
+        <Text fontFamily="Montserrat Medium" fontSize="2xl">
+          ¿Cuantos países deseas comparar?
+        </Text>
+        <Select
+          name="count"
+          fontSize="2xl"
+          lineHeight="1.8"
+          fontWeight="600"
+          width={100}
+          height="70px"
+          fontFamily="Times"
+          letterSpacing="1.2px"
+          onChange={handleChange}
+          bgColor="rgba(255,255,255,0.5)"
+        >
+          <option value="0">-</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </Select>
+      </Stack>
 
       {countValue !== "0" && (
         <Stack
@@ -61,6 +69,7 @@ const SelectOptions = ({ onChange, satisticsRef }) => {
           {Array.from({ length: Number(countValue) }).map((_, index) => (
             <Options
               key={index}
+              countValue={countValue}
               id={String(index + 1)}
               onChange={onChange}
               satisticsRef={satisticsRef}

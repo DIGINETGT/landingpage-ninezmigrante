@@ -309,13 +309,6 @@ const Statistics = () => {
               borderRadius="12px"
               alignItems="center"
             >
-              <Image
-                src={Airplane}
-                width="100px"
-                height="100px"
-                opacity={0.2}
-              />
-
               <Stack direction="column" spacing={8}>
                 <Stack direction="row" spacing={4} alignItems="center">
                   <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
