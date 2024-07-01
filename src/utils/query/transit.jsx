@@ -159,55 +159,39 @@ export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
   }
 `;
 
-export const GET_RECURSOS = (countryId) => gql`
-query {
-  recursos(${getFilterByCountry(countryId)}) {
-    data {
-      attributes {
-        updatedAt
-        name
-        link
-        description
-        esExterno
-        document {
-          data {
-            attributes {
-              url
-            }
-          }
-        }
-        subcategories {
-          data {
-            attributes {
-              name
-              category {
-                data {
-                  attributes {
-                    name
-                  }
-                }
+export const GET_RECURSOS = gql`
+  query {
+    recursos {
+      data {
+        attributes {
+          updatedAt
+          name
+          link
+          description
+          esExterno
+          countries {
+            data {
+              attributes {
+                name
+                isoCode
               }
             }
           }
-        }
-        users_permissions_user {
-          data {
-            attributes {
-              organization {
-                data {
-                  attributes {
-                    department {
-                      data {
-                        attributes {
-                          country {
-                            data {
-                              attributes {
-                                name
-                              }
-                            }
-                          }
-                        }
-                      }
+          document {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          subcategories {
+            data {
+              attributes {
+                name
+                category {
+                  data {
+                    attributes {
+                      name
                     }
                   }
                 }
@@ -218,5 +202,4 @@ query {
       }
     }
   }
-}
 `;

@@ -19,7 +19,6 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, Search2Icon } from "@chakra-ui/icons";
 import { colors } from "../../utils/theme";
-import { useTransitFilteredQuery } from "../../hooks/query";
 import { GET_RECURSOS } from "../../utils/query/transit";
 import { useQuery } from "@apollo/client";
 import getCountryContent from "../../utils/country";
@@ -28,11 +27,19 @@ const DocumentationByCountry = () => {
   const { countryID } = useParams();
   const [filter, setFilter] = useState("");
 
-  const { data } = useQuery(GET_RECURSOS(countryID));
+  const { data } = useQuery(GET_RECURSOS);
 
   const keys = ["nombre", "descripcion"];
 
-  const dataByCountry = data?.recursos?.data?.map((item) => ({
+  const filtered = data?.recursos?.data?.filter((item) => {
+    const isoCodes = item?.attributes?.countries?.data
+      ?.map((country) => country?.attributes?.isoCode)
+      .map((isoCode) => isoCode?.toString().toLowerCase() ?? "");
+
+    return isoCodes.includes(countryID);
+  });
+
+  const dataByCountry = filtered?.map((item) => ({
     nombre: item?.attributes?.name,
     descripcion: item?.attributes?.description,
     esExterno: item?.attributes?.esExterno,
@@ -117,7 +124,7 @@ const DocumentationByCountry = () => {
                 spacing={8}
                 padding="8"
                 direction={{ base: "column", md: "row" }}
-                key={source.id}
+                key={source.id + source.nombre}
                 alignItems="center"
                 justifyContent="space-between"
               >
