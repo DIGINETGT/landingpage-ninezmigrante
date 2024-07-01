@@ -23,7 +23,7 @@ const ComparePage = () => {
     1: [],
     2: [],
     3: [],
-  })
+  });
   const [periodId, setPeriodId] = useState("");
 
   const satisticsRef = useRef(null);
@@ -142,7 +142,15 @@ const ComparePage = () => {
             isScreenShotTime={isScreenShotTime}
           />
           {isScreenShotTime && <GraphFooter responsive />}
-          <DownloadTable files={[...files[1], ...files[2], ...files[3]]} satisticsRef={satisticsRef} periodId={periodId} />
+          <DownloadTable
+            files={[
+              ...(Array.isArray(files["1"]) ? [...files["1"]] : []),
+              ...(Array.isArray(files["2"]) ? [...files["2"]] : []),
+              ...(Array.isArray(files["3"]) ? [...files["3"]] : []),
+            ]}
+            satisticsRef={satisticsRef}
+            periodId={periodId}
+          />
         </Box>
       )}
     </StatisticsContext.Provider>
