@@ -19,13 +19,7 @@ const ReturnCountry = ({ data, dataMaps }) => {
     }, {}) ?? {};
 
   return (
-    <Stack
-      spacing={6}
-      px={2}
-      width="100%"
-      direction="row"
-      justifyContent="start"
-    >
+    <Stack spacing={6} width="100%" direction="row" justifyContent="start">
       {Object.entries(filteredData ?? {})?.map(([name, total], index) => {
         return total > 0 ? (
           <Stack
@@ -48,7 +42,7 @@ const ReturnCountry = ({ data, dataMaps }) => {
                 src={dataMaps?.[name] ?? ""}
               />
 
-              <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+              <Text fontFamily="Oswald" fontSize="md" lineHeight="1" maxW={100}>
                 {name}
               </Text>
               <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">

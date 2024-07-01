@@ -21,6 +21,17 @@ import GraphFooter from "../../../../components/graphFooter";
 import DownloadTable from "../../../country/components/statistics/components/downloadTable";
 import DownloadImage from "../../../../components/downloadImage";
 import { monthNames } from "../../../../hooks/fetch";
+import { Pie } from "react-chartjs-2";
+
+export const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+};
 
 const Statistics = () => {
   const [period, setPeriod] = useState([]);
@@ -290,27 +301,36 @@ const Statistics = () => {
             </Stack>
 
             <Stack
-              direction="column"
-              spacing={8}
+              direction="row"
               width="100%"
               bgColor="#fff"
               padding="40px"
+              spacing={6}
               borderRadius="12px"
+              alignItems="center"
             >
-              <Stack direction="row" spacing={4} alignItems="center">
-                <Image src={Airplane} height="40px" />
-                <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                  Aduanas de ingreso
-                </Text>
-              </Stack>
+              <Image
+                src={Airplane}
+                width="100px"
+                height="100px"
+                opacity={0.2}
+              />
 
-              <Stack
-                width="100%"
-                alignItems="center"
-                justifyContent="space-between"
-                direction={{ base: "column", md: "row" }}
-              >
-                <EntryBorderCountry data={entryBordersContributions} />
+              <Stack direction="column" spacing={8}>
+                <Stack direction="row" spacing={4} alignItems="center">
+                  <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+                    Aduanas de ingreso
+                  </Text>
+                </Stack>
+
+                <Stack
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction={{ base: "column", md: "row" }}
+                >
+                  <EntryBorderCountry data={entryBordersContributions} />
+                </Stack>
               </Stack>
             </Stack>
           </Stack>

@@ -140,7 +140,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
         fontFamily="Montserrat Medium"
         fontSize={{ base: "xs", md: "sm" }}
       >
-        Esta información ha sido procesada por: MOBINIM -Monitoreo Binacional de
+        Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de
         Niñez Migrante Guatemala-Honduras-.
       </Text>
     </Stack>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 //UTILS
-import { month, year } from "../../../../../../../utils/year";
+import { month as currentMonth, year } from "../../../../../../../utils/year";
 import { monthNames } from "../../../../../../../hooks/fetch";
 import { defaultItemColors, itemColors } from "../utils";
 import apolloClient from "../../../../../../../utils/apollo";
@@ -13,6 +13,7 @@ import {
   GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION,
 } from "../../../../../../../utils/query/returned";
 import { isMonthInRange } from "../../../../../../../utils/tools";
+import { generateGraphDataFromRange } from "../utils/events";
 
 const datasetLabels = {
   gender: ["Femenino", "Masculino"],
@@ -30,6 +31,8 @@ const datasetLabels = {
  * @param chartType - "bar"
  * @returns Un objeto con dos propiedades: etiquetas y conjuntos de datos.
  */
+
+const month = currentMonth;
 const useGraphData = (period, graphType, chartType, countryID) => {
   const [graphData, setGraphData] = useState({
     labels: [],
@@ -44,49 +47,43 @@ const useGraphData = (period, graphType, chartType, countryID) => {
   // UTIMO AÑO
   if (period === "0") {
     barLengths = 3;
-    localData.push({
-      ranges: [1, 12],
-      year,
-      name: `Enero - Diciembre - ${year}`,
-    });
+    generateGraphDataFromRange(1, 12, year).forEach((data) =>
+      localData.push(data)
+    );
   }
 
   // ULTIMOS 4 MESES
   if (period === "1") {
     barLengths = 4;
+    let resultData = [];
 
     if (month >= 5) {
-      localData.push({
-        ranges: [month - 4, month - 1],
-        year: currentYear,
-        name: `${monthNames[month - 4]} - ${
-          monthNames[month - 1]
-        } - ${currentYear}`,
-      });
+      resultData = generateGraphDataFromRange(
+        month - 3,
+        month ,
+        currentYear
+      ).forEach((data) => localData.push(data));
     } else {
       const startDiff = 5 - month;
 
-      localData.push({
-        ranges: [1, month],
-        year: currentYear,
-        name: `${monthNames[1]} - ${monthNames[month]} - ${currentYear}`,
-      });
-
       if (startDiff > 1) {
-        localData.push({
-          ranges: [12 - startDiff, 12],
-          year: currentYear - 1,
-          name: `${monthNames[12 - startDiff]} - ${monthNames[12]} - ${
-            currentYear - 1
-          }`,
-        });
+        resultData = generateGraphDataFromRange(
+          12 - startDiff,
+          12,
+          currentYear
+        );
+      } else {
+        resultData = generateGraphDataFromRange(1, month, currentYear);
       }
     }
+
+    resultData?.forEach((data) => localData.push(data));
   }
 
   // ULTIMOS 3 AÑOS
   if (period === "2") {
     barLengths = 3;
+
     localData.push({
       ranges: [1, 12],
       year: currentYear,

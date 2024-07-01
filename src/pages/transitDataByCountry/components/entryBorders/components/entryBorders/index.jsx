@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import React from "react";
+import { Box, Stack, Text } from "@chakra-ui/react";
 
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 const EntryBorderCountry = ({ data }) => {
   const filteredData =
@@ -16,13 +16,7 @@ const EntryBorderCountry = ({ data }) => {
     }, {}) ?? {};
 
   return (
-    <Stack
-      px={5}
-      spacing={5}
-      width="100%"
-      direction="row"
-      justifyContent="start"
-    >
+    <Stack spacing={5} width="100%" direction="row" justifyContent="start">
       {Object.entries(filteredData ?? {})?.map(([name, total], index) => {
         return total > 0 ? (
           <Stack
@@ -40,6 +34,7 @@ const EntryBorderCountry = ({ data }) => {
                 textAlign="center"
                 fontSize="md"
                 lineHeight="1"
+                maxW={150}
               >
                 {name}
               </Text>

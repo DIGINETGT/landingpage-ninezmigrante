@@ -97,7 +97,7 @@ const Slider = () => {
           <Stack paddingTop='20px'>
             <Stack>
               <Text p='5px 20px 0px 20px' fontFamily='Montserrat Medium'>
-                El MOBINIM registra y visibiliza los datos de niñez y
+                El Monitoreo de niñez y adolescencia migrante registra y visibiliza los datos de niñez y
                 adolescencia migrante hondureña y guatemalteca, como referencia
                 para la toma de decisiones políticas, acciones de fiscalización,
                 observancia, auditoría social y motivación para generar

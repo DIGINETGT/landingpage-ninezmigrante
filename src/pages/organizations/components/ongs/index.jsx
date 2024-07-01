@@ -50,7 +50,7 @@ const Ongs = () => {
         >
           <SlideFade in={isOpen} offsetY='-50px'>
             <Heading as='h1' size='4xl' noOfLines={1} fontFamily='Oswald'>
-              MOBININ
+              Monitoreo de niñez y adolescencia migrante
             </Heading>
           </SlideFade>
           <ScaleFade initialScale={0.1} in={isOpen}>
@@ -60,7 +60,7 @@ const Ongs = () => {
         <Stack paddingTop='5px' paddingBottom='10px'>
           <SlideFade in={isOpen} offsetY='-50px'>
             <Heading fontFamily='Oswald' fontWeight='normal' as='h4' size='md'>
-              ORGANIZACIONES QUE IMPLEMENTAN EL MOBINIM
+              ORGANIZACIONES QUE IMPLEMENTAN EL Monitoreo de niñez y adolescencia migrante
             </Heading>
           </SlideFade>
         </Stack>
