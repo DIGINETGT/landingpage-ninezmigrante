@@ -46,7 +46,6 @@ function isValidDate(d) {
 
 export const dateToString = (date) => {
   // TIMEZONE GUATEMALA MOMENT
-  console.log(date, isValidDate(date));
   return moment(isValidDate(date) ? new Date() : date)
     .tz("America/Guatemala")
     .format("DD-MM-YYYY");

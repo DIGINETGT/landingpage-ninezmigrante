@@ -44,8 +44,6 @@ const TravelCondition = ({ period, year, country, defData }) => {
         const travelCondition =
           conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
 
-          console.log(travelCondition)
-
         if (travelCondition === "acompañado") {
           ACD += conditionContribution.attributes?.cant || 0;
         } else if (travelCondition === "no acompañado") {
@@ -62,7 +60,11 @@ const TravelCondition = ({ period, year, country, defData }) => {
     datasets: [
       {
         data: [ACD, NO_ACD, UN_REGISTRED],
-        backgroundColor: [colors.green[700], colors.blue[700], colors.yellow[700]],
+        backgroundColor: [
+          colors.green[700],
+          colors.blue[700],
+          colors.yellow[700],
+        ],
         borderColor: [colors.green[700], colors.blue[700], colors.yellow[700]],
         borderWidth: 1,
       },
