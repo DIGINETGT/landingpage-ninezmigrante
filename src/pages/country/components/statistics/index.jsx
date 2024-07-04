@@ -12,6 +12,7 @@ import HeatMap from "./components/heatMap/index";
 import ReturnPath from "./components/returnPath";
 import AgeRanges from "./components/ageRanges";
 import Gender from "./components/gender";
+import { year as currentYear } from "../../../../utils/year";
 
 import { monthNames } from "../../../../hooks/fetch";
 
@@ -216,6 +217,20 @@ const Statistics = ({ period, year, satisticsRef }) => {
             13 y 17 años.
           </Text>
         </Stack>
+
+        {year?.toString() === currentYear?.toString() && countryID === "hn" && (
+          <Stack
+            direction="column"
+            margin="auto"
+            maxWidth="800px"
+            marginTop={2}
+          >
+            <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
+              En el caso de Honduras la actualización de los datos de niñez
+              retornada se realiza anualmente
+            </Text>
+          </Stack>
+        )}
 
         <LastDate
           sources={sources}

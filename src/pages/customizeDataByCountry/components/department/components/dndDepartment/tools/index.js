@@ -5,10 +5,10 @@ import { colors } from "../../../../../../../utils/theme";
 import countryDeps, { depColors } from "../utils";
 import { year } from "../../../../../../../utils/year";
 
-export const getItemStyle = (isDragging, draggableStyle) => ({
+export const getItemStyle = (isDragging, draggableStyle, isMobile = false) => ({
   userSelect: "none",
-  minWidth: 55,
-  height: 55,
+  minWidth: isMobile ? '43%' : 55,
+  height: isMobile ? '43%' : 55,
   margin: `0 8px 0 0`,
   borderRadius: "5px",
   transition: "background 0.2s ease-in-out",

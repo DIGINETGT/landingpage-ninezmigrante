@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 // REACT ROUTER DOM
 import { useParams } from "react-router-dom";
@@ -42,6 +42,7 @@ import {
   GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
   GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
 } from "../../../../../../utils/query/returned";
+import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
 
 const DnDDepartment = ({ country = "guatemala" }) => {
   // PROPS DE DEPARTAMENTOS
@@ -49,6 +50,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [depList, setDepList] = useState(countryDeps[countryID]);
   const [period, setPeriod] = useState([1, 1]);
   const [currentYear, setYear] = useState(year);
+  const [windowWidth, setWindowWidth] = useState();
 
   const dataBordersCapital = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
@@ -109,6 +111,10 @@ const DnDDepartment = ({ country = "guatemala" }) => {
     currentYear,
   });
 
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+  }, [window.innerWidth]);
+
   const sources = (
     <Stack
       width="100%"
@@ -140,8 +146,9 @@ const DnDDepartment = ({ country = "guatemala" }) => {
         fontFamily="Montserrat Medium"
         fontSize={{ base: "xs", md: "sm" }}
       >
-        Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de
-        Niñez Migrante Guatemala-Honduras-.
+        Esta información ha sido procesada por: Monitoreo de niñez y
+        adolescencia migrante -Monitoreo Binacional de Niñez Migrante
+        Guatemala-Honduras-.
       </Text>
     </Stack>
   );
@@ -175,7 +182,11 @@ const DnDDepartment = ({ country = "guatemala" }) => {
           {/* LISTA DE DEPARTAMENTOS */}
           <Box
             maxWidth={{ base: "100%", md: "475px" }}
-            style={{ overflowX: "auto" }}
+            style={{
+              overflowX: "auto",
+              marginTop: "20px",
+              marginBottom: "20px",
+            }}
           >
             <Droppable droppableId="droppableDeps" direction="horizontal">
               {(provided, snapshot) => (
@@ -197,9 +208,21 @@ const DnDDepartment = ({ country = "guatemala" }) => {
                           {...provided.dragHandleProps}
                           style={getItemStyle(
                             snapshot.isDragging,
-                            provided.draggableProps.style
+                            provided.draggableProps.style,
+                            windowWidth < 500
                           )}
                         >
+                          {windowWidth < 500 && (
+                            <Text
+                              textAlign="center"
+                              fontFamily="Oswald"
+                              mb={4}
+                              width="100%"
+                            >
+                              {depName?.[item?.id]}
+                            </Text>
+                          )}
+
                           <svg
                             x="0px"
                             y="0px"

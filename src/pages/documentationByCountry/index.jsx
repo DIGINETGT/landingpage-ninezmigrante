@@ -41,6 +41,7 @@ const DocumentationByCountry = () => {
 
   const dataByCountry = filtered?.map((item) => ({
     nombre: item?.attributes?.name,
+    privado: item?.attributes?.privado,
     descripcion: item?.attributes?.description,
     esExterno: item?.attributes?.esExterno,
     url: item?.attributes?.esExterno
@@ -116,56 +117,58 @@ const DocumentationByCountry = () => {
             alignItems="center"
             justifyContent="space-around"
           >
-            {dataSearch?.map((source) => (
-              <HStack
-                shadow="md"
-                borderWidth="1px"
-                width="100%"
-                spacing={8}
-                padding="8"
-                direction={{ base: "column", md: "row" }}
-                key={source.id + source.nombre}
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Stack transition="ease-in" direction="column" spacing={0}>
-                  <Text fontFamily="Oswald" fontSize="2xl">
-                    {source.nombre}
-                  </Text>
+            {dataSearch?.map((source) =>
+              source.privado ? null : (
+                <HStack
+                  shadow="md"
+                  borderWidth="1px"
+                  width="100%"
+                  spacing={8}
+                  padding="8"
+                  direction={{ base: "column", md: "row" }}
+                  key={source.id + source.nombre}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Stack transition="ease-in" direction="column" spacing={0}>
+                    <Text fontFamily="Oswald" fontSize="2xl">
+                      {source.nombre}
+                    </Text>
 
-                  <Text fontFamily="Montserrat Medium">
-                    {parse(source.descripcion)}
-                  </Text>
-                  <Stack direction="row">
-                    <Heading color="gray" as="h6" size="xs">
-                      Catalogado en:
-                    </Heading>
-                    <Badge color={colors.green[700]}>
-                      {source.subCategoria}
-                    </Badge>
+                    <Text fontFamily="Montserrat Medium">
+                      {parse(source.descripcion)}
+                    </Text>
+                    <Stack direction="row">
+                      <Heading color="gray" as="h6" size="xs">
+                        Catalogado en:
+                      </Heading>
+                      <Badge color={colors.green[700]}>
+                        {source.subCategoria}
+                      </Badge>
+                    </Stack>
                   </Stack>
-                </Stack>
-                {source.archivos === "" ? null : (
-                  <Link
-                    size="xl"
-                    download
-                    borderRadius={8}
-                    href={source.url}
-                    padding={4}
-                    bgColor="#ccc"
-                    minW={150}
-                    textAlign="center"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    fontFamily="Montserrat Medium"
-                    _hover={{ bgColor: "green.700", color: "white" }}
-                  >
-                    Descargar
-                    <DownloadIcon ml={2} />
-                  </Link>
-                )}
-              </HStack>
-            ))}
+                  {source.archivos === "" ? null : (
+                    <Link
+                      size="xl"
+                      download
+                      borderRadius={8}
+                      href={source.url}
+                      padding={4}
+                      bgColor="#ccc"
+                      minW={150}
+                      textAlign="center"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      fontFamily="Montserrat Medium"
+                      _hover={{ bgColor: "green.700", color: "white" }}
+                    >
+                      Descargar
+                      <DownloadIcon ml={2} />
+                    </Link>
+                  )}
+                </HStack>
+              )
+            )}
           </Stack>
         </Stack>
       </Stack>

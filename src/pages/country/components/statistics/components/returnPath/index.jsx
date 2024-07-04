@@ -8,9 +8,8 @@ import { Box, Stack, Text, Image } from "@chakra-ui/react";
 // ASSETS
 import Airplane from "../../../../../../assets/airplane.png";
 import Bus from "../../../../../../assets/bus.png";
-import {
-  GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE,
-} from "../../../../../../utils/query/returned";
+import Ship from "../../../../../../assets/ship.png";
+import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 
 const ReturnPath = ({ period, year, country }) => {
@@ -27,6 +26,7 @@ const ReturnPath = ({ period, year, country }) => {
 
   let totalAerea = 0;
   let totalTerrestre = 0;
+  let totalMaritimo = 0;
 
   rdata?.forEach((report) => {
     report.attributes?.returned?.data?.attributes?.return_route_contributions?.data?.forEach(
@@ -34,10 +34,15 @@ const ReturnPath = ({ period, year, country }) => {
         const returnRoute =
           routeContribution.attributes?.return_route?.data?.attributes?.name?.toLowerCase();
 
-        if (returnRoute.startsWith("aérea")) {
+        if (
+          returnRoute.startsWith("aérea") ||
+          returnRoute.startsWith("aéreo")
+        ) {
           totalAerea += routeContribution.attributes?.cant || 0;
         } else if (returnRoute.startsWith("terrestre")) {
           totalTerrestre += routeContribution.attributes?.cant || 0;
+        } else if (returnRoute.startsWith("marítimo")) {
+          totalMaritimo += routeContribution.attributes?.cant || 0;
         }
       }
     );
@@ -87,10 +92,33 @@ const ReturnPath = ({ period, year, country }) => {
             justifyContent="center"
           >
             <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
-              Terrestre
+              Marítimo
             </Text>
             <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
               {totalTerrestre}
+            </Text>
+          </Stack>
+        </Stack>
+
+        <Stack
+          gap="24px"
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Image src={Ship} height="50px" />
+
+          <Stack
+            spacing="8px"
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+              Marítimo
+            </Text>
+            <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+              {totalMaritimo}
             </Text>
           </Stack>
         </Stack>

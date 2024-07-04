@@ -169,6 +169,7 @@ export const GET_RECURSOS = gql`
           link
           description
           esExterno
+          privado
           countries {
             data {
               attributes {
