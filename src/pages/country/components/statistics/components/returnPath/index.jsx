@@ -92,7 +92,7 @@ const ReturnPath = ({ period, year, country }) => {
             justifyContent="center"
           >
             <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
-              Marítimo
+              Terrestre
             </Text>
             <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
               {totalTerrestre}
