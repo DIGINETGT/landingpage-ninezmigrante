@@ -54,14 +54,14 @@ const DnDDepartment = ({ country = "guatemala" }) => {
 
   const dataBordersCapital = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
-    year,
+    year: currentYear,
     period,
     country: countryID,
   });
 
   const databorders = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
-    year,
+    year: currentYear,
     period,
     country: countryID,
   });
