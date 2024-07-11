@@ -80,7 +80,7 @@ const MobileNavbar = () => {
                 </Stack>
               </Link>
 
-              <Link to="/country/hn">
+              <Link to="/country/sv">
                 <Stack direction="row" alignItems="center">
                   <Icon as={ChevronRightIcon} color="gray.600" />
                   <Text fontFamily="Montserrat Medium" color="gray.600">
@@ -112,6 +112,15 @@ const MobileNavbar = () => {
                   <Icon as={ChevronRightIcon} color="gray.600" />
                   <Text fontFamily="Montserrat Medium" color="gray.600">
                     Detenidos en fronteras
+                  </Text>
+                </Stack>
+              </Link>
+
+              <Link to="/transit">
+                <Stack direction="row" alignItems="center">
+                  <Icon as={ChevronRightIcon} color="gray.600" />
+                  <Text fontFamily="Montserrat Medium" color="gray.600">
+                    Niñez en tránsito
                   </Text>
                 </Stack>
               </Link>
