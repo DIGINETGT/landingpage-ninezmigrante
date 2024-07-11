@@ -12,15 +12,15 @@ import { GET_RETURNEDS_BY_COUNTRY_FOR_GENDER } from "../../../../../../utils/que
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 import { useParams } from "react-router-dom";
 
-const Gender = ({ period, year, country, defData }) => {
+const Gender = ({ period, year, skip, country, defData }) => {
   const { countryID: id } = useParams();
   const countryId = country || id;
 
   const data = useReturnedFilteredQuery({
+    skip,
     year,
     period,
     country,
-    skip: !!defData?.male,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryId),
   });
 

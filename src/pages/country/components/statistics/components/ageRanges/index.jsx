@@ -30,6 +30,7 @@ const AgeRanges = ({
   period,
   year,
   country,
+  skip,
   disableFirstAge = false,
   defData,
 }) => {
@@ -53,7 +54,7 @@ const AgeRanges = ({
   const rdata = useReturnedFilteredQuery({
     year,
     period,
-    skip: !!defData?.f1,
+    skip,
     country,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryId),
   });

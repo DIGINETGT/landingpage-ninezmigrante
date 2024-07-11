@@ -249,6 +249,7 @@ const Statistics = () => {
               >
                 {/* GENDER COMPONENT */}
                 <Gender
+                  skip
                   period={period}
                   year={currentYear}
                   defData={{
@@ -259,6 +260,7 @@ const Statistics = () => {
 
                 {/* AGE RANGES COMPONENT */}
                 <AgeRanges
+                  skip
                   year={currentYear}
                   period={period}
                   defData={{
@@ -294,6 +296,7 @@ const Statistics = () => {
                 direction={{ base: "column", md: "row" }}
               >
                 <ReturnCountry
+                  skip
                   data={countryContributions}
                   dataMaps={dataMaps}
                 />
