@@ -1,7 +1,9 @@
 import { capitalizeText } from "../tools";
 
 export const getFilterByCountry = (country) =>
-  `filters: {
+  `
+  pagination: { page: 1, pageSize: 10000000 },
+  filters: {
     users_permissions_user: {
         organization: {
             department: { 
