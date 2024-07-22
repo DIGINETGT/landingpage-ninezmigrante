@@ -1,9 +1,15 @@
 import { gql } from "@apollo/client";
 import { getFilterByCountry } from "./filters";
 
-export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = (country) => gql`
+import { year as currentYear } from "../year";
+
+export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = (
+  country,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-  detainedInBordersReports(${getFilterByCountry(country)}) {
+  detainedInBordersReports(${getFilterByCountry(country, period, year, 'reportDate')}) {
     data {
       id
       attributes {
@@ -69,9 +75,13 @@ export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = (country) => gql`
 }
 `;
 
-export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (country) => gql`
+export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (
+  country,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-    detainedInBordersReports(${getFilterByCountry(country)}) {
+    detainedInBordersReports(${getFilterByCountry(country, period, year, 'reportDate')}) {
       data {
         id
         attributes {

@@ -1,9 +1,15 @@
 import { gql } from "@apollo/client";
 import { getFilterByCountry } from "./filters";
 
-export const GET_TRANSIT_REPORT = (countryId) => gql`
+import { year as currentYear } from "../year";
+
+export const GET_TRANSIT_REPORT = (
+  countryId,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-    transitReports(${getFilterByCountry(countryId)}) {
+    transitReports(${getFilterByCountry(countryId, period, year, 'reportDate')}) {
       data {
         attributes {
           reportDate
@@ -76,9 +82,13 @@ export const GET_TRANSIT_REPORT = (countryId) => gql`
   }
 `;
 
-export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (countryId) => gql`
+export const GET_TRANSIT_REPORT_ENTRY_BORDERS = (
+  countryId,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-    transitReports(${getFilterByCountry(countryId)}) {
+    transitReports(${getFilterByCountry(countryId, period, year, 'reportDate')}) {
       data {
         attributes {
           reportDate

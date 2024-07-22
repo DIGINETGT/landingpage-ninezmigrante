@@ -1,6 +1,8 @@
 import { gql } from "@apollo/client";
 import { getFilterByCountry } from "./filters";
 
+import { year as currentYear } from "../year";
+
 export const GET_RETURNEDS = gql`
   query {
     monthlyReports {
@@ -95,9 +97,13 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
 query {
-  monthlyReports(${getFilterByCountry(country)}) {
+  monthlyReports(${getFilterByCountry(country, period, year)}) {
     data {
       attributes {
         reportMonth
@@ -147,9 +153,13 @@ query {
 }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
           reportMonth
@@ -221,9 +231,13 @@ export const GET_RETURNEDS_BY_COUNTRY = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
           reportMonth
@@ -286,9 +300,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
           reportMonth
@@ -351,9 +369,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = (
+  country,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
           reportMonth
@@ -417,9 +439,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = (
+  country,
+  period = [1, 12], 
+  year = currentYear
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
           reportMonth
@@ -482,9 +508,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)})  {
+    monthlyReports(${getFilterByCountry(country, period, year)})  {
       data {
         attributes {
           reportMonth
@@ -547,9 +577,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (country) => gql`
   }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (
+  country,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
     data {
       id
       attributes {
@@ -634,9 +668,13 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (country) => gql`
 }
 `;
 
-export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL = (country) => gql`
+export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL = (
+  country,
+  period = [1, 12],
+  year = currentYear,
+) => gql`
   query {
-  monthlyReports(${getFilterByCountry(country)}) {
+  monthlyReports(${getFilterByCountry(country, period, year)}) {
     data {
       id  
       attributes {
