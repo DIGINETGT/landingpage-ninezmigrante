@@ -15,7 +15,7 @@ const TotalReturns = () => {
   const dataGt = useReturnedFilteredQuery({
     year,
     period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("gt"),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("gt", [1, 12], year),
   });
   let gt = 0;
 
@@ -26,7 +26,7 @@ const TotalReturns = () => {
   const dataHn = useReturnedFilteredQuery({
     year,
     period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("hn"),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("hn", [1, 12], year),
   });
   let hn = 0;
 
@@ -37,7 +37,7 @@ const TotalReturns = () => {
   const dataSv = useReturnedFilteredQuery({
     year,
     period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("sv"),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("sv", [1, 12], year),
   });
   let sv = 0;
 

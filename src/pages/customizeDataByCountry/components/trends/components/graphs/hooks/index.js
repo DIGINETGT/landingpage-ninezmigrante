@@ -103,20 +103,21 @@ const useGraphData = (period, graphType, chartType, countryID) => {
 
   useEffect(() => {
     if (period.length && graphType.length && chartType.length) {
-      const selectedQuery = {
-        via: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryID),
-        condition: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryID),
-        return: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryID),
-        gender: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryID),
-        age: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryID),
-      }[graphType];
+   
 
       // PETICIONES
       const requests = localData.map(async (label) => {
+        const selectedQuery = {
+          via: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryID, label.ranges, label?.year),
+          condition: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryID, label.ranges, label?.year),
+          return: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryID, label.ranges, label?.year),
+          gender: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryID, label.ranges, label?.year),
+          age: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryID, label.ranges, label?.year),
+        }[graphType];
+        
         let totals = { total1: 0, total2: 0, total3: 0, total4: 0 };
         const { data: queryData } = await apolloClient.query({
           query: selectedQuery,
-          variables: {},
         });
 
         const filteredData = queryData?.monthlyReports?.data?.filter(

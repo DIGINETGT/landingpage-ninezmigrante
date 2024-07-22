@@ -20,7 +20,7 @@ import { useQuery } from "@apollo/client";
 
 const Statistics = ({ data, setUpdateDate, id, setFiles }) => {
   const { data: dataReturned } = useQuery(
-    GET_RETURNEDS_BY_COUNTRY(data?.country ?? "")
+    GET_RETURNEDS_BY_COUNTRY(data?.country ?? "", data?.period, data?.year)
   );
 
   const returneds = dataReturned?.monthlyReports?.data?.filter((report) => {

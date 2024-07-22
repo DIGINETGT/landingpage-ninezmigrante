@@ -21,7 +21,7 @@ const Gender = ({ period, year, skip, country, defData }) => {
     year,
     period,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryId),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryId, period, year),
   });
 
   let tfemale = defData?.female ?? 0;

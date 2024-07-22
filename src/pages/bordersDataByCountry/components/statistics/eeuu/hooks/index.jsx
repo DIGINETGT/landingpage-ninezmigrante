@@ -34,7 +34,7 @@ export const useDetainedEEUU = ({ period, currentYear }) => {
   const { countryID } = useParams();
 
   const { data: dataBorder } = useQuery(
-    GET_DETAINED_US_BORDERDS_BY_COUNTRY(countryID)
+    GET_DETAINED_US_BORDERDS_BY_COUNTRY(countryID, period, currentYear)
   );
 
   const bordersData = dataBorder?.detainedInBordersReports?.data;

@@ -53,7 +53,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   };
 
   const databordersCapital = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID, period, year),
     country: countryID,
     year,
     period,
@@ -81,7 +81,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
   });
 
   const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID, period, year),
     country: countryID,
     year,
     period,

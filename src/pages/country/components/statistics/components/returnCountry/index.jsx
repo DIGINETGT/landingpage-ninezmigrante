@@ -17,6 +17,7 @@ import { colors } from "../../../../../../utils/theme";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY } from "../../../../../../utils/query/returned";
 
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
+import { getFilterByCountry } from "../../../../../../utils/query/filters";
 
 const countryImages = {
   ["Estados Unidos"]: { Image: EEUU },
@@ -35,7 +36,7 @@ const ReturnCountry = ({ period, year, country }) => {
     period,
     country,
     skip: false,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryId),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY(countryId, period, year),
   });
 
   const dataPerCountry = {};

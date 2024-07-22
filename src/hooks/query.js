@@ -16,7 +16,7 @@ const useReturnedFilteredQuery = ({
 
   const { countryID: id } = useParams();
   const countryID = country || id;
-  const defQuery = query || GET_RETURNEDS_BY_COUNTRY(countryID);
+  const defQuery = query || GET_RETURNEDS_BY_COUNTRY(countryID, period, year);
 
   const { data } = useQuery(defQuery);
 
@@ -65,7 +65,7 @@ export const useTransitFilteredQuery = ({
 
   const { countryID: id } = useParams();
   const countryID = country || id;
-  const defQuery = query ?? GET_RETURNEDS_BY_COUNTRY(countryID);
+  const defQuery = query ?? GET_RETURNEDS_BY_COUNTRY(countryID, period, year);
   const { data } = useQuery(defQuery);
 
   const filteredData =

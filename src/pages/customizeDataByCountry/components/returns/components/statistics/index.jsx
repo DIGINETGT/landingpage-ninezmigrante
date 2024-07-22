@@ -37,7 +37,7 @@ const Statistics = ({ returns }) => {
   const containerRef = useRef(null);
 
   const dataBordersCapital = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID, period, year),
     year,
     period,
     country: countryID,

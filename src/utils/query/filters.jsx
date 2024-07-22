@@ -12,7 +12,7 @@ export const getFilterByCountry = (
   filters: {
     ${customKey}: {
         gte: "${year}-${period[0] < 10 ? `0${period[0]}` : period[0]}-01",
-        lte: "${year}-${period[1] < 10 ? `0${period[1]}` : period[1]}-31"
+        lte: "${year}-${period[1] < 10 ? `0${period[1]}` : period[1]}-28"
     },
     users_permissions_user: {
         organization: {

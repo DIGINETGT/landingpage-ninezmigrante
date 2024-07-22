@@ -56,7 +56,7 @@ const AgeRanges = ({
     period,
     skip,
     country,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryId),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryId, period, year),
   });
 
   let totalAdolescencia = defData?.f3 ?? 0;

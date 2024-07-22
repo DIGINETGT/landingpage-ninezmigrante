@@ -31,7 +31,7 @@ const TravelCondition = ({ period, year, country, defData }) => {
     period,
     country,
     skip: !!defData?.acd,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryId),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryId, period, year),
   });
 
   let ACD = defData?.acd ?? 0;

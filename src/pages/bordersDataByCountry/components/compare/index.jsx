@@ -55,7 +55,7 @@ const Compare = () => {
     filesRef,
     year: currentYear,
     period: currentPeriod,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID, currentPeriod, currentYear),
   });
   let totalCant = 0;
 

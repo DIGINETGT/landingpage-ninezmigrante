@@ -21,7 +21,7 @@ const ReturnPath = ({ period, year, country }) => {
     period,
     country,
     skip: false,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryId),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE(countryId, year, period),
   });
 
   let totalAerea = 0;
