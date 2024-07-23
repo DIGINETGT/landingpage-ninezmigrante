@@ -43,6 +43,7 @@ import {
   GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
 } from "../../../../../../utils/query/returned";
 import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
+import { getFilterByCountry } from "../../../../../../utils/query/filters";
 
 const DnDDepartment = ({ country = "guatemala" }) => {
   // PROPS DE DEPARTAMENTOS
@@ -53,14 +54,22 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [windowWidth, setWindowWidth] = useState();
 
   const dataBordersCapital = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID, period, year),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
+      countryID,
+      period,
+      currentYear
+    ),
     year: currentYear,
     period,
     country: countryID,
   });
 
   const databorders = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID, period, year),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(
+      countryID,
+      period,
+      currentYear
+    ),
     year: currentYear,
     period,
     country: countryID,
