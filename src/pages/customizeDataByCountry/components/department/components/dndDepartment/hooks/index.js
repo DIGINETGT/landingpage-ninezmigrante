@@ -12,6 +12,8 @@ export const usePeriodReload = ({
   depData,
   depDataCapital,
   setDepDataList,
+  databordersLength,
+  depDataCapitalLength,
   currentYear,
 }) => {
   const depIds = depDataList.map((dep) => dep?.id);
@@ -32,5 +34,14 @@ export const usePeriodReload = ({
         });
       }
     });
-  }, [depIds[0], depIds[1], depIds[2], period[0], period[1], currentYear]);
+  }, [
+    depIds[0],
+    depIds[1],
+    depIds[2],
+    period[0],
+    period[1],
+    currentYear,
+    databordersLength,
+    depDataCapitalLength,
+  ]);
 };

@@ -23,6 +23,7 @@ import countryDeps from "./utils";
 import ModalContentGT from "../../../../../../components/departments/components/gt";
 import ModalContentHN from "../../../../../../components/departments/components/hn";
 import ModalContentSV from "../../../../../../components/departments/components/sv";
+import Loader from "../../../../../../components/loader";
 
 // CHACKRA
 import { Select, Text, Stack, Box } from "@chakra-ui/react";
@@ -53,7 +54,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [currentYear, setYear] = useState(year);
   const [windowWidth, setWindowWidth] = useState();
 
-  const { data: dataBordersCapital } = useReturnedFilteredQuery({
+  const { data: dataBordersCapital, loading } = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
       countryID,
       period,
@@ -109,6 +110,9 @@ const DnDDepartment = ({ country = "guatemala" }) => {
     });
 
   // HOOKS
+  const dataBordersCapitalLength = databorders.length 
+  const databordersLength = databorders.length
+
   usePeriodReload({
     period,
     countryID,
@@ -116,6 +120,8 @@ const DnDDepartment = ({ country = "guatemala" }) => {
     depData,
     depDataList,
     setDepDataList,
+    databordersLength,
+    dataBordersCapitalLength,
     depDataCapital,
     currentYear,
   });
@@ -310,7 +316,13 @@ const DnDDepartment = ({ country = "guatemala" }) => {
           </Stack>
 
           {/* SECCION 1 */}
-          <Stack direction={{ base: "column", md: "row" }} spacing={0} mb={8}>
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            position="relative"
+            spacing={0}
+            mb={8}
+          >
+        
             <Droppable droppableId="droppableData1">
               {(provided, snapshot) => {
                 const item = depDataList[0];
@@ -383,6 +395,8 @@ const DnDDepartment = ({ country = "guatemala" }) => {
                 );
               }}
             </Droppable>
+
+            <Loader loading={loading} />
           </Stack>
 
           {/* SOURCES */}
