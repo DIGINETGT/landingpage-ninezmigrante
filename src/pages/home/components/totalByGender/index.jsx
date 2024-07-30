@@ -14,13 +14,9 @@ import { useQuery } from "@apollo/client";
 import { GET_RETURNEDS_BY_GENDER } from "../../../../utils/query/returned";
 
 const TotalByGender = () => {
-  const { data } = useQuery(GET_RETURNEDS_BY_GENDER);
+  const { data } = useQuery(GET_RETURNEDS_BY_GENDER("GT", [1, 12], year));
 
-  const returneds = data?.monthlyReports?.data?.filter(
-    (report) =>
-      report?.attributes?.reportMonth?.split("-")?.[0]?.toString() ===
-      year.toString()
-  );
+  const returneds = data?.monthlyReports?.data ?? [];
 
   let female = 0;
   returneds?.forEach((returned) =>
@@ -47,7 +43,6 @@ const TotalByGender = () => {
       }
     )
   );
-
 
   return (
     <Box width="100%">

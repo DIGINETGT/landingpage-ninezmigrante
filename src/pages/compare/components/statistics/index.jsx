@@ -9,17 +9,14 @@ import ReturnPath from "../../../country/components/statistics/components/return
 import ReturnCountry from "../../../country/components/statistics/components/returnCountry";
 import HeatMap from "../../../country/components/statistics/components/heatMap";
 
-import {
-  GET_RETURNEDS,
-  GET_RETURNEDS_BY_COUNTRY,
-} from "../../../../utils/query/returned";
+import { GET_RETURNEDS_BY_COUNTRY } from "../../../../utils/query/returned";
 
 import { monthNames } from "../../../../hooks/fetch";
 import { dateToString, isMonthInRange } from "../../../../utils/tools";
 import { useQuery } from "@apollo/client";
 
 const Statistics = ({ data, setUpdateDate, id, setFiles }) => {
-  const { data: dataReturned } = useQuery(
+  const { data: dataReturned, loading } = useQuery(
     GET_RETURNEDS_BY_COUNTRY(data?.country ?? "", data?.period, data?.year)
   );
 
@@ -113,12 +110,37 @@ const Statistics = ({ data, setUpdateDate, id, setFiles }) => {
         </Text>
       </Stack>
 
-      <Gender {...data} />
-      <TravelCondition {...data} />
-      <AgeRanges {...data} />
-      <ReturnPath {...data} />
-      <ReturnCountry {...data} />
-      <HeatMap {...data} />
+      {loading && (
+        <Stack
+          gap="40px"
+          width="100%"
+          margin="auto"
+          maxWidth="800px"
+          justifyContent="space-between"
+          direction={{ base: "column", md: "row" }}
+          alignItems={{ base: "center", md: "flex-start" }}
+        >
+          <Text
+            width="100%"
+            fontSize="3xl"
+            fontWeight="bold"
+            textAlign="center"
+          >
+            Generando gráficas ...
+          </Text>
+        </Stack>
+      )}
+
+      {!loading && (
+        <>
+          <Gender {...data} />
+          <TravelCondition {...data} />
+          <AgeRanges {...data} />
+          <ReturnPath {...data} />
+          <ReturnCountry {...data} />
+          <HeatMap {...data} />
+        </>
+      )}
     </Stack>
   );
 };

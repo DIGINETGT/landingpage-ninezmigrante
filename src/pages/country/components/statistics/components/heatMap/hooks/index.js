@@ -52,8 +52,12 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     });
   };
 
-  const databordersCapital = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(countryID, period, year),
+  const { data: databordersCapital } = useReturnedFilteredQuery({
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
+      countryID,
+      period,
+      year
+    ),
     country: countryID,
     year,
     period,
@@ -80,7 +84,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     );
   });
 
-  const databorders = useReturnedFilteredQuery({
+  const { data: databorders } = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID, period, year),
     country: countryID,
     year,
@@ -125,6 +129,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     );
   });
 
+  const depLength = Object.keys(depTotals).length;
   useEffect(() => {
     const filteredData = Object.entries(depTotals ?? {}).map(
       ([dep, total]) => ({
@@ -146,7 +151,7 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
     });
 
     setColorScales(scales);
-  }, [countryID, period, year]);
+  }, [countryID, period, depLength, year]);
 
   return {
     depTotals,

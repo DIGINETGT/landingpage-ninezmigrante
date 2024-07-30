@@ -15,8 +15,8 @@ import { GET_TRANSIT_REPORTS } from "../../../../utils/query/returned";
 import { useQuery } from "@apollo/client";
 
 const TotalTransit = () => {
-  const { data } = useQuery(GET_TRANSIT_REPORTS);
-
+  const { data } = useQuery(GET_TRANSIT_REPORTS("GT", [1, 12], year));
+  console.log('transit', data);
   let totalCant = 0;
   data?.transitReports?.data.forEach((report) => {
     report.attributes?.gender_contributions?.data.forEach((contribution) => {

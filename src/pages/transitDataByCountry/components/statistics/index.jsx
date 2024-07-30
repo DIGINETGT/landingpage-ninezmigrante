@@ -42,13 +42,13 @@ const Statistics = () => {
   const satisticsRef = useRef(null);
   let files = [];
 
-  const data = useTransitFilteredQuery({
+  const { data } = useTransitFilteredQuery({
     period,
     query: GET_TRANSIT_REPORT(countryID, period, currentYear),
     year: currentYear,
   });
 
-  const dataEntry = useTransitFilteredQuery({
+  const { data: dataEntry } = useTransitFilteredQuery({
     period,
     query: GET_TRANSIT_REPORT_ENTRY_BORDERS(countryID, period, currentYear),
     year: currentYear,

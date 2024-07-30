@@ -14,6 +14,7 @@ import MonthPicker from "../../../../../components/monthPicker";
 import { useDetainedEEUU } from "./hooks";
 import { monthNames } from "../../../../../hooks/fetch";
 import DownloadTable from "../../../../country/components/statistics/components/downloadTable";
+import Loader from "../../../../../components/loader";
 
 const EEUU = () => {
   const [currentYear, setCurrentYear] = useState("");
@@ -27,10 +28,11 @@ const EEUU = () => {
   };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { dataPerDeps, dataPerMonth, updateDate, files } = useDetainedEEUU({
-    period,
-    currentYear,
-  });
+  const { dataPerDeps, dataPerMonth, updateDate, files, loading } =
+    useDetainedEEUU({
+      period,
+      currentYear,
+    });
 
   const sources = (
     <Stack
@@ -111,62 +113,71 @@ const EEUU = () => {
             padding="40px 24px"
             borderRadius="12px"
             alignItems="center"
+            position='relative'
             justifyContent="space-between"
             direction={{ base: "column", md: "row" }}
           >
+
+
             {/* COUNTRY MAP */}
             <Stack>
               <Image src={MapaEEUU} maxWidth="240px" />
             </Stack>
 
             {/* TOTAL MONTH DATA */}
-            <Stack>
-              <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                {`Total ${
-                  period?.[0] ? monthNames?.[period[0]] + " - " ?? "" : ""
-                } ${monthNames[period[1]] ?? ""}`}
-              </Text>
-              <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
-                {currentYear ?? ""}
-              </Text>
-              <Text fontFamily="Oswald" fontSize="6xl" lineHeight="1">
-                {dataPerMonth?.totalMes ?? "N/D"}
-              </Text>
-            </Stack>
 
-            {/* DATA BY BORDERS */}
-            <Stack direction="row" spacing={7}>
-              {Object.entries(dataPerDeps ?? {}).map(([key, value]) => {
-                return (
-                  <Stack>
-                    <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
-                      {key === "noacm" ? "No Acompañados" : "Acompañados"}
-                    </Text>
+            <>
 
-                    {Object.entries(value ?? {}).map(([key2, value2]) => {
-                      return (
-                        <Stack direction="row">
-                          <Text
-                            fontFamily="Montserrat Medium"
-                            fontSize="xl"
-                            fontWeight={
-                              key2.toLowerCase().includes("total")
-                                ? "bold"
-                                : "normal"
-                            }
-                          >
-                            {key2}:
-                          </Text>
-                          <Text fontFamily="Montserrat Medium" fontSize="xl">
-                            {value2}
-                          </Text>
-                        </Stack>
-                      );
-                    })}
-                  </Stack>
-                );
-              })}
-            </Stack>
+              <Stack>
+                <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+                  {`Total ${
+                    period?.[0] ? monthNames?.[period[0]] + " - " ?? "" : ""
+                  } ${monthNames[period[1]] ?? ""}`}
+                </Text>
+                <Text fontFamily="Oswald" fontSize="3xl" lineHeight="1">
+                  {currentYear ?? ""}
+                </Text>
+                <Text fontFamily="Oswald" fontSize="6xl" lineHeight="1">
+                  {dataPerMonth?.totalMes ?? "N/D"}
+                </Text>
+              </Stack>
+
+              {/* DATA BY BORDERS */}
+              <Stack direction="row" spacing={7} position="relative">
+                {Object.entries(dataPerDeps ?? {}).map(([key, value]) => {
+                  return (
+                    <Stack>
+                      <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
+                        {key === "noacm" ? "No Acompañados" : "Acompañados"}
+                      </Text>
+
+                      {Object.entries(value ?? {}).map(([key2, value2]) => {
+                        return (
+                          <Stack direction="row">
+                            <Text
+                              fontFamily="Montserrat Medium"
+                              fontSize="xl"
+                              fontWeight={
+                                key2.toLowerCase().includes("total")
+                                  ? "bold"
+                                  : "normal"
+                              }
+                            >
+                              {key2}:
+                            </Text>
+                            <Text fontFamily="Montserrat Medium" fontSize="xl">
+                              {value2}
+                            </Text>
+                          </Stack>
+                        );
+                      })}
+                    </Stack>
+                  );
+                })}
+              </Stack>
+
+              <Loader loading={loading} />
+            </>
           </Stack>
 
           {/* SOURCES */}

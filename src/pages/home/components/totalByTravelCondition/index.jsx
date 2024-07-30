@@ -13,7 +13,7 @@ import { GET_RETURNEDS_BY_TRAVEL_CONDITION } from "../../../../utils/query/retur
 import { useQuery } from "@apollo/client";
 
 const TotalByTravelCondition = () => {
-  const { data } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION);
+  const { data } = useQuery(GET_RETURNEDS_BY_TRAVEL_CONDITION('GT', [1, 12], year));
 
   const returneds = data?.monthlyReports?.data?.filter(
     (report) =>

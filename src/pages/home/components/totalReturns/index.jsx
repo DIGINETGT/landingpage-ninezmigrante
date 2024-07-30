@@ -12,7 +12,7 @@ import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/retu
 import useReturnedFilteredQuery from "../../../../hooks/query";
 
 const TotalReturns = () => {
-  const dataGt = useReturnedFilteredQuery({
+  const { data: dataGt } = useReturnedFilteredQuery({
     year,
     period: [1, 12],
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("gt", [1, 12], year),
@@ -23,7 +23,7 @@ const TotalReturns = () => {
     gt += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
-  const dataHn = useReturnedFilteredQuery({
+  const { data: dataHn } = useReturnedFilteredQuery({
     year,
     period: [1, 12],
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("hn", [1, 12], year),
@@ -34,7 +34,7 @@ const TotalReturns = () => {
     hn += report.attributes?.returned?.data?.attributes?.total || 0;
   });
 
-  const dataSv = useReturnedFilteredQuery({
+  const { data: dataSv } = useReturnedFilteredQuery({
     year,
     period: [1, 12],
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL("sv", [1, 12], year),

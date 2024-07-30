@@ -16,6 +16,7 @@ import { colors } from "../../../../../../utils/theme";
 import { Box, Grid, Stack, Text } from "@chakra-ui/react";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
+import Loader from "../../../../../../components/loader";
 
 export const options = {
   responsive: true,
@@ -32,6 +33,7 @@ const AgeRanges = ({
   country,
   skip,
   disableFirstAge = false,
+  loading: load,
   defData,
 }) => {
   const { countryID: id } = useParams();
@@ -51,13 +53,15 @@ const AgeRanges = ({
     "No registrado",
   ];
 
-  const rdata = useReturnedFilteredQuery({
+  const { data: rdata, loading: loadingQuery } = useReturnedFilteredQuery({
     year,
     period,
     skip,
-    country,
+    country: countryId,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP(countryId, period, year),
   });
+
+  const loading = load ?? loadingQuery;
 
   let totalAdolescencia = defData?.f3 ?? 0;
   let totalNinez = defData?.f2 ?? 0;
@@ -113,7 +117,9 @@ const AgeRanges = ({
   };
 
   return (
-    <Box width="100%">
+    <Box width="100%" position="relative">
+      <Loader loading={loading} />
+
       <Stack justifyContent="center" alignItems="center">
         <Text fontFamily="Oswald" fontSize="2xl">
           Rangos etarios

@@ -15,7 +15,7 @@ import { GET_DETAINED_IN_BORDERDS } from '../../../../utils/query/returned';
 import { useQuery } from '@apollo/client';
 
 const TotalBorders = () => {
-  const { data } = useQuery(GET_DETAINED_IN_BORDERDS);
+  const { data } = useQuery(GET_DETAINED_IN_BORDERDS('GT', [1, 12], year));
 
   let totalDetainedInMexicoBorders = 0;
   let totalDetainedInUSBorders = 0;

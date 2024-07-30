@@ -33,7 +33,7 @@ const countyMapping = {
 export const useDetainedEEUU = ({ period, currentYear }) => {
   const { countryID } = useParams();
 
-  const { data: dataBorder } = useQuery(
+  const { data: dataBorder, loading } = useQuery(
     GET_DETAINED_US_BORDERDS_BY_COUNTRY(countryID, period, currentYear)
   );
 
@@ -58,21 +58,7 @@ export const useDetainedEEUU = ({ period, currentYear }) => {
       });
     });
 
-    const filteredData =
-      element.attributes?.detained_us_borders?.data?.filter((report) => {
-        const [reportYear, reportMonth] = report?.attributes?.month
-          ?.split("-")
-          .map(Number);
-
-        if (
-          !isMonthInRange(reportMonth, period) ||
-          reportYear?.toString() !== currentYear?.toString()
-        ) {
-          return false;
-        }
-
-        return true;
-      }) ?? [];
+    const filteredData = element.attributes?.detained_us_borders?.data ?? [];
 
     updateDate = dateToString(
       new Date(element?.attributes?.updatedAt?.toString() ?? 0)
@@ -115,5 +101,5 @@ export const useDetainedEEUU = ({ period, currentYear }) => {
     dataPerMonth.totalMes += total;
   });
 
-  return { dataPerMonth, dataPerDeps, updateDate, files };
+  return { dataPerMonth, dataPerDeps, loading, updateDate, files };
 };

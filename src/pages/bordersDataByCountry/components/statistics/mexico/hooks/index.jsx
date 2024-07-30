@@ -7,7 +7,7 @@ import { monthNames } from "../../../../../../hooks/fetch";
 export const useDetainedMexico = ({ period, currentYear }) => {
   const { countryID } = useParams();
 
-  const { data: dataBorder } = useQuery(
+  const { data: dataBorder, loading } = useQuery(
     GET_DETAINED_IN_BORDERDS_BY_COUNTRY(countryID, period, currentYear)
   );
 
@@ -37,21 +37,7 @@ export const useDetainedMexico = ({ period, currentYear }) => {
       });
     });
 
-    const filteredData =
-      element.attributes?.detained_in_borders?.data?.filter((report) => {
-        const [reportYear, reportMonth] = report?.attributes?.month
-          ?.split("-")
-          .map(Number);
-
-        if (
-          !isMonthInRange(reportMonth, period) ||
-          reportYear?.toString() !== currentYear?.toString()
-        ) {
-          return false;
-        }
-
-        return true;
-      }) ?? [];
+    const filteredData = element.attributes?.detained_in_borders?.data ?? [];
 
     updateDate = dateToString(
       new Date(element?.attributes?.updatedAt?.toString() ?? 0)
@@ -94,5 +80,5 @@ export const useDetainedMexico = ({ period, currentYear }) => {
     dataPerMonth.totalMes += total;
   });
 
-  return { dataPerMonth, updateDate, files };
+  return { dataPerMonth, updateDate, files, loading };
 };

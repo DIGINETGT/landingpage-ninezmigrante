@@ -53,7 +53,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
   const [currentYear, setYear] = useState(year);
   const [windowWidth, setWindowWidth] = useState();
 
-  const dataBordersCapital = useReturnedFilteredQuery({
+  const { data: dataBordersCapital } = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
       countryID,
       period,
@@ -64,7 +64,7 @@ const DnDDepartment = ({ country = "guatemala" }) => {
     country: countryID,
   });
 
-  const databorders = useReturnedFilteredQuery({
+  const { data: databorders } = useReturnedFilteredQuery({
     query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(
       countryID,
       period,

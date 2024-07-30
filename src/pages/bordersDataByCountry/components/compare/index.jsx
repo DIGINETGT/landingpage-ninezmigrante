@@ -27,9 +27,10 @@ import { useDetainedMexico } from "../statistics/mexico/hooks";
 import useReturnedFilteredQuery from "../../../../hooks/query";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
 import DownloadTable from "../../../country/components/statistics/components/downloadTable";
+import Loader from "../../../../components/loader";
 
 const Compare = () => {
-  const [currentPeriod, setCurrentPeriod] = useState([0, 0]);
+  const [currentPeriod, setCurrentPeriod] = useState([]);
   const [currentYear, setCurrentYear] = useState(year);
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const { countryID } = useParams();
@@ -51,11 +52,15 @@ const Compare = () => {
   });
 
   const filesRef = useRef([]);
-  const returnedData = useReturnedFilteredQuery({
+  const { data: returnedData, loading } = useReturnedFilteredQuery({
     filesRef,
     year: currentYear,
     period: currentPeriod,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID, currentPeriod, currentYear),
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(
+      countryID,
+      currentPeriod,
+      currentYear
+    ),
   });
   let totalCant = 0;
 
@@ -139,9 +144,12 @@ const Compare = () => {
             gap="24px"
             width="100%"
             justifyContent="center"
+            position="relative"
             direction={{ base: "column", md: "row" }}
             alignItems={{ base: "center", md: "flex-end" }}
           >
+            <Loader loading={loading && currentYear && currentPeriod.length > 0} />
+
             <Stack
               maxWidth="210px"
               justifyContent="center"

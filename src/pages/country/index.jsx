@@ -10,7 +10,7 @@ import Statistics from "./components/statistics";
 
 const CountryPage = () => {
   // PERIOD
-  const [period, setPeriod] = useState([1, 1]);
+  const [period, setPeriod] = useState([]);
   const [year, setYear] = useState("");
   const satisticsRef = useRef(null);
 
@@ -29,13 +29,15 @@ const CountryPage = () => {
         period={period}
         year={year}
       />
-      <Statistics
-        satisticsRef={satisticsRef}
-        setPeriod={setPeriod}
-        setYear={setYear}
-        period={period}
-        year={year}
-      />
+      {period.length > 0 && year && (
+        <Statistics
+          satisticsRef={satisticsRef}
+          setPeriod={setPeriod}
+          setYear={setYear}
+          period={period}
+          year={year}
+        />
+      )}
     </>
   );
 };

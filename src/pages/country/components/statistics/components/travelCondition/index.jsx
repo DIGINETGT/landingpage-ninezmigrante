@@ -11,6 +11,7 @@ import { colors } from "../../../../../../utils/theme";
 
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
+import Loader from "../../../../../../components/loader";
 
 export const options = {
   responsive: true,
@@ -22,17 +23,30 @@ export const options = {
   },
 };
 
-const TravelCondition = ({ period, year, country, defData }) => {
+const TravelCondition = ({
+  period,
+  year,
+  country,
+  defData,
+  skip,
+  loading: load,
+}) => {
   const { countryID: id } = useParams();
   const countryId = country || id;
 
-  const rdata = useReturnedFilteredQuery({
+  const { data: rdata, loading: loadingQuery } = useReturnedFilteredQuery({
     year,
     period,
     country,
-    skip: !!defData?.acd,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(countryId, period, year),
+    skip,
+    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(
+      countryId,
+      period,
+      year
+    ),
   });
+
+  const loading = load ?? loadingQuery;
 
   let ACD = defData?.acd ?? 0;
   let NO_ACD = defData?.noAcd ?? 0;
@@ -72,7 +86,9 @@ const TravelCondition = ({ period, year, country, defData }) => {
   };
 
   return (
-    <Box width="100%">
+    <Box width="100%" position="relative">
+      <Loader loading={loading} />
+
       {/* TITLE */}
       <Stack justifyContent="center" alignItems="center">
         <Text fontFamily="Oswald" fontSize="2xl">

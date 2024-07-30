@@ -18,6 +18,7 @@ import { GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY } from "../../../../../../u
 
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 import { getFilterByCountry } from "../../../../../../utils/query/filters";
+import Loader from "../../../../../../components/loader";
 
 const countryImages = {
   ["Estados Unidos"]: { Image: EEUU },
@@ -31,7 +32,7 @@ const ReturnCountry = ({ period, year, country }) => {
   const { countryID: id } = useParams();
   const countryId = country || id;
 
-  const rdata = useReturnedFilteredQuery({
+  const { data: rdata, loading } = useReturnedFilteredQuery({
     year,
     period,
     country,
@@ -59,7 +60,9 @@ const ReturnCountry = ({ period, year, country }) => {
   });
 
   return (
-    <Box width="100%">
+    <Box width="100%" position="relative">
+      <Loader loading={loading} />
+
       <Stack justifyContent="center" alignItems="center" marginBottom="24px">
         <Text fontFamily="Oswald" fontSize="2xl">
           País de retorno

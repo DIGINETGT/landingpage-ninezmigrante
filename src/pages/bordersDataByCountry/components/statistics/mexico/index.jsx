@@ -35,7 +35,7 @@ const Mexico = () => {
   };
   const handleYear = (ev) => setCurrentYear(ev.target.value);
 
-  const { dataPerMonth, updateDate, files } = useDetainedMexico({
+  const { dataPerMonth, updateDate, files, loading } = useDetainedMexico({
     period,
     currentYear,
   });
@@ -112,6 +112,7 @@ const Mexico = () => {
         </Stack>
 
         {/* STATISTICS */}
+
         <Box ref={containerRef} padding="40px">
           <Stack
             gap="40px"
@@ -155,6 +156,8 @@ const Mexico = () => {
                 <Gender
                   period={"enero - abril"}
                   year={"2020"}
+                  skip
+                  loading={loading}
                   defData={{
                     female: dataPerMonth?.female,
                     male: dataPerMonth?.male,
@@ -165,6 +168,8 @@ const Mexico = () => {
                 <TravelCondition
                   period={"enero - abril"}
                   year={"2020"}
+                  skip
+                  loading={loading}
                   defData={{
                     acd: dataPerMonth?.acd,
                     noAcd: dataPerMonth?.noAcd,
@@ -175,6 +180,8 @@ const Mexico = () => {
                 <AgeRanges
                   disableFirstAge
                   year={"2020"}
+                  skip
+                  loading={loading}
                   period={"enero - abril"}
                   defData={{
                     f2: dataPerMonth?.f2,

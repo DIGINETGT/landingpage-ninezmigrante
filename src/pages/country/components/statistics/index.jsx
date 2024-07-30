@@ -21,13 +21,14 @@ import getCountryContent from "../../../../utils/country";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../hooks/query";
 import { dateToString } from "../../../../utils/tools";
+import Loader from "../../../../components/loader";
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
-  const data = useReturnedFilteredQuery({
+  const { data, loading } = useReturnedFilteredQuery({
     year,
     period,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(countryID, period, year),
@@ -145,41 +146,76 @@ const Statistics = ({ period, year, satisticsRef }) => {
               } ${year ?? ""}`}
             </Text>
           </Stack>
-          <Text
-            fontFamily="Oswald"
-            fontSize={{ base: "7xl", md: "8xl" }}
-            lineHeight="1"
-          >
-            {totalCant}
-          </Text>
-        </Stack>
-        <Stack
-          gap="40px"
-          width="100%"
-          margin="auto"
-          maxWidth="800px"
-          justifyContent="space-between"
-          direction={{ base: "column", md: "row" }}
-          marginBottom={{ base: "40px", md: "60px" }}
-          alignItems={{ base: "center", md: "flex-start" }}
-        >
-          <Gender period={period} year={year} />
-          <TravelCondition period={period} year={year} />
-          <AgeRanges period={period} year={year} />
+
+          <Stack position="relative" height="100px">
+            <Loader loading={loading} />
+            {!loading && (
+              <Text
+                fontFamily="Oswald"
+                fontSize={{ base: "7xl", md: "8xl" }}
+                lineHeight="1"
+              >
+                {totalCant}
+              </Text>
+            )}
+          </Stack>
         </Stack>
 
+        {loading && (
+          <Stack
+            gap="40px"
+            width="100%"
+            margin="auto"
+            maxWidth="800px"
+            justifyContent="space-between"
+            direction={{ base: "column", md: "row" }}
+            alignItems={{ base: "center", md: "flex-start" }}
+          >
+            <Text
+              width="100%"
+              fontSize="3xl"
+              fontWeight="bold"
+              textAlign="center"
+            >
+              Generando gráficas, espera un momento ...
+            </Text>
+          </Stack>
+        )}
+
         <Stack
-          width="100%"
-          margin="auto"
-          maxWidth="800px"
-          justifyContent="center"
-          gap={{ base: "40px", md: "40px" }}
-          direction={{ base: "column", md: "row" }}
-          marginBottom={{ base: "40px", md: "60px" }}
-          alignItems={{ base: "center", md: "flex-start" }}
+          opacity={loading ? 0 : 1}
+          transition="opacity 0.2s ease"
+          maxHeight={loading ? "20px" : "100%"}
+          overflow={loading ? "hidden" : "visible"}
         >
-          <ReturnPath period={period} year={year} />
-          <ReturnCountry period={period} year={year} />
+          <Stack
+            gap="40px"
+            width="100%"
+            margin="auto"
+            maxWidth="800px"
+            justifyContent="space-between"
+            direction={{ base: "column", md: "row" }}
+            marginBottom={{ base: "40px", md: "60px" }}
+            alignItems={{ base: "center", md: "flex-start" }}
+          >
+            <Gender period={period} year={year} />
+            <TravelCondition period={period} year={year} />
+            <AgeRanges period={period} year={year} />
+          </Stack>
+
+          <Stack
+            width="100%"
+            margin="auto"
+            maxWidth="800px"
+            justifyContent="center"
+            gap={{ base: "40px", md: "40px" }}
+            direction={{ base: "column", md: "row" }}
+            marginBottom={{ base: "40px", md: "60px" }}
+            alignItems={{ base: "center", md: "flex-start" }}
+          >
+            <ReturnPath period={period} year={year} />
+            <ReturnCountry period={period} year={year} />
+          </Stack>
         </Stack>
 
         <Divider
@@ -189,7 +225,6 @@ const Statistics = ({ period, year, satisticsRef }) => {
           borderColor="black"
           orientation="horizontal"
         />
-
         <Stack
           spacing={8}
           width="100%"
@@ -202,7 +237,6 @@ const Statistics = ({ period, year, satisticsRef }) => {
         >
           <HeatMap files={filesUrl} period={period} year={year} periodId="1" />
         </Stack>
-
         <Stack direction="column" margin="auto" maxWidth="800px">
           <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
             <b>Primera infancia (P. INF)*</b> en Guatemala se registra entre los
@@ -217,7 +251,6 @@ const Statistics = ({ period, year, satisticsRef }) => {
             13 y 17 años.
           </Text>
         </Stack>
-
         {year?.toString() === currentYear?.toString() && countryID === "hn" && (
           <Stack
             direction="column"
@@ -231,15 +264,12 @@ const Statistics = ({ period, year, satisticsRef }) => {
             </Text>
           </Stack>
         )}
-
         <LastDate
           sources={sources}
           updateDate={updateDate}
           isScreenShotTime={isScreenShotTime}
         />
-
         {isScreenShotTime && <GraphFooter responsive />}
-
         <DownloadTable files={filesUrl} satisticsRef={satisticsRef} />
       </Box>
     </StatisticsContext.Provider>

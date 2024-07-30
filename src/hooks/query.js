@@ -1,8 +1,9 @@
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { GET_RETURNEDS_BY_COUNTRY } from "../utils/query/returned";
 import { isMonthInRange } from "../utils/tools";
 import { monthNames } from "./fetch";
+import { useEffect } from "react";
 
 const useReturnedFilteredQuery = ({
   query,
@@ -18,7 +19,7 @@ const useReturnedFilteredQuery = ({
   const countryID = country || id;
   const defQuery = query || GET_RETURNEDS_BY_COUNTRY(countryID, period, year);
 
-  const { data } = useQuery(defQuery);
+  const [getData, { loading: loadingQuery, data }] = useLazyQuery(defQuery);
 
   const files = [];
   const filteredData =
@@ -51,7 +52,16 @@ const useReturnedFilteredQuery = ({
 
   if (filesRef?.current) filesRef.current = files;
 
-  return filteredData;
+  useEffect(() => {
+    if (data === undefined) {
+      getData();
+    }
+  }, []);
+
+  return {
+    data: filteredData,
+    loading: data ? loadingQuery : true,
+  };
 };
 
 export const useTransitFilteredQuery = ({
@@ -66,7 +76,7 @@ export const useTransitFilteredQuery = ({
   const { countryID: id } = useParams();
   const countryID = country || id;
   const defQuery = query ?? GET_RETURNEDS_BY_COUNTRY(countryID, period, year);
-  const { data } = useQuery(defQuery);
+  const { data, loading } = useQuery(defQuery);
 
   const filteredData =
     data?.transitReports?.data?.filter((report) => {
@@ -84,7 +94,10 @@ export const useTransitFilteredQuery = ({
       return true;
     }) ?? [];
 
-  return filteredData;
+  return {
+    data: filteredData,
+    loading,
+  };
 };
 
 export default useReturnedFilteredQuery;

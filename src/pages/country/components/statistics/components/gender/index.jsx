@@ -11,18 +11,21 @@ import Femenine from "../../../../../../assets/femenine.png";
 import { GET_RETURNEDS_BY_COUNTRY_FOR_GENDER } from "../../../../../../utils/query/returned";
 import useReturnedFilteredQuery from "../../../../../../hooks/query";
 import { useParams } from "react-router-dom";
+import Loader from "../../../../../../components/loader";
 
-const Gender = ({ period, year, skip, country, defData }) => {
+const Gender = ({ period, year, skip, country, defData, loading: load }) => {
   const { countryID: id } = useParams();
   const countryId = country || id;
 
-  const data = useReturnedFilteredQuery({
+  const { data, loading: loadingQuery } = useReturnedFilteredQuery({
     skip,
     year,
     period,
     country,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_GENDER(countryId, period, year),
   });
+
+  const loading = load ?? loadingQuery;
 
   let tfemale = defData?.female ?? 0;
   let tmale = defData?.male ?? 0;
@@ -43,7 +46,9 @@ const Gender = ({ period, year, skip, country, defData }) => {
   });
 
   return (
-    <Box width="100%">
+    <Box width="100%" position="relative">
+      <Loader loading={loading} />
+
       <Stack justifyContent="center" alignItems="center" spacing="16px">
         <Text fontFamily="Oswald" fontSize="2xl">
           Sexo
