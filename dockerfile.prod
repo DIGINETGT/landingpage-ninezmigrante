@@ -1,0 +1,49 @@
+# Build Stage
+FROM --platform=linux/amd64 node:21-alpine3.19 as build
+
+WORKDIR /usr/src/app
+
+# Copiar archivos necesarios
+COPY package.json ./
+COPY package-lock.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el código fuente de la aplicación
+COPY . .
+
+# Configurar variables de entorno
+ARG VITE_APP_GOOGLE_RECAPTCHA_KEY
+ARG VITE_APP_API_URL
+ARG VITE_APP_BASENAME
+ARG VITE_API_URL_GRAPH_TOKEN
+ARG PUBLIC_URL
+ARG GENERATE_SOURCEMAP
+
+ENV VITE_APP_GOOGLE_RECAPTCHA_KEY=$VITE_APP_GOOGLE_RECAPTCHA_KEY
+ENV VITE_APP_API_URL=$VITE_APP_API_URL
+ENV VITE_APP_BASENAME=$VITE_APP_BASENAME
+ENV VITE_API_URL_GRAPH_TOKEN=$VITE_API_URL_GRAPH_TOKEN
+ENV PUBLIC_URL=$PUBLIC_URL
+ENV GENERATE_SOURCEMAP=$GENERATE_SOURCEMAP
+
+# Construir la aplicación
+RUN npm run build
+
+# Production Stage
+FROM --platform=linux/amd64 node:21-alpine3.19 as prod
+
+WORKDIR /usr/src/app
+
+# Copiar la carpeta de DIST desde la etapa de construcción
+COPY --from=build /usr/src/app/dist /usr/src/app/dist
+
+# Establecer NODE_ENV a producción
+ENV NODE_ENV=production
+
+# Exponer el puerto 3001, si es necesario para pruebas locales
+EXPOSE 3001
+
+# Comando para ejecutar un servidor estático simple
+CMD ["npx", "serve", "-s", "dist"]

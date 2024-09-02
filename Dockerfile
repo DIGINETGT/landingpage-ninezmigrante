@@ -1,19 +1,25 @@
-FROM node:14
+FROM node:20-alpine3.20
 
-WORKDIR /usr/src/observatorio-landing
+WORKDIR /usr/src/app
 
-COPY ./ ./
+COPY package-lock.json ./
+COPY package.json ./
 
-ENV VITE_APP_GOOGLE_RECAPTCHA_KEY=6Ld_LJcgAAAAAOILele8n-ocGc738mu0APQDJJp8
-ENV VITE_APP_API_URL=/api/v1
-ENV VITE_APP_BASENAME=/
-ENV PUBLIC_URL=/
+# ENV VITE_APP_GOOGLE_RECAPTCHA_KEY=6Ld_LJcgAAAAAOILele8n-ocGc738mu0APQDJJp8
+# ENV VITE_APP_API_URL=/api/v1
+# ENV VITE_APP_BASENAME=/
+# ENV PUBLIC_URL=/
+
+# RUN npm install -D vite
 
 RUN npm install
-RUN npm install -g serve
+# RUN npm i framer-motion
+# RUN npm install -g serve
 
-RUN npm run build
+COPY . .
 
-EXPOSE 3001
+# RUN npm run dev
 
-CMD ["serve", "-l", "3001", "-s", "dist"] 
+# EXPOSE 3001
+
+# CMD ["serve", "-l", "3001", "-s", "dist"] 
