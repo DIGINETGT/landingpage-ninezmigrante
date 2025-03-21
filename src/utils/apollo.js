@@ -6,7 +6,6 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  console.log('LOS HEADERS:', headers);
   return {
     headers: {
       ...headers,

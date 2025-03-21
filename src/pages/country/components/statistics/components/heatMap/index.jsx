@@ -1,21 +1,21 @@
-import React, { useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
 // CHAKRA UI COMPONENTS
-import { Box, Flex, HStack, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 
-import MapModal from "./components/modal";
+import MapModal from './components/modal';
 
 // UTILS
-import HeatMapContext from "./context";
-import { useHeatColors } from "./hooks";
+import HeatMapContext from './context';
+import { useHeatColors } from './hooks';
 
-import "./style.css";
-import { colors } from "../../../../../../utils/theme";
-import HeatMapGT from "./components/gt";
-import HeatMapSV from "./components/sv";
-import HeatMapHN from "./components/hn";
-import getCountryContent from "../../../../../../utils/country";
+import './style.css';
+import { colors } from '../../../../../../utils/theme';
+import HeatMapGT from './components/gt';
+import HeatMapSV from './components/sv';
+import HeatMapHN from './components/hn';
+import getCountryContent from '../../../../../../utils/country';
 
 const HeatMap = ({ period, year, country, periodId, files }) => {
   const countryID = useParams().countryID || country;
@@ -26,15 +26,15 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
       countryID,
       content: {
         guatemala: {
-          color: "rgba(146,189,87,1.0)",
+          color: 'rgba(146,189,87,1.0)',
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
         honduras: {
-          color: "rgba(221,184,65,1.0)",
+          color: 'rgba(221,184,65,1.0)',
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
         elsalvador: {
-          color: "rgba(96, 134, 167,1.0)",
+          color: 'rgba(96, 134, 167,1.0)',
           levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         },
       },
@@ -45,10 +45,10 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
   const [colorScales, setColorScales] = useState({});
 
   // MODAL
-  const [modalDep, setModalDep] = useState("");
+  const [modalDep, setModalDep] = useState('');
 
   // PREV COLOR
-  const prevColor = useRef("");
+  const prevColor = useRef('');
 
   // CLICK EN DEPARTAMENTO
   const onClick = (name) => () => {
@@ -62,7 +62,7 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
 
   // CERRAR
   const onCloseModal = () => {
-    setModalDep("");
+    setModalDep('');
     setColorScales((prevScales) => ({
       ...prevScales,
       ...prevColor.current,
@@ -70,42 +70,46 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
   };
 
   // DATA
-  const { depTotals, depSubDepTotals, depSubDepGenderTotals } =
-    useHeatColors(setColorScales, countryID, period, year);
+  const { depTotals, depSubDepTotals, depSubDepGenderTotals } = useHeatColors(
+    setColorScales,
+    countryID,
+    period,
+    year
+  );
 
   return (
     <HeatMapContext.Provider value={{ colorScales, onClick }}>
       <Box
-        gap="16px"
-        width="100%"
-        display="flex"
-        alignItems="center"
-        flexDirection="column"
-        justifyContent="center"
-        maxWidth={{ base: "100%", md: "450px" }}
+        gap='16px'
+        width='100%'
+        display='flex'
+        alignItems='center'
+        flexDirection='column'
+        justifyContent='center'
+        maxWidth={{ base: '100%', md: '450px' }}
       >
-        <Text fontFamily="Oswald" fontSize="2xl">
+        <Text fontFamily='Oswald' fontSize='2xl'>
           Departamento de origen
         </Text>
         <Box>
           <HStack spacing={0}>
-            <Box height="30px" width="30px" background={colors.heatMin[100]} />
+            <Box height='30px' width='30px' background={colors.heatMin[100]} />
             {Object.values(scale?.heat?.levelHeat ?? {}).map((opacity) => {
               return (
                 <Box
-                  height="30px"
-                  width="30px"
+                  height='30px'
+                  width='30px'
                   key={opacity}
-                  background={scale.heat.color?.replace("1.0", opacity)}
+                  background={scale.heat.color?.replace('1.0', opacity)}
                 />
               );
             })}
           </HStack>
-          <Flex justifyContent="space-between">
-            <Text fontFamily="Oswald" fontSize="lg">
+          <Flex justifyContent='space-between'>
+            <Text fontFamily='Oswald' fontSize='lg'>
               Min.
             </Text>
-            <Text fontFamily="Oswald" fontSize="lg">
+            <Text fontFamily='Oswald' fontSize='lg'>
               Max.
             </Text>
           </Flex>

@@ -1,20 +1,20 @@
 const countryByCode = {
-  gt: "guatemala",
-  sv: "elsalvador",
-  hn: "honduras",
+  gt: 'guatemala',
+  sv: 'elsalvador',
+  hn: 'honduras',
 };
 const getCountryContent = ({ countryID: id, content, capitalize }) => {
-  let countryID = countryByCode[id?.toLowerCase() ?? "gt"] ?? "guatemala";
+  let countryID = countryByCode[id?.toLowerCase() ?? 'gt'] ?? 'guatemala';
 
   if (capitalize) {
-    if (countryID === "elsalvador") return "El Salvador";
+    if (countryID === 'elsalvador') return 'El Salvador';
     return countryID.substring(0, 1).toUpperCase() + countryID.substring(1);
   }
 
   const newContent = content[countryID];
 
   if (!newContent) {
-    return content?.["guatemala"];
+    return content?.['guatemala'];
   }
 
   return newContent;
@@ -33,10 +33,10 @@ export const getDepartmentData = (databorders) => {
         const depName =
           muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
             ?.toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll("department", "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .replaceAll(' ', '')
+            .replaceAll('department', '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
 
         const muniCant = muni.attributes?.cant || 0;
         const gender =
@@ -73,10 +73,10 @@ export const getDepartmentDataCapital = (databorders) => {
       (muni) => {
         const depName = muni.attributes?.department?.data?.attributes?.name
           ?.toLowerCase()
-          .replaceAll(" ", "_")
-          .replaceAll("department", "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
+          .replaceAll(' ', '_')
+          .replaceAll('department', '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
 
         const muniCant = muni.attributes?.cant || 0;
 

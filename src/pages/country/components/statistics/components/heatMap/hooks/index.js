@@ -1,15 +1,15 @@
 // REACT
-import { useContext, useEffect } from "react";
-import HeatMapContext from "../context";
+import { useContext, useEffect } from 'react';
+import HeatMapContext from '../context';
 
 // COLORS
-import { colors } from "../../../../../../../utils/theme";
-import getCountryContent from "../../../../../../../utils/country";
-import useReturnedFilteredQuery from "../../../../../../../hooks/query";
+import { colors } from '../../../../../../../utils/theme';
+import getCountryContent from '../../../../../../../utils/country';
+import useReturnedFilteredQuery from '../../../../../../../hooks/query';
 import {
   GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
   GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
-} from "../../../../../../../utils/query/returned";
+} from '../../../../../../../utils/query/returned';
 
 /**
  * Devuelve un objeto de mapa de calor con un color y una función onClick si la propiedad disabledHeat
@@ -71,10 +71,10 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
         const departmentName =
           department?.attributes?.department?.data?.attributes?.name
             ?.toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll("department", "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") || "Otros";
+            .replaceAll(' ', '_')
+            .replaceAll('department', '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') || 'Otros';
 
         const departmentTotal = department?.attributes?.cant || 0;
 
@@ -103,10 +103,10 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
         const depName =
           muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
             ?.toLowerCase()
-            .replaceAll(" ", "")
-            .replaceAll("department", "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .replaceAll(' ', '_')
+            .replaceAll('department', '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
 
         const muniCant = muni.attributes?.cant || 0;
         const gender =
