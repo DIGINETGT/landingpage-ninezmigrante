@@ -86,7 +86,8 @@ const ReturnCountry = ({ period, year, country }) => {
                 alignItems='center'
                 justifyContent='center'
               >
-                <ReactSVG
+                {/* <ReactSVG
+                  method='GET'
                   style={{ width: 60, height: 60 }}
                   beforeInjection={(svg) => {
                     svg.setAttribute(
@@ -96,6 +97,12 @@ const ReturnCountry = ({ period, year, country }) => {
                     svg.setAttribute('style', 'width: 100%; height: 100%');
                   }}
                   src={dataMaps?.[country] ?? ''}
+                /> */}
+                <img
+                  src={dataMaps?.[country] ?? ''}
+                  alt={country || ''}
+                  height={'100%'}
+                  width={'130px'}
                 />
 
                 <Stack

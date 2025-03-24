@@ -1,30 +1,30 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 
-import { Box, Stack, Text } from "@chakra-ui/react";
+import { Box, Stack, Text } from '@chakra-ui/react';
 
-import SelectOptions from "./components/selectOptions";
-import Statistics from "./components/statistics";
-import DownloadTable from "../country/components/statistics/components/downloadTable";
-import GraphFooter from "../../components/graphFooter";
-import StatisticsContext from "../country/components/statistics/context";
-import LastDate from "../../components/lastUpdate";
+import SelectOptions from './components/selectOptions';
+import Statistics from './components/statistics';
+import DownloadTable from '../country/components/statistics/components/downloadTable';
+import GraphFooter from '../../components/graphFooter';
+import StatisticsContext from '../country/components/statistics/context';
+import LastDate from '../../components/lastUpdate';
 
 const ComparePage = () => {
-  const [countValue, setCountValue] = useState("0");
+  const [countValue, setCountValue] = useState('0');
   const [options, setOptions] = useState({
-    1: { country: "", year: 0, period: [1, 1], files: [] },
-    2: { country: "", year: 0, period: [1, 1], files: [] },
-    3: { country: "", year: 0, period: [1, 1], files: [] },
+    1: { country: '', year: 0, period: [1, 1], files: [] },
+    2: { country: '', year: 0, period: [1, 1], files: [] },
+    3: { country: '', year: 0, period: [1, 1], files: [] },
   });
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [updateDate, setUpdateDate] = useState("");
+  const [updateDate, setUpdateDate] = useState('');
   const [files, setFiles] = useState({
     1: [],
     2: [],
     3: [],
   });
-  const [periodId, setPeriodId] = useState("");
+  const [periodId, setPeriodId] = useState('');
 
   const satisticsRef = useRef(null);
 
@@ -34,36 +34,36 @@ const ComparePage = () => {
 
   const sources = (
     <Stack
-      width="100%"
-      margin="auto"
-      direction="column"
-      alignItems="center"
-      marginBottom="40px"
-      justifyContent="center"
-      maxWidth={{ base: "300px", md: "800px" }}
+      width='100%'
+      margin='auto'
+      direction='column'
+      alignItems='center'
+      marginBottom='40px'
+      justifyContent='center'
+      maxWidth={{ base: '300px', md: '800px' }}
     >
       <Text
-        textAlign="center"
-        fontFamily="Oswald"
-        fontSize={{ base: "xl", md: "md" }}
-        maxWidth={{ base: "300px", md: "800px" }}
+        textAlign='center'
+        fontFamily='Oswald'
+        fontSize={{ base: 'xl', md: 'md' }}
+        maxWidth={{ base: '300px', md: '800px' }}
       >
-        {options[1].country === "guatemala" &&
+        {options[1].country === 'guatemala' &&
           `Fuente Guatemala: Instituto Guatemalteco de Migración -IGM-`}
       </Text>
       <Text
-        textAlign="center"
-        fontFamily="Oswald"
-        fontSize={{ base: "xl", md: "md" }}
-        maxWidth={{ base: "300px", md: "800px" }}
+        textAlign='center'
+        fontFamily='Oswald'
+        fontSize={{ base: 'xl', md: 'md' }}
+        maxWidth={{ base: '300px', md: '800px' }}
       >
-        {options[2].country === "honduras" && "Fuente Honduras: DINAF"}
+        {options[2].country === 'honduras' && 'Fuente Honduras: DINAF'}
       </Text>
 
       <Text
-        textAlign="center"
-        fontFamily="Montserrat Medium"
-        fontSize={{ base: "xs", md: "sm" }}
+        textAlign='center'
+        fontFamily='Montserrat Medium'
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
         Esta información ha sido procesada por: Monitoreo de niñez y
         adolescencia migrante -Monitoreo Binacional de Niñez Migrante
@@ -71,9 +71,9 @@ const ComparePage = () => {
       </Text>
 
       <Text
-        textAlign="center"
-        fontFamily="Montserrat Medium"
-        fontSize={{ base: "xs", md: "sm" }}
+        textAlign='center'
+        fontFamily='Montserrat Medium'
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
         Esta información ha sido procesada por Niñez Migrante Guatemala-El
         Salvador
@@ -82,7 +82,7 @@ const ComparePage = () => {
   );
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, []);
 
   return (
@@ -96,39 +96,39 @@ const ComparePage = () => {
         satisticsRef={satisticsRef}
       />
 
-      {countValue !== "0" && options["1"]?.country !== "" && (
+      {countValue !== '0' && options['1']?.country !== '' && (
         <Box
           ref={satisticsRef}
-          bgColor={isScreenShotTime ? "#fff" : "#eee"}
-          padding={{ base: "40px 24px", md: "80px 40px" }}
+          bgColor={isScreenShotTime ? '#fff' : '#eee'}
+          padding={{ base: '40px 24px', md: '80px 40px' }}
         >
           <Stack
-            gap="40px"
-            alignContent="center"
-            justifyContent="center"
-            marginBottom="60px"
-            direction={{ base: "column", md: "row" }}
+            gap='40px'
+            alignContent='center'
+            justifyContent='center'
+            marginBottom='60px'
+            direction={{ base: 'column', md: 'row' }}
           >
             <Statistics
-              data={options["1"]}
-              id="1"
+              data={options['1']}
+              id='1'
               setFiles={setFiles}
               setUpdateDate={setUpdateDate}
               setPeriodId={setPeriodId}
             />
-            {(countValue === "2" || countValue === "3") && (
+            {(countValue === '2' || countValue === '3') && (
               <Statistics
-                data={options["2"]}
+                data={options['2']}
                 setFiles={setFiles}
-                id="2"
+                id='2'
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
               />
             )}
-            {countValue === "3" && (
+            {countValue === '3' && (
               <Statistics
-                data={options["3"]}
-                id="3"
+                data={options['3']}
+                id='3'
                 setFiles={setFiles}
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
@@ -144,9 +144,9 @@ const ComparePage = () => {
           {isScreenShotTime && <GraphFooter responsive />}
           <DownloadTable
             files={[
-              ...(Array.isArray(files["1"]) ? [...files["1"]] : []),
-              ...(Array.isArray(files["2"]) ? [...files["2"]] : []),
-              ...(Array.isArray(files["3"]) ? [...files["3"]] : []),
+              ...(Array.isArray(files['1']) ? [...files['1']] : []),
+              ...(Array.isArray(files['2']) ? [...files['2']] : []),
+              ...(Array.isArray(files['3']) ? [...files['3']] : []),
             ]}
             satisticsRef={satisticsRef}
             periodId={periodId}

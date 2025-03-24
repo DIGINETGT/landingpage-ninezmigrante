@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { Box, Stack, Text, Divider } from "@chakra-ui/react";
+import { Box, Stack, Text, Divider } from '@chakra-ui/react';
 
-import GraphFooter from "../../../../components/graphFooter";
-import LastDate from "../../../../components/lastUpdate";
-import TravelCondition from "./components/travelCondition";
-import ReturnCountry from "./components/returnCountry";
-import DownloadTable from "./components/downloadTable";
-import HeatMap from "./components/heatMap/index";
-import ReturnPath from "./components/returnPath";
-import AgeRanges from "./components/ageRanges";
-import Gender from "./components/gender";
-import { year as currentYear } from "../../../../utils/year";
+import GraphFooter from '../../../../components/graphFooter';
+import LastDate from '../../../../components/lastUpdate';
+import TravelCondition from './components/travelCondition';
+import ReturnCountry from './components/returnCountry';
+import DownloadTable from './components/downloadTable';
+import HeatMap from './components/heatMap/index';
+import ReturnPath from './components/returnPath';
+import AgeRanges from './components/ageRanges';
+import Gender from './components/gender';
+import { year as currentYear } from '../../../../utils/year';
 
-import { monthNames } from "../../../../hooks/fetch";
+import { monthNames } from '../../../../hooks/fetch';
 
-import StatisticsContext from "./context";
-import getCountryContent from "../../../../utils/country";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
-import useReturnedFilteredQuery from "../../../../hooks/query";
-import { dateToString } from "../../../../utils/tools";
-import Loader from "../../../../components/loader";
+import StatisticsContext from './context';
+import getCountryContent from '../../../../utils/country';
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from '../../../../utils/query/returned';
+import useReturnedFilteredQuery from '../../../../hooks/query';
+import { dateToString } from '../../../../utils/tools';
+import Loader from '../../../../components/loader';
 
 const Statistics = ({ period, year, satisticsRef }) => {
   // STATES
@@ -47,7 +47,7 @@ const Statistics = ({ period, year, satisticsRef }) => {
     data
       ?.map((report) => {
         const [_, month] = report?.attributes?.reportMonth
-          ?.split("-")
+          ?.split('-')
           ?.map(Number);
 
         return report?.attributes?.returned?.data?.attributes?.fuentes?.data?.map(
@@ -57,17 +57,17 @@ const Statistics = ({ period, year, satisticsRef }) => {
       ?.flat() ?? [];
 
   const sources = (
-    <Box direction="column" margin="auto" maxWidth="800px">
+    <Box direction='column' margin='auto' maxWidth='800px'>
       {getCountryContent({
         countryID,
         content: {
           guatemala: (
             <Text
               lineHeight={1}
-              textAlign="center"
-              fontFamily="Oswald"
-              fontSize={{ base: "xl", md: "2xl" }}
-              maxWidth={"800px"}
+              textAlign='center'
+              fontFamily='Oswald'
+              fontSize={{ base: 'xl', md: '2xl' }}
+              maxWidth={'800px'}
             >
               Fuente: Instituto Guatemalteco de Migración
             </Text>
@@ -75,10 +75,10 @@ const Statistics = ({ period, year, satisticsRef }) => {
           honduras: (
             <Text
               lineHeight={1}
-              textAlign="center"
-              fontFamily="Oswald"
-              fontSize={{ base: "xl", md: "2xl" }}
-              maxWidth={"800px"}
+              textAlign='center'
+              fontFamily='Oswald'
+              fontSize={{ base: 'xl', md: '2xl' }}
+              maxWidth={'800px'}
             >
               Fuente: Dirección de Niñez, Adolescencia y Familia (DINAF)
             </Text>
@@ -86,10 +86,10 @@ const Statistics = ({ period, year, satisticsRef }) => {
           elsalvador: (
             <Text
               lineHeight={1}
-              textAlign="center"
-              fontFamily="Oswald"
-              fontSize={{ base: "xl", md: "2xl" }}
-              maxWidth={"800px"}
+              textAlign='center'
+              fontFamily='Oswald'
+              fontSize={{ base: 'xl', md: '2xl' }}
+              maxWidth={'800px'}
             >
               Dirección General de Migración y Extranjería El Salvador
             </Text>
@@ -105,55 +105,55 @@ const Statistics = ({ period, year, satisticsRef }) => {
     >
       <Box
         ref={satisticsRef}
-        padding={{ base: "40px 24px", md: "80px 40px" }}
-        bgColor={isScreenShotTime ? "#fff" : "#eee"}
+        padding={{ base: '40px 24px', md: '80px 40px' }}
+        bgColor={isScreenShotTime ? '#fff' : '#eee'}
       >
         <Stack
-          margin="auto"
-          maxWidth="800px"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={{ base: "24px", md: "40px" }}
-          direction={{ base: "column", md: "row" }}
-          marginBottom={{ base: "40px", md: "80px" }}
+          margin='auto'
+          maxWidth='800px'
+          alignItems='center'
+          justifyContent='space-between'
+          gap={{ base: '24px', md: '40px' }}
+          direction={{ base: 'column', md: 'row' }}
+          marginBottom={{ base: '40px', md: '80px' }}
         >
-          <Stack direction="column" spacing="16px">
+          <Stack direction='column' spacing='16px'>
             <Text
-              lineHeight="1"
-              fontFamily="Oswald"
-              fontSize={{ base: "4xl", md: "6xl" }}
-              textAlign={{ base: "center", md: "left" }}
+              lineHeight='1'
+              fontFamily='Oswald'
+              fontSize={{ base: '4xl', md: '6xl' }}
+              textAlign={{ base: 'center', md: 'left' }}
             >
               {getCountryContent({ countryID, capitalize: true }).toUpperCase()}
             </Text>
             <Text
-              lineHeight="1"
-              fontFamily="Oswald"
-              fontSize={{ base: "2xl", md: "4xl" }}
-              textAlign={{ base: "center", md: "left" }}
+              lineHeight='1'
+              fontFamily='Oswald'
+              fontSize={{ base: '2xl', md: '4xl' }}
+              textAlign={{ base: 'center', md: 'left' }}
             >
               Total de niñez migrante retornanda
             </Text>
             <Text
-              lineHeight="1"
-              fontWeight="600"
-              fontFamily="Times"
-              fontSize={{ base: "xl", md: "2xl" }}
-              textAlign={{ base: "center", md: "left" }}
+              lineHeight='1'
+              fontWeight='600'
+              fontFamily='Times'
+              fontSize={{ base: 'xl', md: '2xl' }}
+              textAlign={{ base: 'center', md: 'left' }}
             >
-              {`${monthNames[period[0]] ?? ""} - ${
-                monthNames[period[1]] ?? ""
-              } ${year ?? ""}`}
+              {`${monthNames[period[0]] ?? ''} - ${
+                monthNames[period[1]] ?? ''
+              } ${year ?? ''}`}
             </Text>
           </Stack>
 
-          <Stack position="relative" height="100px">
+          <Stack position='relative' height='100px'>
             <Loader loading={loading} />
             {!loading && (
               <Text
-                fontFamily="Oswald"
-                fontSize={{ base: "7xl", md: "8xl" }}
-                lineHeight="1"
+                fontFamily='Oswald'
+                fontSize={{ base: '7xl', md: '8xl' }}
+                lineHeight='1'
               >
                 {totalCant}
               </Text>
@@ -163,19 +163,19 @@ const Statistics = ({ period, year, satisticsRef }) => {
 
         {loading && (
           <Stack
-            gap="40px"
-            width="100%"
-            margin="auto"
-            maxWidth="800px"
-            justifyContent="space-between"
-            direction={{ base: "column", md: "row" }}
-            alignItems={{ base: "center", md: "flex-start" }}
+            gap='40px'
+            width='100%'
+            margin='auto'
+            maxWidth='800px'
+            justifyContent='space-between'
+            direction={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'center', md: 'flex-start' }}
           >
             <Text
-              width="100%"
-              fontSize="3xl"
-              fontWeight="bold"
-              textAlign="center"
+              width='100%'
+              fontSize='3xl'
+              fontWeight='bold'
+              textAlign='center'
             >
               Generando gráficas, espera un momento ...
             </Text>
@@ -184,19 +184,19 @@ const Statistics = ({ period, year, satisticsRef }) => {
 
         <Stack
           opacity={loading ? 0 : 1}
-          transition="opacity 0.2s ease"
-          maxHeight={loading ? "20px" : "100%"}
-          overflow={loading ? "hidden" : "visible"}
+          transition='opacity 0.2s ease'
+          maxHeight={loading ? '20px' : '100%'}
+          overflow={loading ? 'hidden' : 'visible'}
         >
           <Stack
-            gap="40px"
-            width="100%"
-            margin="auto"
-            maxWidth="800px"
-            justifyContent="space-between"
-            direction={{ base: "column", md: "row" }}
-            marginBottom={{ base: "40px", md: "60px" }}
-            alignItems={{ base: "center", md: "flex-start" }}
+            gap='40px'
+            width='100%'
+            margin='auto'
+            maxWidth='800px'
+            justifyContent='space-between'
+            direction={{ base: 'column', md: 'row' }}
+            marginBottom={{ base: '40px', md: '60px' }}
+            alignItems={{ base: 'center', md: 'flex-start' }}
           >
             <Gender period={period} year={year} />
             <TravelCondition period={period} year={year} />
@@ -204,14 +204,14 @@ const Statistics = ({ period, year, satisticsRef }) => {
           </Stack>
 
           <Stack
-            width="100%"
-            margin="auto"
-            maxWidth="800px"
-            justifyContent="center"
-            gap={{ base: "40px", md: "40px" }}
-            direction={{ base: "column", md: "row" }}
-            marginBottom={{ base: "40px", md: "60px" }}
-            alignItems={{ base: "center", md: "flex-start" }}
+            width='100%'
+            margin='auto'
+            maxWidth='800px'
+            justifyContent='center'
+            gap={{ base: '40px', md: '40px' }}
+            direction={{ base: 'column', md: 'row' }}
+            marginBottom={{ base: '40px', md: '60px' }}
+            alignItems={{ base: 'center', md: 'flex-start' }}
           >
             <ReturnPath period={period} year={year} />
             <ReturnCountry period={period} year={year} />
@@ -219,46 +219,46 @@ const Statistics = ({ period, year, satisticsRef }) => {
         </Stack>
 
         <Divider
-          maxWidth="800px"
-          borderWidth="1px"
-          margin="40px auto"
-          borderColor="black"
-          orientation="horizontal"
+          maxWidth='800px'
+          borderWidth='1px'
+          margin='40px auto'
+          borderColor='black'
+          orientation='horizontal'
         />
         <Stack
           spacing={8}
-          width="100%"
-          margin="auto"
-          maxWidth="800px"
-          alignItems="center"
-          marginBottom="40px"
-          justifyContent="center"
-          direction={{ base: "column", md: "row" }}
+          width='100%'
+          margin='auto'
+          maxWidth='800px'
+          alignItems='center'
+          marginBottom='40px'
+          justifyContent='center'
+          direction={{ base: 'column', md: 'row' }}
         >
-          <HeatMap files={filesUrl} period={period} year={year} periodId="1" />
+          <HeatMap files={filesUrl} period={period} year={year} periodId='1' />
         </Stack>
-        <Stack direction="column" margin="auto" maxWidth="800px">
-          <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
+        <Stack direction='column' margin='auto' maxWidth='800px'>
+          <Text fontSize='0.9em' textAlign='center' lineHeight={1}>
             <b>Primera infancia (P. INF)*</b> en Guatemala se registra entre los
             0 y 6 años y en Honduras entre 0 y 5 años.
           </Text>
-          <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
+          <Text fontSize='0.9em' textAlign='center' lineHeight={1}>
             <b>Niñez*</b> en Guatemala se registra entre 7 y 12 años y en
             Honduras entre los 6 y 12 años.
           </Text>
-          <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
+          <Text fontSize='0.9em' textAlign='center' lineHeight={1}>
             <b>Adolescencia (ADOL)*</b> en ambos países el registro es entre los
             13 y 17 años.
           </Text>
         </Stack>
-        {year?.toString() === currentYear?.toString() && countryID === "hn" && (
+        {year?.toString() === currentYear?.toString() && countryID === 'hn' && (
           <Stack
-            direction="column"
-            margin="auto"
-            maxWidth="800px"
+            direction='column'
+            margin='auto'
+            maxWidth='800px'
             marginTop={2}
           >
-            <Text fontSize="0.9em" textAlign="center" lineHeight={1}>
+            <Text fontSize='0.9em' textAlign='center' lineHeight={1}>
               En el caso de Honduras la actualización de los datos de niñez
               retornada se realiza anualmente
             </Text>

@@ -1,35 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import { Stack, Select, Image, Text } from "@chakra-ui/react";
+import { Stack, Select, Image, Text } from '@chakra-ui/react';
 
-import LogoNinezMigrante from "../../../../../../assets/LogoNinezMigrante.png";
-import MapaGuatemala from "../../../../../../assets/MapaGuatemala.svg";
-import MapaHonduras from "../../../../../../assets/MapaHonduras.svg";
-import MapaSalvador from "../../../../../../assets/MapaElSalvador.svg";
-import YearSelect from "../../../../../../components/yearSelect";
-import MonthPicker from "../../../../../../components/monthPicker";
+import LogoNinezMigrante from '../../../../../../assets/LogoNinezMigrante.png';
+import MapaGuatemala from '../../../../../../assets/MapaGuatemala.svg';
+import MapaHonduras from '../../../../../../assets/MapaHonduras.svg';
+import MapaSalvador from '../../../../../../assets/MapaElSalvador.svg';
+import YearSelect from '../../../../../../components/yearSelect';
+import MonthPicker from '../../../../../../components/monthPicker';
 
 const countryImages = {
   default: {
     src: LogoNinezMigrante,
-    height: "200px",
+    height: '200px',
   },
   gt: {
     src: MapaGuatemala,
-    height: "240px",
+    height: '240px',
   },
   hn: {
     src: MapaHonduras,
-    height: "100%",
+    height: '100%',
   },
   sv: {
     src: MapaSalvador,
-    height: "100%",
+    height: '100%',
   },
 };
 
 const Options = ({ id, onChange, satisticsRef, countValue }) => {
-  const [data, setData] = useState({ country: "", period: [1, 1], year: 0 });
+  const [data, setData] = useState({ country: '', period: [1, 1], year: 0 });
 
   const handleChange = (ev) => {
     setData((prevData) => ({ ...prevData, [ev.target.name]: ev.target.value }));
@@ -44,12 +44,12 @@ const Options = ({ id, onChange, satisticsRef, countValue }) => {
 
   const scrollInto = () => {
     if (satisticsRef.current) {
-      const navbar = document.getElementById("menu").clientHeight;
+      const navbar = document.getElementById('menu').clientHeight;
       const y =
         satisticsRef.current.getBoundingClientRect().top + window.scrollY;
       window.scroll({
         top: y - navbar,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -60,29 +60,29 @@ const Options = ({ id, onChange, satisticsRef, countValue }) => {
 
   return (
     <Stack
-      spacing="16px"
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
+      spacing='16px'
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
     >
-      <Text fontFamily="Montserrat Medium" fontSize="2xl">
+      <Text fontFamily='Montserrat Medium' fontSize='2xl'>
         Data {id}
       </Text>
       {/* SELECT COUNTRY */}
       <Select
-        name="country"
-        fontSize="2xl"
-        lineHeight="1.8"
-        fontWeight="600"
-        fontFamily="Times"
-        letterSpacing="1.2px"
+        name='country'
+        fontSize='2xl'
+        lineHeight='1.8'
+        fontWeight='600'
+        fontFamily='Times'
+        letterSpacing='1.2px'
         onChange={handleChange}
-        bgColor="rgba(255,255,255,0.5)"
+        bgColor='rgba(255,255,255,0.5)'
       >
-        <option value="default">Elegir país</option>
-        <option value="gt">Guatemala</option>
-        <option value="hn">Honduras</option>
-        <option value="sv">El Salvador</option>
+        <option value='default'>Elegir país</option>
+        <option value='gt'>Guatemala</option>
+        <option value='hn'>Honduras</option>
+        <option value='sv'>El Salvador</option>
       </Select>
 
       {/* SELECT YEAR */}
@@ -93,21 +93,21 @@ const Options = ({ id, onChange, satisticsRef, countValue }) => {
 
       {/* MAP IMAGE */}
       <Stack
-        width="300px"
-        height="300px"
-        alignItems="center"
-        justifyContent="center"
+        width='300px'
+        height='300px'
+        alignItems='center'
+        justifyContent='center'
       >
         <Image
           src={
             data.country.length > 0
-              ? countryImages[data.country || "default"].src
+              ? countryImages[data.country || 'default'].src
               : LogoNinezMigrante
           }
-          width="100%"
-          marginTop="24px"
-          objectFit="contain"
-          height={countryImages[data.country || "default"].height}
+          width='100%'
+          marginTop='24px'
+          objectFit='contain'
+          height={countryImages[data.country || 'default'].height}
         />
       </Stack>
     </Stack>
