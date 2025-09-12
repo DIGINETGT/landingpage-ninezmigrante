@@ -1,74 +1,68 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React from 'react';
+import {
+  Text,
+  Stack,
+  Image,
+  CloseButton,
+  Box,
+  Spinner,
+} from '@chakra-ui/react';
+import ModalContentGT from '../../../../../../../../components/departments/components/gt';
+import ModalContentHN from '../../../../../../../../components/departments/components/hn';
+import ModalContentSV from '../../../../../../../../components/departments/components/sv';
+import getCountryContent from '../../../../../../../../utils/country';
 
-//  UTILS
-import { depColors } from "../../utils";
+import MaleIcon from '../../../../../../../../assets/male.png';
+import FemaleIcon from '../../../../../../../../assets/femenine.png';
 
-// CHACKRA
-import { Text, Stack, Image, CloseButton, Box } from "@chakra-ui/react";
+import GenderGapChip from '../../../../../../../../components/common/GenderGapChip';
 
-import MaleIcon from "../../../../../../../../assets/male.png";
-import FemaleIcon from "../../../../../../../../assets/femenine.png";
-import ModalContentGT from "../../../../../../../../components/departments/components/gt";
-import ModalContentHN from "../../../../../../../../components/departments/components/hn";
-import ModalContentSV from "../../../../../../../../components/departments/components/sv";
-import getCountryContent from "../../../../../../../../utils/country";
+import useDepartmentCard from '../../hooks/useDepartmentCard';
+import { depColors } from '../../utils';
 
-const DepartmentData = ({
-  country = "guatemala",
-  item,
+export default function DepartmentData({
+  country = 'guatemala', // 'guatemala' | 'honduras' | 'elsalvador'
+  item, // { id, color }
   index,
   setDepDataList,
   isDragOver,
-}) => {
-  // PROPS DE DEPARTAMENTOS
-  const countryID = useParams().countryID || country;
-
-  // REMOVE
+  year,
+  period,
+  iso, // 'GT' | 'HN' | 'SV'
+}) {
   const removeData = () =>
     setDepDataList((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, reload: true } : item))
+      prev.map((x, i) => (i === index ? { ...x, reload: true } : x))
     );
 
-  return item.reload ? (
-    <Stack
-      height="100%"
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Text>
-        {isDragOver ? "Soltar departamento aquí" : "Sin datos"}
-      </Text>
+  const { loading, label, total, male, female } = useDepartmentCard({
+    iso,
+    year,
+    period,
+    depId: item?.id, // ej: 'quetzaltenango'
+  });
+
+  return item?.reload ? (
+    <Stack h='100%' align='center' justify='center'>
+      <Text>{isDragOver ? 'Soltar departamento aquí' : 'Sin datos'}</Text>
     </Stack>
   ) : (
-    <Box style={{ position: "relative" }}>
-      <CloseButton
-        onClick={removeData}
-        style={{ position: "absolute", right: 8 }}
-      />
-      <Stack
-        p={4}
-        direction="column"
-        alignItems="center"
-        style={{ pointerEvents: "none" }}
-      >
-        {/* IMAGEN DE DEPARTAMENTO */}
+    <Box position='relative'>
+      <CloseButton onClick={removeData} position='absolute' right={2} top={2} />
+      <Stack p={4} align='center' pointerEvents='none'>
+        {/* SVG del depto */}
         <svg
-          x="0px"
-          y="0px"
-          version="1.2"
-          width="100%"
-          height="100"
-          className="depSVG"
-          xmlSpace="preserve"
-          viewBox="0 0 585.94 612"
-          style={{ marginBottom: "16px" }}
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
+          x='0px'
+          y='0px'
+          version='1.2'
+          width='100%'
+          height='100'
+          viewBox='0 0 585.94 612'
+          style={{ marginBottom: 16 }}
+          xmlns='http://www.w3.org/2000/svg'
         >
           {getCountryContent({
-            countryID,
+            countryID: country,
             content: {
               guatemala: (
                 <ModalContentGT
@@ -95,34 +89,64 @@ const DepartmentData = ({
           })}
         </svg>
 
-        {/* NOMBRE */}
-        <Text fontFamily="Oswald" fontSize="1.2em" fontWeight="500">
-          {item.name}
+        {/* Nombre */}
+        <Text fontFamily='Oswald' fontSize='1.2em' fontWeight='500'>
+          {label}
         </Text>
 
-        {/* TOTAL */}
-        <Text fontFamily="Oswald" fontSize="2em" fontWeight="500">
-          {item.total ?? 'N/D'}
-        </Text>
+        {/* Totales */}
+        {loading ? (
+          <Spinner thickness='3px' size='md' />
+        ) : (
+          <>
+            <Text fontFamily='Oswald' fontSize='2em' fontWeight='500'>
+              {Number.isFinite(total) ? total : 0}
+            </Text>
 
-        {/* TOTAL MUJERES */}
-        <Stack direction="row" alignItems="center">
-          <Image src={FemaleIcon} height={5} />
-          <Text fontFamily="Oswald" fontWeight="500">
-            {item.female} Femenino
-          </Text>
-        </Stack>
+            {(() => {
+              const iso = (country || '').toUpperCase(); // 'GT' | 'HN' | 'SV'
+              const t = Number(total) || 0;
+              const m = Number(male) || 0;
+              const f = Number(female) || 0;
+              const sum = m + f;
+              const gap = Math.max(0, t - sum);
+              const canDisaggregate = ['GT'].includes(iso); // GT sí reporta M/F normalmente
 
-        {/* TOTAL HOMBRES */}
-        <Stack direction="row" alignItems="center">
-          <Image src={MaleIcon} height={5} />
-          <Text fontFamily="Oswald" fontWeight="500">
-            {item.male} Masculino
-          </Text>
-        </Stack>
+              // Si NO hay desagregación (sum=0) o hay brecha (gap>0): mostrar chip
+              if (sum === 0 || gap > 0) {
+                return (
+                  <GenderGapChip
+                    total={t}
+                    male={m}
+                    female={f}
+                    canDisaggregate={canDisaggregate}
+                    size='sm'
+                  />
+                );
+              }
+
+              // Si cuadra (sum === total): mostrar M/F
+              return (
+                <>
+                  <Stack direction='row' align='center'>
+                    <Image src={FemaleIcon} h={5} alt='Femenino' />
+                    <Text fontFamily='Oswald' fontWeight='500'>
+                      {f} Femenino
+                    </Text>
+                  </Stack>
+
+                  <Stack direction='row' align='center'>
+                    <Image src={MaleIcon} h={5} alt='Masculino' />
+                    <Text fontFamily='Oswald' fontWeight='500'>
+                      {m} Masculino
+                    </Text>
+                  </Stack>
+                </>
+              );
+            })()}
+          </>
+        )}
       </Stack>
     </Box>
   );
-};
-
-export default DepartmentData;
+}

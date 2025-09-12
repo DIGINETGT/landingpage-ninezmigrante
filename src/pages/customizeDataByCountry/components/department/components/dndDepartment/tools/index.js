@@ -1,33 +1,33 @@
 // TOOLS
-import depName from "../../../../../../country/components/statistics/components/heatMap/components/modal/utils";
-import { reorder } from "../../../../../../../utils/tools";
-import { colors } from "../../../../../../../utils/theme";
-import countryDeps, { depColors } from "../utils";
-import { year } from "../../../../../../../utils/year";
+import depName from '../../../../../../country/components/statistics/components/heatMap/components/modal/utils';
+import { reorder } from '../../../../../../../utils/tools';
+import { colors } from '../../../../../../../utils/theme';
+import countryDeps, { depColors } from '../utils';
+import { year } from '../../../../../../../utils/year';
 
 export const getItemStyle = (isDragging, draggableStyle, isMobile = false) => ({
-  userSelect: "none",
+  userSelect: 'none',
   minWidth: isMobile ? '43%' : 55,
   height: isMobile ? '43%' : 55,
   margin: `0 8px 0 0`,
-  borderRadius: "5px",
-  transition: "background 0.2s ease-in-out",
-  background: "transparent",
+  borderRadius: '5px',
+  transition: 'background 0.2s ease-in-out',
+  background: 'transparent',
   ...draggableStyle,
 });
 
 export const getListStyle = () => ({
-  display: "flex",
+  display: 'flex',
   padding: 8,
 });
 
 export const getDataItemStyle = (isDragging) => ({
   height: 305,
-  display: "flex",
-  flexDirection: "column",
-  borderRadius: isDragging ? "5px" : "0",
-  transition: "background 0.2s ease-in-out",
-  background: isDragging ? "rgba(0,0,0,0.1)" : "transparent",
+  display: 'flex',
+  flexDirection: 'column',
+  borderRadius: isDragging ? '5px' : '0',
+  transition: 'background 0.2s ease-in-out',
+  background: isDragging ? 'rgba(0,0,0,0.1)' : 'transparent',
 });
 
 /**
@@ -88,43 +88,97 @@ export const updateSection = ({
  * Si el destino es el mismo que el origen, reordene la lista; de lo contrario, actualice la sección.
  * @returns el resultado de la llamada de función a updateSection.
  */
-export const onDragEnd = ({
+// export const onDragEnd = ({
+//   result,
+//   countryID,
+//   period,
+//   setDepList,
+//   depDataCapital,
+//   depData,
+//   setDepDataList,
+// }) => {
+//   if (!result.destination) return;
+
+//   if (result.destination.droppableId === "droppableDeps") {
+//     setDepList((depList) =>
+//       reorder(depList, result.source.index, result.destination.index)
+//     );
+//   } else {
+//     // DATA
+//     const id = +result.destination.droppableId.substring(13) - 1;
+//     const dep = result.draggableId;
+
+//     // LOADING
+//     setDepDataList((prevData) => {
+//       const tmp = [...prevData];
+//       tmp[id] = { reload: true };
+//       return tmp;
+//     });
+
+//     // ACTUALIZAR
+//     updateSection({
+//       id,
+//       dep,
+//       countryID,
+//       period,
+//       setDepDataList,
+//       setDepList,
+//       depData,
+//       depDataCapital,
+//     });
+//   }
+// };
+
+// 🔁 NUEVO onDragEnd: arma la tarjeta con los mapas que ya tienes
+export function onDragEnd({
   result,
-  countryID,
-  period,
-  setDepList,
-  depDataCapital,
-  depData,
   setDepDataList,
-}) => {
-  if (!result.destination) return;
+  depDataCapital, // { depTotals: { quetzaltenango: 37, ... } }
+  depData, // { depSubDepGenderTotals: { quetzaltenango: { masculino: 22, femenino: 15 }, ... } }
+}) {
+  const { destination, draggableId } = result;
+  if (!destination) return;
 
-  if (result.destination.droppableId === "droppableDeps") {
-    setDepList((depList) =>
-      reorder(depList, result.source.index, result.destination.index)
-    );
-  } else {
-    // DATA
-    const id = +result.destination.droppableId.substring(13) - 1;
-    const dep = result.draggableId;
+  // A qué “slot” cayó
+  const slot =
+    destination.droppableId === 'droppableData1'
+      ? 0
+      : destination.droppableId === 'droppableData2'
+      ? 1
+      : destination.droppableId === 'droppableData3'
+      ? 2
+      : -1;
 
-    // LOADING
-    setDepDataList((prevData) => {
-      const tmp = [...prevData];
-      tmp[id] = { reload: true };
-      return tmp;
-    });
+  if (slot < 0) return;
 
-    // ACTUALIZAR
-    updateSection({
+  // Id del depto es el draggableId (p.e. "quetzaltenango")
+  const id = String(draggableId);
+  const name = depName?.[id] || id;
+
+  const totalsMap = depDataCapital?.depTotals || {};
+  const gendersMap = depData?.depSubDepGenderTotals || {};
+
+  const male = Number(gendersMap?.[id]?.masculino || 0);
+  const female = Number(gendersMap?.[id]?.femenino || 0);
+
+  // Si no encontramos department_contributions, usa M+F como fallback
+  const total = Number.isFinite(totalsMap?.[id])
+    ? Number(totalsMap[id])
+    : male + female || null;
+
+  // DEBUG opcional
+  // console.log("build card:", { id, name, total, male, female });
+
+  setDepDataList((prev) => {
+    const next = [...prev];
+    next[slot] = {
+      reload: false,
       id,
-      dep,
-      countryID,
-      period,
-      setDepDataList,
-      setDepList,
-      depData,
-      depDataCapital,
-    });
-  }
-};
+      name,
+      total,
+      male,
+      female,
+    };
+    return next;
+  });
+}

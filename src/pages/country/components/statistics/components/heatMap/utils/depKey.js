@@ -7,6 +7,7 @@ const depKey = (s = '') =>
   String(s)
     .toLowerCase()
     .replace(/\s+/g, '_')
+    .replace(/ /g, '_')
     .replace(/department/g, '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
