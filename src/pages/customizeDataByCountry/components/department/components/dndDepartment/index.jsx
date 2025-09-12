@@ -28,6 +28,8 @@ import ModalContentGT from '../../../../../../components/departments/components/
 import ModalContentHN from '../../../../../../components/departments/components/hn';
 import ModalContentSV from '../../../../../../components/departments/components/sv';
 
+import DepartmentListCarousel from '../../../../../../components/departmentListCarousel';
+
 // ----------------------------------------------------
 // Componente
 // ----------------------------------------------------
@@ -101,8 +103,6 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
     });
   };
 
-  const dropIds = ['droppableData1', 'droppableData2', 'droppableData3'];
-
   // const iso = isoFromCountrySlug(countryID);
 
   return (
@@ -121,7 +121,7 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Stack spacing={1} direction='column'>
+          <Stack spacing={1} direction='column' minWidth={'25%'}>
             <YearSelect
               currentYear={currentYear}
               handleYear={handleChangeYear}
@@ -130,98 +130,12 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
           </Stack>
 
           {/* Carrusel / lista de deptos */}
-          <Box
-            maxWidth={{ base: '100%', md: '475px' }}
-            style={{
-              overflowX: 'auto',
-              marginTop: '20px',
-              marginBottom: '20px',
-            }}
-          >
-            <Droppable droppableId='droppableDeps' direction='horizontal'>
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
-                  {...provided.droppableProps}
-                >
-                  {(depList || []).map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      index={index}
-                      draggableId={item.id}
-                    >
-                      {(p, s) => (
-                        <div
-                          ref={p.innerRef}
-                          {...p.draggableProps}
-                          {...p.dragHandleProps}
-                          style={getItemStyle(
-                            s.isDragging,
-                            p.draggableProps.style,
-                            windowWidth < 500
-                          )}
-                        >
-                          {windowWidth < 500 && (
-                            <Text
-                              textAlign='center'
-                              fontFamily='Oswald'
-                              mb={4}
-                              width='100%'
-                            >
-                              {depName?.[item?.id]}
-                            </Text>
-                          )}
 
-                          {/* Mini SVG del depto */}
-                          <svg
-                            x='0px'
-                            y='0px'
-                            version='1.2'
-                            width='100%'
-                            height='100%'
-                            className='depSVG'
-                            xmlSpace='preserve'
-                            viewBox='0 0 585.94 612'
-                            xmlns='http://www.w3.org/2000/svg'
-                            xmlnsXlink='http://www.w3.org/1999/xlink'
-                          >
-                            {getCountryContent({
-                              countryID,
-                              content: {
-                                guatemala: (
-                                  <ModalContentGT
-                                    customColor={item.color}
-                                    id={item.id}
-                                    disableHeat
-                                  />
-                                ),
-                                honduras: (
-                                  <ModalContentHN
-                                    customColor={item.color}
-                                    id={item.id}
-                                    disableHeat
-                                  />
-                                ),
-                                elsalvador: (
-                                  <ModalContentSV
-                                    customColor={item.color}
-                                    id={item.id}
-                                    disableHeat
-                                  />
-                                ),
-                              },
-                            })}
-                          </svg>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </Box>
+          <DepartmentListCarousel
+            countryID={countryID}
+            depList={depList}
+            depDataList={depDataList}
+          />
         </Stack>
 
         {/* Encabezado del canvas */}
