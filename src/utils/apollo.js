@@ -1,27 +1,73 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  from,
+  createHttpLink,
+  ApolloLink,
+} from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
+import { RetryLink } from '@apollo/client/link/retry';
 import { setContext } from '@apollo/client/link/context';
+
+const logLink = new ApolloLink((operation, forward) => {
+  const t0 = performance.now();
+  return forward(operation).map((result) => {
+    const t1 = performance.now();
+    return result;
+  });
+});
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_APP_BASENAME,
+  useGETForQueries: true,
+  fetchOptions: { mode: 'cors', credentials: 'omit' },
 });
 
-const authLink = setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers,
-      Authorization: `Bearer a6a73a15fe500c78d2d427cf9fffa1409f56314902c3a7deb6dc6fb776c2457834a747338163164817dab4cf3ae2ed538ef37133c87690d0a4a5d8846db3eee7cfa2e09b994b90af745cbfb4112008fb27cf3e2fcfa312f13b9538cd7c42d39e1c703c1bae8dcf1d5e19f37ad9e4f4bae596bf98d551fba6e2dde5c7ee1a4bea`,
-    },
-  };
+const authLink = setContext((_, { headers }) => ({
+  headers: {
+    ...headers,
+    Authorization: `Bearer ${import.meta.env.VITE_API_URL_GRAPH_TOKEN}`,
+  },
+}));
+
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  if (graphQLErrors?.length) {
+    console.warn('GraphQL errors', {
+      op: operation.operationName,
+      graphQLErrors,
+    });
+  }
+  if (networkError) console.warn('Network error', networkError);
 });
 
-const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'cache-and-network',
+const retryLink = new RetryLink({
+  delay: { initial: 300, max: 1500, jitter: true },
+  attempts: { max: 2, retryIf: (err) => !!err },
+});
+
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        monthlyReports: {
+          merge: (_existing, incoming) => incoming,
+        },
+      },
     },
   },
 });
 
-export default apolloClient;
+const client = new ApolloClient({
+  link: from([retryLink, errorLink, logLink, authLink, httpLink]),
+  cache,
+  queryDeduplication: true,
+  defaultOptions: {
+    query: { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-first' },
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',
+    },
+  },
+});
+
+export default client;

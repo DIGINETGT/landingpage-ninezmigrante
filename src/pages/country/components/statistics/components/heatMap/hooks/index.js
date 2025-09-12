@@ -2,47 +2,41 @@
 import { useContext, useEffect } from 'react';
 import HeatMapContext from '../context';
 
-// COLORS
+// CONTEXTO global
+import StatisticsContext from '../../../context';
+
+// COLORS / UTILS
 import { colors } from '../../../../../../../utils/theme';
 import getCountryContent from '../../../../../../../utils/country';
-import useReturnedFilteredQuery from '../../../../../../../hooks/query';
-import {
-  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
-  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
-} from '../../../../../../../utils/query/returned';
 
 /**
- * Devuelve un objeto de mapa de calor con un color y una función onClick si la propiedad disabledHeat
- * es falsa; de lo contrario, devuelve un objeto de mapa de calor con un color predeterminado y una
- * función onClick vacía
- * @param id - La identificación del elemento al que desea agregar el mapa de calor.
- * @param disableHeat - booleano: si es verdadero, el mapa de calor se desactivará
- * @returns Una función que toma una identificación y deshabilita el calor y devuelve un objeto.
+ * Hook para cada shape del mapa:
+ * devuelve color actual y handler onClick desde el HeatMapContext.
+ * Si disableHeat=true, devuelve color mínimo y onClick vacío.
  */
 const useHeatmap = (id, disableHeat) => {
   if (!disableHeat) {
     const heatmap = useContext(HeatMapContext);
-    const heatmapDefault = {
+    return {
       ...heatmap,
       color: heatmap.colorScales[id] ?? colors.heatMin[100],
       onClick: heatmap.onClick(id),
     };
-    return heatmapDefault;
   }
   return { color: colors.heatMin[100], onClick: () => {} };
 };
 
 /**
- * Obtiene datos de la API, calcula el porcentaje del total para cada departamento y luego establece la
- * escala de colores para cada departamento en función de ese porcentaje.
- * @param setColorScales - una función que establece las escalas de color en el estado
- * @param countryID - El ID del país para el que se obtendrán los datos.
- * @param period - El período del año, que puede ser "T1", "T2", "T3" o "T4".
- * @param year - El año que se mostrará
+ * Calcula la escala de color por departamento usando depTotals del StatisticsContext.
+ * NO hace llamadas a la API.
+ *
+ * @param setColorScales - setter del estado local en <HeatMap />
+ * @param countryID - 'gt' | 'sv' | 'hn' (para color base)
+ * @param depTotals - objeto { [depName]: total } ya agregado
  */
-export const useHeatColors = (setColorScales, countryID, period, year) => {
-  const setColor = (countryID, escala) => {
-    return getCountryContent({
+export const useHeatColors = (setColorScales, countryID, depTotals) => {
+  const setColor = (countryID, escala) =>
+    getCountryContent({
       countryID,
       content: {
         guatemala: `rgba(146,189,87, ${escala})`,
@@ -50,114 +44,29 @@ export const useHeatColors = (setColorScales, countryID, period, year) => {
         elsalvador: `rgba(96, 134, 167, ${escala})`,
       },
     });
-  };
 
-  const { data: databordersCapital } = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
-      countryID,
-      period,
-      year
-    ),
-    country: countryID,
-    year,
-    period,
-  });
-
-  const depTotals = {};
-
-  databordersCapital?.forEach((report) => {
-    report.attributes?.returned?.data?.attributes?.department_contributions?.data?.forEach(
-      (department) => {
-        const departmentName =
-          department?.attributes?.department?.data?.attributes?.name
-            ?.toLowerCase()
-            .replaceAll(' ', '_')
-            .replaceAll('department', '')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '') || 'Otros';
-
-        const departmentTotal = department?.attributes?.cant || 0;
-
-        depTotals[departmentName] =
-          (depTotals[departmentName] || 0) + departmentTotal;
-      }
-    );
-  });
-
-  const { data: databorders } = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT(countryID, period, year),
-    country: countryID,
-    year,
-    period,
-  });
-
-  const depSubDepTotals = {};
-  const depSubDepGenderTotals = {};
-
-  databorders?.forEach((report) => {
-    report.attributes?.returned?.data?.attributes?.municipality_contributions?.data?.forEach(
-      (muni) => {
-        const subDepName =
-          muni.attributes?.municipality?.data?.attributes?.name;
-
-        const depName =
-          muni.attributes?.municipality?.data?.attributes?.department?.data?.attributes?.name
-            ?.toLowerCase()
-            .replaceAll(' ', '_')
-            .replaceAll('department', '')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '');
-
-        const muniCant = muni.attributes?.cant || 0;
-        const gender =
-          muni.attributes?.gender?.data?.attributes?.name?.toLowerCase();
-
-        depSubDepTotals[depName] = {
-          ...depSubDepTotals[depName],
-          [subDepName]: depSubDepTotals?.[depName]?.[subDepName]
-            ? depSubDepTotals[depName][subDepName] + muniCant
-            : muniCant,
-        };
-
-        depSubDepGenderTotals[depName] = {
-          ...depSubDepGenderTotals[depName],
-          [gender]: depSubDepGenderTotals?.[depName]?.[gender]
-            ? depSubDepGenderTotals[depName][gender] + muniCant
-            : muniCant,
-        };
-      }
-    );
-  });
-
-  const depLength = Object.keys(depTotals).length;
   useEffect(() => {
-    const filteredData = Object.entries(depTotals ?? {}).map(
-      ([dep, total]) => ({
-        id: dep,
-        total,
-      })
+    const entries = Object.entries(depTotals || {});
+    if (!entries.length) {
+      setColorScales({});
+      return;
+    }
+
+    const higher = Math.max(
+      ...entries.map(([, total]) => Number(total || 0)),
+      0
     );
-
-    const totales = filteredData.map((department) => department.total);
     const scales = {};
-    const higher = Math.max(...totales);
-
-    filteredData.forEach((department) => {
-      const percent = department.total / higher;
-      const scale = Math.round((percent + Number.EPSILON) * 100) / 100;
-
-      if (scale === 0) scales[department.id] = colors.heatMin[100];
-      else scales[department.id] = setColor(countryID, scale);
-    });
+    for (const [dep, totalRaw] of entries) {
+      const total = Number(totalRaw || 0);
+      const percent = higher > 0 ? total / higher : 0;
+      const scale = Math.round((percent + Number.EPSILON) * 100) / 100; // 2 decimales
+      scales[dep] =
+        scale === 0 ? colors.heatMin[100] : setColor(countryID, scale);
+    }
 
     setColorScales(scales);
-  }, [countryID, period, depLength, year]);
-
-  return {
-    depTotals,
-    depSubDepTotals,
-    depSubDepGenderTotals,
-  };
+  }, [countryID, depTotals, setColorScales]);
 };
 
 export default useHeatmap;

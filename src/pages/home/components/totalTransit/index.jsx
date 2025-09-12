@@ -1,5 +1,6 @@
 // REACT
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Image, Text, Tooltip } from '@chakra-ui/react';
@@ -12,7 +13,8 @@ import Family from '../../../../assets/family.png';
 // UTILS
 import { year } from '../../../../utils/year';
 import { GET_TRANSIT_REPORTS } from '../../../../utils/query/returned';
-import { useQuery } from '@apollo/client';
+
+import BigStat from '../../../../components/common/BigStat';
 
 const TotalTransit = () => {
   const { data } = useQuery(GET_TRANSIT_REPORTS('GT', [1, 12], year));
@@ -67,9 +69,23 @@ const TotalTransit = () => {
           />
 
           {/* GLOBAL DATA */}
-          <Text fontFamily='Oswald' fontSize={{ base: '5xl', md: '6xl' }}>
-            {Number(totalCant)}
-          </Text>
+
+          <BigStat
+            value={totalCant}
+            compactFrom={10_000} // o Infinity si NO quieres compacto
+            mode='long' // "short" => 16.3K
+            withTooltip={false}
+            numberProps={{
+              color: 'black',
+              fontFamily: 'Oswald',
+              fontWeight: '400',
+              fontSize: { base: '5xl', md: '6xl' },
+              lineHeight: '1',
+              paddingTop: '10px',
+              paddingBottom: '15px',
+            }}
+            statProps={{ textAlign: 'right', paddingTop: '10px' }}
+          />
         </Stack>
       </Stack>
     </Box>

@@ -1,76 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext, useMemo } from 'react';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as CTooltip,
+  Legend,
+} from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+ChartJS.register(ArcElement, CTooltip, Legend);
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Box, Stack, Text } from '@chakra-ui/react';
+import { colors } from '../../../../../../utils/theme';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-import { Box, Stack, Text } from "@chakra-ui/react";
-import { colors } from "../../../../../../utils/theme";
-
-import { GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION } from "../../../../../../utils/query/returned";
-import useReturnedFilteredQuery from "../../../../../../hooks/query";
-import Loader from "../../../../../../components/loader";
+import StatisticsContext from '../../context';
+import Loader from '../../../../../../components/loader';
+import { formatInt } from '../../../../../../utils/numbers';
 
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
+  plugins: { legend: { display: false } },
 };
 
-const TravelCondition = ({
-  period,
-  year,
-  country,
-  defData,
-  skip,
-  loading: load,
-}) => {
-  const { countryID: id } = useParams();
-  const countryId = country || id;
+const TravelCondition = () => {
+  const { loading, travelConditionTotals } = useContext(StatisticsContext);
 
-  const { data: rdata, loading: loadingQuery } = useReturnedFilteredQuery({
-    year,
-    period,
-    country,
-    skip,
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION(
-      countryId,
-      period,
-      year
-    ),
-  });
-
-  const loading = load ?? loadingQuery;
-
-  let ACD = defData?.acd ?? 0;
-  let NO_ACD = defData?.noAcd ?? 0;
-  let UN_REGISTRED = defData?.unRegistred ?? 0;
-
-  rdata?.forEach((report) => {
-    report.attributes?.returned?.data?.attributes?.travel_condition_contributions?.data?.forEach(
-      (conditionContribution) => {
-        const travelCondition =
-          conditionContribution.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
-
-        if (travelCondition === "acompañado") {
-          ACD += conditionContribution.attributes?.cant || 0;
-        } else if (travelCondition === "no acompañado") {
-          NO_ACD += conditionContribution.attributes?.cant || 0;
-        } else if (travelCondition === "otros") {
-          UN_REGISTRED += conditionContribution.attributes?.cant || 0;
-        }
-      }
-    );
-  });
+  // nombres esperados en tu data: "acompañado" | "no acompañado" | "otros"
+  const { ACD, NO_ACD, UN_REGISTRED } = useMemo(() => {
+    const acd = travelConditionTotals?.['acompañado'] ?? 0;
+    const no = travelConditionTotals?.['no acompañado'] ?? 0;
+    const otr = travelConditionTotals?.['otros'] ?? 0;
+    return { ACD: acd, NO_ACD: no, UN_REGISTRED: otr };
+  }, [travelConditionTotals]);
 
   const data = {
-    labels: ["ACAMPANADOS", "NO ACAMPANADOS", "OTROS"],
+    labels: ['ACOMPAÑADOS', 'NO ACOMPAÑADOS', 'OTROS'],
     datasets: [
       {
         data: [ACD, NO_ACD, UN_REGISTRED],
@@ -86,60 +49,52 @@ const TravelCondition = ({
   };
 
   return (
-    <Box width="100%" position="relative">
+    <Box width='100%' position='relative'>
       <Loader loading={loading} />
 
-      {/* TITLE */}
-      <Stack justifyContent="center" alignItems="center">
-        <Text fontFamily="Oswald" fontSize="2xl">
+      <Stack justifyContent='center' alignItems='center'>
+        <Text fontFamily='Oswald' fontSize='2xl'>
           Condición de viaje
         </Text>
 
-        {/* PIE CHART */}
-        <Box maxWidth="200px">
+        <Box maxWidth='200px'>
           <Pie data={data} options={options} />
         </Box>
 
-        <Stack direction="column" spacing="-8px">
-          {/* DATA ITEM */}
-          <Stack direction="row" alignItems="center">
-            <Box bgColor="blue.700" width="18px" height="18px" />
-            <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+        <Stack direction='column' spacing='-8px'>
+          <Stack direction='row' alignItems='center'>
+            <Box bgColor='blue.700' width='18px' height='18px' />
+            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
               No Acompañados
             </Text>
-            <Text fontFamily="Oswald" fontSize="2xl">
-              {NO_ACD}
+            <Text fontFamily='Oswald' fontSize='2xl'>
+              {formatInt(NO_ACD)}
             </Text>
           </Stack>
 
-          {/* DATA ITEM */}
-          <Stack direction="row" alignItems="center">
-            <Box bgColor="green.700" width="18px" height="18px" />
-            <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+          <Stack direction='row' alignItems='center'>
+            <Box bgColor='green.700' width='18px' height='18px' />
+            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
               Acompañados
             </Text>
-            <Text fontFamily="Oswald" fontSize="2xl">
-              {ACD}
+            <Text fontFamily='Oswald' fontSize='2xl'>
+              {formatInt(ACD)}
             </Text>
           </Stack>
 
-          <Stack direction="row" alignItems="center">
-            <Box bgColor="yellow.700" width="18px" height="18px" />
-            <Text fontFamily="Oswald" fontSize="md" lineHeight="1">
+          <Stack direction='row' alignItems='center'>
+            <Box bgColor='yellow.700' width='18px' height='18px' />
+            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
               Otros
             </Text>
-            <Text fontFamily="Oswald" fontSize="2xl">
-              {UN_REGISTRED}
+            <Text fontFamily='Oswald' fontSize='2xl'>
+              {formatInt(UN_REGISTRED)}
             </Text>
           </Stack>
         </Stack>
       </Stack>
     </Box>
   );
-};
-
-TravelCondition.defaultProps = {
-  defData: { acd: undefined, noAcd: undefined },
 };
 
 export default TravelCondition;

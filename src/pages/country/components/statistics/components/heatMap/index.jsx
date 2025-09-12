@@ -1,81 +1,81 @@
-import React, { useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-
-// CHAKRA UI COMPONENTS
+import React, { useState, useRef, useContext, useMemo } from 'react';
 import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 
 import MapModal from './components/modal';
-
-// UTILS
-import HeatMapContext from './context';
-import { useHeatColors } from './hooks';
-
-import './style.css';
+import StatisticsContext from '../../context'; // datos globales
+import HeatMapContext from './context'; // contexto local de colores+onClick
 import { colors } from '../../../../../../utils/theme';
+import getCountryContent from '../../../../../../utils/country';
+
 import HeatMapGT from './components/gt';
 import HeatMapSV from './components/sv';
 import HeatMapHN from './components/hn';
-import getCountryContent from '../../../../../../utils/country';
 
-const HeatMap = ({ period, year, country, periodId, files }) => {
-  const countryID = useParams().countryID || country;
+import depKey from './utils/depKey'; // 👈 helper de normalización
+import { useHeatColors } from './hooks'; // (no hace fetch)
+import './style.css';
 
-  //SCALE
-  const scale = {
-    heat: getCountryContent({
-      countryID,
-      content: {
-        guatemala: {
-          color: 'rgba(146,189,87,1.0)',
-          levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+const HeatMap = ({ period, year, periodId, files }) => {
+  const {
+    countryID, // 'gt' | 'sv' | 'hn'
+    depTotals, // { [depNameNorm]: total }
+    depSubDepTotals, // { [depNameNorm]: { [muniName]: total } }
+    depSubDepGenderTotals, // { [depNameNorm]: { masculino: n, femenino: n, ... } }
+  } = useContext(StatisticsContext);
+
+  // Escala de color base por país (RGBA con alpha variable)
+  const scale = useMemo(
+    () => ({
+      heat: getCountryContent({
+        countryID,
+        content: {
+          guatemala: {
+            color: 'rgba(146,189,87,1.0)',
+            levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          },
+          honduras: {
+            color: 'rgba(221,184,65,1.0)',
+            levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          },
+          elsalvador: {
+            color: 'rgba(96, 134, 167,1.0)',
+            levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          },
         },
-        honduras: {
-          color: 'rgba(221,184,65,1.0)',
-          levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        },
-        elsalvador: {
-          color: 'rgba(96, 134, 167,1.0)',
-          levelHeat: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        },
-      },
+      }),
     }),
-  };
+    [countryID]
+  );
 
-  // COLORES
+  // Estado de colores por depto (interacción)
   const [colorScales, setColorScales] = useState({});
-
-  // MODAL
-  const [modalDep, setModalDep] = useState('');
-
-  // PREV COLOR
   const prevColor = useRef('');
 
-  // CLICK EN DEPARTAMENTO
+  // Click en depto → resalta y abre modal
+  const [modalDep, setModalDep] = useState('');
   const onClick = (name) => () => {
     prevColor.current = { [name]: colorScales[name] };
-    setModalDep(name);
-    setColorScales((prevScales) => ({
-      ...prevScales,
+    setColorScales((prev) => ({
+      ...prev,
       [name]: colors?.heat?.[countryID]?.[900],
     }));
+    setModalDep(name);
   };
-
-  // CERRAR
   const onCloseModal = () => {
     setModalDep('');
-    setColorScales((prevScales) => ({
-      ...prevScales,
-      ...prevColor.current,
-    }));
+    setColorScales((prev) => ({ ...prev, ...prevColor.current }));
   };
 
-  // DATA
-  const { depTotals, depSubDepTotals, depSubDepGenderTotals } = useHeatColors(
-    setColorScales,
-    countryID,
-    period,
-    year
-  );
+  // Calcula colorScales a partir de depTotals (NO hace fetch)
+  useHeatColors(setColorScales, countryID, depTotals);
+
+  // 👇 Normaliza la clave del depto seleccionado para buscar en los objetos agregados
+  const norm = depKey(modalDep);
+  const muniTotals =
+    depSubDepTotals?.[norm] ?? depSubDepTotals?.[modalDep] ?? {};
+  const muniGenderTotals =
+    depSubDepGenderTotals?.[norm] ?? depSubDepGenderTotals?.[modalDep] ?? {};
+  const deptTotal = depTotals?.[norm] ?? depTotals?.[modalDep] ?? 0;
 
   return (
     <HeatMapContext.Provider value={{ colorScales, onClick }}>
@@ -91,19 +91,19 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
         <Text fontFamily='Oswald' fontSize='2xl'>
           Departamento de origen
         </Text>
+
+        {/* Escala visual */}
         <Box>
           <HStack spacing={0}>
             <Box height='30px' width='30px' background={colors.heatMin[100]} />
-            {Object.values(scale?.heat?.levelHeat ?? {}).map((opacity) => {
-              return (
-                <Box
-                  height='30px'
-                  width='30px'
-                  key={opacity}
-                  background={scale.heat.color?.replace('1.0', opacity)}
-                />
-              );
-            })}
+            {(scale?.heat?.levelHeat ?? []).map((opacity) => (
+              <Box
+                key={opacity}
+                height='30px'
+                width='30px'
+                background={scale.heat.color?.replace('1.0', opacity)}
+              />
+            ))}
           </HStack>
           <Flex justifyContent='space-between'>
             <Text fontFamily='Oswald' fontSize='lg'>
@@ -115,6 +115,7 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
           </Flex>
         </Box>
 
+        {/* Mapa por país */}
         {getCountryContent({
           countryID,
           content: {
@@ -124,16 +125,16 @@ const HeatMap = ({ period, year, country, periodId, files }) => {
           },
         })}
 
+        {/* Modal con datos ya agregados */}
         <MapModal
-          country={country}
           files={files}
           year={year}
           period={period}
           modalDep={modalDep}
           periodId={periodId}
-          departmentTotal={depTotals[modalDep] ?? 0}
-          genderDepTotals={depSubDepGenderTotals[modalDep]}
-          depTotals={depSubDepTotals[modalDep]}
+          departmentTotal={deptTotal}
+          genderDepTotals={muniGenderTotals}
+          depTotals={muniTotals}
           onCloseModal={onCloseModal}
         />
       </Box>

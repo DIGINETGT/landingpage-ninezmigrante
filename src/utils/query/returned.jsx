@@ -1,7 +1,97 @@
-import { gql } from "@apollo/client";
-import { getFilterByCountry, getFilterByPeriod } from "./filters";
+import { gql } from '@apollo/client';
+import { getFilterByCountry, getFilterByPeriod } from './filters';
 
-import { year as currentYear } from "../year";
+import { year as currentYear } from '../year';
+
+// Para todos los países
+export const GET_RETURNEDS_BY_GENDER_REGION = gql`
+  query ReportsByGenderRegion($isos: [String!]!, $start: Date!, $end: Date!) {
+    monthlyReports(
+      filters: {
+        reportMonth: { gte: $start, lt: $end }
+        users_permissions_user: {
+          organization: { department: { country: { isoCode: { in: $isos } } } }
+        }
+      }
+      sort: ["reportMonth:asc"]
+      pagination: { page: 1, pageSize: 500 }
+    ) {
+      data {
+        id
+        attributes {
+          reportMonth
+          returned {
+            data {
+              id
+              attributes {
+                total
+                gender_contributions(pagination: { page: 1, pageSize: 9999 }) {
+                  data {
+                    attributes {
+                      cant
+                      gender {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Para un país
+export const GET_RETURNEDS_BY_GENDER_COUNTRY = gql`
+  query ReportsByGenderCountry($iso: String!, $start: Date!, $end: Date!) {
+    monthlyReports(
+      filters: {
+        reportMonth: { gte: $start, lt: $end }
+        users_permissions_user: {
+          organization: { department: { country: { isoCode: { eq: $iso } } } }
+        }
+      }
+      sort: ["reportMonth:asc"]
+      pagination: { page: 1, pageSize: 200 }
+    ) {
+      data {
+        id
+        attributes {
+          reportMonth
+          returned {
+            data {
+              id
+              attributes {
+                total
+                gender_contributions(pagination: { page: 1, pageSize: 9999 }) {
+                  data {
+                    attributes {
+                      cant
+                      gender {
+                        data {
+                          attributes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const GET_RETURNEDS_BY_GENDER = (
   country,
@@ -9,7 +99,7 @@ export const GET_RETURNEDS_BY_GENDER = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByPeriod(period, year)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         id
         attributes {
@@ -20,11 +110,53 @@ export const GET_RETURNEDS_BY_GENDER = (
               id
               attributes {
                 total
-                gender_contributions {
+                gender_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
-                      gender {
+                      gender { data { attributes { name } } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RETURNEDS_BY_TRAVEL_CONDITION_REGION = gql`
+  query ReportsByTravelCondRegion(
+    $isos: [String!]!
+    $start: Date!
+    $end: Date!
+  ) {
+    monthlyReports(
+      filters: {
+        reportMonth: { gte: $start, lt: $end }
+        users_permissions_user: {
+          organization: { department: { country: { isoCode: { in: $isos } } } }
+        }
+      }
+      sort: ["reportMonth:asc"]
+      pagination: { page: 1, pageSize: 500 }
+    ) {
+      data {
+        attributes {
+          reportMonth
+          returned {
+            data {
+              attributes {
+                total
+                travel_condition_contributions(
+                  pagination: { page: 1, pageSize: 9999 }
+                ) {
+                  data {
+                    attributes {
+                      cant
+                      travel_condition {
                         data {
                           attributes {
                             name
@@ -49,7 +181,7 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByPeriod(period, year)}) {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         id
         attributes {
@@ -60,17 +192,11 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION = (
               id
               attributes {
                 total
-                travel_condition_contributions {
+                travel_condition_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
-                      travel_condition {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
+                      travel_condition { data { attributes { name } } }
                     }
                   }
                 }
@@ -98,7 +224,7 @@ query {
           data {
             attributes {
               total
-              fuentes {
+              fuentes(pagination: { limit: -1 }) {
                 data {
                   attributes {
                     url
@@ -155,7 +281,7 @@ export const GET_RETURNEDS_BY_COUNTRY = (
               attributes {
                 total
 
-                fuentes {
+                fuentes(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       url
@@ -163,14 +289,14 @@ export const GET_RETURNEDS_BY_COUNTRY = (
                   }
                 }
                 
-                country_contributions {
+                country_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       returned {
                         data {
                           attributes {
                             total
-                            fuentes {
+                            fuentes(pagination: { limit: -1 }) {
                               data {
                                 attributes {
                                   url
@@ -231,14 +357,14 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_GENDER = (
           returned {
             data {
               attributes {
-                fuentes {
+                fuentes(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       url
                     }
                   }
                 }
-                gender_contributions {
+                gender_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                        cant
@@ -300,14 +426,14 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_TRAVEL_CONDITION = (
           returned {
             data {
               attributes {
-                fuentes {
+                fuentes(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       url
                     }
                   }
                 }
-                travel_condition_contributions {
+                travel_condition_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
@@ -371,14 +497,14 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_AGE_GROUP = (
             data {
               attributes {
                 total
-                fuentes {
+                fuentes(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       url
                     }
                   }
                 }
-                age_group_contributions {
+                age_group_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
@@ -441,14 +567,14 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_ROUTE = (
           returned {
             data {
               attributes {
-                fuentes {
+                fuentes(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       url
                     }
                   }
                 }
-                return_route_contributions {
+                return_route_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
@@ -510,7 +636,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_RETURN_COUNTRY = (
           returned {
             data {
               attributes {
-                country_contributions {
+                country_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
                       cant
@@ -580,7 +706,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT = (
         returned {
           data {
             attributes {
-              fuentes {
+              fuentes(pagination: { limit: -1 }) {
                 data {
                   attributes {
                     url
@@ -671,7 +797,7 @@ export const GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL = (
         returned {
           data {
             attributes {
-              fuentes {
+              fuentes(pagination: { limit: -1 }) {
                 data {
                   attributes {
                     url
@@ -734,12 +860,12 @@ export const GET_TRANSIT_REPORTS = (
 ) => {
   return gql`
   query {
-    transitReports(${getFilterByPeriod(period, year, "reportDate")}) {
+    transitReports(${getFilterByPeriod(period, year, 'reportDate')}) {
       data {
         id
         attributes {
           reportDate
-          gender_contributions {
+          gender_contributions(pagination: { limit: -1 }) {
             data {
               attributes {
                 cant
@@ -759,7 +885,7 @@ export const GET_DETAINED_IN_BORDERDS = (
   year = currentYear
 ) => gql`
   query {
-    detainedInBordersReports(${getFilterByPeriod(period, year, "reportDate")}) {
+    detainedInBordersReports(${getFilterByPeriod(period, year, 'reportDate')}) {
       data {
         id
         attributes {
