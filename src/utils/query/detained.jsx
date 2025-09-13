@@ -1,101 +1,33 @@
-import { gql } from "@apollo/client";
-import { getFilterByCountry } from "./filters";
+import { gql } from '@apollo/client';
+import { getFilterByCountry } from './filters';
 
-import { year as currentYear } from "../year";
+import { year as currentYear } from '../year';
 
-export const GET_DETAINED_IN_BORDERDS_BY_COUNTRY = (
-  country,
-  period = [1, 12],
-  year = currentYear,
-) => gql`
-  query {
-  detainedInBordersReports(${getFilterByCountry(country, period, year, 'reportDate')}) {
-    data {
-      id
-      attributes {
-        reportDate
-        updatedAt
-        fuentes {
-          data {
-            attributes {
-              url
-            }
-          } 
-        }
-        country {
-          data {
-            attributes {
-              name
-            }
+export const GET_DETAINED_IN_BORDERS_BY_COUNTRY = gql`
+  query DetainedInBordersByCountry(
+    $country: String!
+    $registrarCountry: String!
+    $yearStart: Date!
+    $yearEnd: Date!
+  ) {
+    detainedInBordersReports(
+      filters: {
+        country: { name: { eqi: $country } }
+        users_permissions_user: {
+          organization: {
+            department: { country: { name: { eqi: $registrarCountry } } }
           }
         }
-        detained_in_borders(pagination: { limit: -1 }) {
-          data {
-            id
-            attributes {
-              month  
-              total
-              femenino
-              masculino
-              acompaniados
-              noAcompaniados
-              ninos
-              adolescentes
-            }
-          }
-        }
-        users_permissions_user {
-          data {
-            attributes {
-              organization {
-                data {
-                  attributes {
-                    department {
-                      data {
-                        attributes {
-                          country {
-                            data {
-                              attributes {
-                                name
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        reportDate: { gte: $yearStart, lte: $yearEnd }
       }
-    }
-  }
-}
-`;
-
-export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (
-  country,
-  period = [1, 12],
-  year = currentYear,
-) => gql`
-  query {
-    detainedInBordersReports(${getFilterByCountry(country, period, year, 'reportDate')}) {
+      pagination: { limit: -1 }
+      sort: ["reportDate:asc"]
+    ) {
       data {
         id
         attributes {
-          updatedAt
           reportDate
-
-          fuentes {
-            data {
-              attributes {
-                url
-              }
-            }
-          }
-
+          updatedAt
           country {
             data {
               attributes {
@@ -103,12 +35,79 @@ export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (
               }
             }
           }
-
-          detained_us_borders(pagination: { limit: -1 }) {
+          fuentes {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          detained_in_borders(pagination: { limit: -1 }) {
             data {
               id
               attributes {
                 month
+                total
+                femenino
+                masculino
+                acompaniados
+                noAcompaniados
+                ninos
+                adolescentes
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_DETAINED_US_BORDERS_BY_COUNTRY = gql`
+  query USDetainedByParentYearAndRegistrar(
+    $country: String! # País del informe (p.ej. "Estados Unidos")
+    $registrarCountry: String! # País que registró (p.ej. "Guatemala"|"Honduras"|"El Salvador")
+    $yearStart: Date!
+    $yearEnd: Date!
+  ) {
+    detainedInBordersReports(
+      filters: {
+        country: { name: { eqi: $country } }
+        users_permissions_user: {
+          organization: {
+            department: { country: { name: { eqi: $registrarCountry } } }
+          }
+        }
+        reportDate: { gte: $yearStart, lte: $yearEnd }
+      }
+      pagination: { limit: -1 }
+      sort: ["reportDate:asc"]
+    ) {
+      data {
+        attributes {
+          reportDate
+          updatedAt
+          country {
+            data {
+              attributes {
+                name
+              }
+            }
+          }
+          fuentes {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          detained_us_borders(pagination: { limit: -1 }) {
+            data {
+              attributes {
+                month
+                total
+                totalAcompaniados
+                totalNoAcompaniados
                 elCentroAcompaniados
                 yumaAcompaniados
                 tucsonAcompaniados
@@ -126,35 +125,6 @@ export const GET_DETAINED_US_BORDERDS_BY_COUNTRY = (
                 delRioNoAcompaniados
                 laredoNoAcompaniados
                 rioGrandeNoAcompaniados
-                totalAcompaniados
-                totalNoAcompaniados
-                total
-              }
-            }
-          }
-
-          users_permissions_user {
-            data {
-              attributes {
-                organization {
-                  data {
-                    attributes {
-                      department {
-                        data {
-                          attributes {
-                            country {
-                              data {
-                                attributes {
-                                  name
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
               }
             }
           }

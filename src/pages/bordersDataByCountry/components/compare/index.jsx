@@ -1,33 +1,33 @@
 // REACT
-import React, { useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Text, Image, Divider } from "@chakra-ui/react";
+import { Box, Stack, Text, Image, Divider } from '@chakra-ui/react';
 
 // COMPONENTS
-import DownloadImage from "../../../../components/downloadImage";
-import MonthPicker from "../../../../components/monthPicker";
-import YearSelect from "../../../../components/yearSelect";
-import GraphFooter from "../../../../components/graphFooter";
+import DownloadImage from '../../../../components/downloadImage';
+import MonthPicker from '../../../../components/monthPicker';
+import YearSelect from '../../../../components/yearSelect';
+import GraphFooter from '../../../../components/graphFooter';
 
 // ASSETS
-import MapaHonduras from "../../../.../../../assets/MapaHonduras.svg";
-import MapaElSalvador from "../../../../assets/MapaElSalvador.svg";
-import MapaMexico from "../../../../assets/MapaMexico.png";
-import MapaEEUU from "../../../../assets/MapaEEUU.png";
-import MapaGuatemala from "../../../../assets/MapaGuatemala.png";
+import MapaHonduras from '../../../.../../../assets/MapaHonduras.svg';
+import MapaElSalvador from '../../../../assets/MapaElSalvador.svg';
+import MapaMexico from '../../../../assets/MapaMexico.png';
+import MapaEEUU from '../../../../assets/MapaEEUU.png';
+import MapaGuatemala from '../../../../assets/MapaGuatemala.png';
 
 // UTILS
-import { year } from "../../../../utils/year";
-import LastDate from "../../../../components/lastUpdate";
-import getCountryContent from "../../../../utils/country";
-import { useDetainedEEUU } from "../statistics/eeuu/hooks";
-import { useDetainedMexico } from "../statistics/mexico/hooks";
-import useReturnedFilteredQuery from "../../../../hooks/query";
-import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from "../../../../utils/query/returned";
-import DownloadTable from "../../../country/components/statistics/components/downloadTable";
-import Loader from "../../../../components/loader";
+import { year } from '../../../../utils/year';
+import LastDate from '../../../../components/lastUpdate';
+import getCountryContent from '../../../../utils/country';
+import { useUSDetained } from '../statistics/eeuu/hooks';
+import { useDetainedMexico } from '../statistics/mexico/hooks';
+import useReturnedFilteredQuery from '../../../../hooks/query';
+import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from '../../../../utils/query/returned';
+import DownloadTable from '../../../country/components/statistics/components/downloadTable';
+import Loader from '../../../../components/loader';
 
 const Compare = () => {
   const [currentPeriod, setCurrentPeriod] = useState([]);
@@ -42,7 +42,7 @@ const Compare = () => {
     dataPerMonth: dataUS,
     updateDate,
     files: filesUs,
-  } = useDetainedEEUU({
+  } = useUSDetained({
     period: currentPeriod,
     currentYear,
   });
@@ -72,22 +72,22 @@ const Compare = () => {
 
   const sources = (
     <Stack
-      width="100%"
-      margin="auto"
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-      maxWidth="800px"
+      width='100%'
+      margin='auto'
+      direction='column'
+      alignItems='center'
+      justifyContent='center'
+      maxWidth='800px'
     >
       <a
-        href="http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos"
-        target="_blank"
+        href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
+        target='_blank'
       >
         <Text
-          textAlign="center"
-          fontFamily="Oswald"
-          fontSize={{ base: "xl", md: "2xl" }}
-          maxWidth={"800px"}
+          textAlign='center'
+          fontFamily='Oswald'
+          fontSize={{ base: 'xl', md: '2xl' }}
+          maxWidth={'800px'}
         >
           Fuente: Secretaría de Gobernación/Unidad de Política Migratoria,
           Registro e Identidad de Personas. Gobierno de México.
@@ -97,39 +97,39 @@ const Compare = () => {
   );
 
   return (
-    <Box width="100%" bgColor="#d9e8e8" padding="40px 40px 80px 40px">
+    <Box width='100%' bgColor='#d9e8e8' padding='40px 40px 80px 40px'>
       <Stack
-        width="100%"
-        margin="auto"
-        spacing="40px"
-        maxWidth="800px"
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
+        width='100%'
+        margin='auto'
+        spacing='40px'
+        maxWidth='800px'
+        direction='column'
+        alignItems='center'
+        justifyContent='center'
       >
         <Divider
-          width="100%"
-          borderWidth="1px"
-          borderColor="black"
-          orientation="horizontal"
-          display={{ base: "none", md: "block" }}
+          width='100%'
+          borderWidth='1px'
+          borderColor='black'
+          orientation='horizontal'
+          display={{ base: 'none', md: 'block' }}
         />
 
-        <Stack justifyContent="center" alignItems="center" gap="8px">
+        <Stack justifyContent='center' alignItems='center' gap='8px'>
           <Text
-            lineHeight="1"
-            fontSize="4xl"
-            textAlign="center"
-            fontFamily="Oswald"
+            lineHeight='1'
+            fontSize='4xl'
+            textAlign='center'
+            fontFamily='Oswald'
           >
             COMPARAR DETENIDOS EN FRONTERA CON RETORNADOS
           </Text>
 
           <Stack
-            width="100%"
-            alignItems="center"
-            justifyContent="center"
-            direction={{ base: "column", md: "row" }}
+            width='100%'
+            alignItems='center'
+            justifyContent='center'
+            direction={{ base: 'column', md: 'row' }}
           >
             {/* SELECT YEAR */}
             <YearSelect currentYear={currentYear} handleYear={handleYear} />
@@ -139,25 +139,27 @@ const Compare = () => {
           </Stack>
         </Stack>
 
-        <Box padding="40px" ref={containerRef}>
+        <Box padding='40px' ref={containerRef}>
           <Stack
-            gap="24px"
-            width="100%"
-            justifyContent="center"
-            position="relative"
-            direction={{ base: "column", md: "row" }}
-            alignItems={{ base: "center", md: "flex-end" }}
+            gap='24px'
+            width='100%'
+            justifyContent='center'
+            position='relative'
+            direction={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'center', md: 'flex-end' }}
           >
-            <Loader loading={loading && currentYear && currentPeriod.length > 0} />
+            <Loader
+              loading={loading && currentYear && currentPeriod.length > 0}
+            />
 
             <Stack
-              maxWidth="210px"
-              justifyContent="center"
-              alignItems={{ base: "center", md: "flex-end" }}
+              maxWidth='210px'
+              justifyContent='center'
+              alignItems={{ base: 'center', md: 'flex-end' }}
             >
               <Image
-                height="200px"
-                maxWidth={{ base: "300px", md: "240px" }}
+                height='200px'
+                maxWidth={{ base: '300px', md: '240px' }}
                 src={getCountryContent({
                   countryID,
                   content: {
@@ -168,30 +170,30 @@ const Compare = () => {
                 })}
               />
               <Text
-                fontSize="2xl"
-                lineHeight="1"
-                fontFamily="Oswald"
-                textAlign={{ base: "center", md: "right" }}
+                fontSize='2xl'
+                lineHeight='1'
+                fontFamily='Oswald'
+                textAlign={{ base: 'center', md: 'right' }}
               >
-                TOTAL DE RETORNADOS A{" "}
+                TOTAL DE RETORNADOS A{' '}
                 {getCountryContent({
                   countryID,
                   capitalize: true,
                 }).toUpperCase()}
               </Text>
               <Text
-                fontSize="xl"
-                lineHeight="1"
-                fontWeight="600"
-                fontFamily="Times"
+                fontSize='xl'
+                lineHeight='1'
+                fontWeight='600'
+                fontFamily='Times'
               >
-                {currentYear || "Año"}
+                {currentYear || 'Año'}
               </Text>
               <Text
-                lineHeight="1"
-                textAlign="right"
-                fontFamily="Oswald"
-                fontSize={{ base: "4xl", md: "6xl" }}
+                lineHeight='1'
+                textAlign='right'
+                fontFamily='Oswald'
+                fontSize={{ base: '4xl', md: '6xl' }}
               >
                 {totalCant}
               </Text>
@@ -199,69 +201,69 @@ const Compare = () => {
 
             {/* DIVIDER */}
             <Divider
-              height="400px"
-              borderWidth="1px"
-              orientation="vertical"
-              borderColor="#000"
-              display={{ base: "none", md: "block" }}
+              height='400px'
+              borderWidth='1px'
+              orientation='vertical'
+              borderColor='#000'
+              display={{ base: 'none', md: 'block' }}
             />
 
             <Stack
-              justifyContent="center"
-              alignItems="center"
-              maxWidth="300px"
-              spacing="16px"
+              justifyContent='center'
+              alignItems='center'
+              maxWidth='300px'
+              spacing='16px'
             >
               <Image
                 src={MapaEEUU}
-                height="120px"
-                maxWidth="300px"
-                objectFit="contain"
+                height='120px'
+                maxWidth='300px'
+                objectFit='contain'
               />
-              <Text fontFamily="Oswald" fontSize="2xl" lineHeight="1">
+              <Text fontFamily='Oswald' fontSize='2xl' lineHeight='1'>
                 Estados Unidos
               </Text>
               <Text
-                fontSize="xl"
-                lineHeight="1"
-                fontWeight="600"
-                fontFamily="Times"
+                fontSize='xl'
+                lineHeight='1'
+                fontWeight='600'
+                fontFamily='Times'
               >
-                {currentYear || "Año"}
+                {currentYear || 'Año'}
               </Text>
               <Text
-                lineHeight="1"
-                fontFamily="Oswald"
-                fontSize={{ base: "4xl", md: "6xl" }}
+                lineHeight='1'
+                fontFamily='Oswald'
+                fontSize={{ base: '4xl', md: '6xl' }}
               >
-                {dataUS.totalMes ?? "N/D"}
+                {dataUS.totalMes ?? 'N/D'}
               </Text>
             </Stack>
 
-            <Stack justifyContent="center" alignItems="center" lineHeight="1">
+            <Stack justifyContent='center' alignItems='center' lineHeight='1'>
               <Image
                 src={MapaMexico}
-                height="160px"
-                maxWidth="200px"
-                objectFit="contain"
+                height='160px'
+                maxWidth='200px'
+                objectFit='contain'
               />
-              <Text fontFamily="Oswald" fontSize="2xl">
+              <Text fontFamily='Oswald' fontSize='2xl'>
                 México
               </Text>
               <Text
-                fontSize="xl"
-                lineHeight="1"
-                fontWeight="600"
-                fontFamily="Times"
+                fontSize='xl'
+                lineHeight='1'
+                fontWeight='600'
+                fontFamily='Times'
               >
-                {currentYear || "Año"}
+                {currentYear || 'Año'}
               </Text>
               <Text
-                lineHeight="1"
-                fontFamily="Oswald"
-                fontSize={{ base: "4xl", md: "6xl" }}
+                lineHeight='1'
+                fontFamily='Oswald'
+                fontSize={{ base: '4xl', md: '6xl' }}
               >
-                {dataMx.totalMes ?? "N/D"}
+                {dataMx.totalMes ?? 'N/D'}
               </Text>
             </Stack>
           </Stack>
