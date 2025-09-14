@@ -1,285 +1,376 @@
-// REACT
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import {
+  Box,
+  Stack,
+  Text,
+  Image,
+  Divider,
+  Grid,
+  GridItem,
+  Skeleton,
+} from '@chakra-ui/react';
 
-// CHAKRA UI COMPONENTS
-import { Box, Stack, Text, Image, Divider } from '@chakra-ui/react';
-
-// COMPONENTS
-import DownloadImage from '../../../../components/downloadImage';
 import MonthPicker from '../../../../components/monthPicker';
 import YearSelect from '../../../../components/yearSelect';
 import GraphFooter from '../../../../components/graphFooter';
+import LastDate from '../../../../components/lastUpdate';
+import DownloadTable from '../../../country/components/statistics/components/downloadTable';
+import Loader from '../../../../components/loader';
+import BigStat from '../../../../components/common/BigStat';
 
-// ASSETS
 import MapaHonduras from '../../../.../../../assets/MapaHonduras.svg';
 import MapaElSalvador from '../../../../assets/MapaElSalvador.svg';
 import MapaMexico from '../../../../assets/MapaMexico.png';
 import MapaEEUU from '../../../../assets/MapaEEUU.png';
 import MapaGuatemala from '../../../../assets/MapaGuatemala.png';
 
-// UTILS
-import { year } from '../../../../utils/year';
-import LastDate from '../../../../components/lastUpdate';
+import { year as defaultYear } from '../../../../utils/year';
 import getCountryContent from '../../../../utils/country';
+import { monthNames } from '../../../../hooks/fetch';
+
 import { useUSDetained } from '../statistics/eeuu/hooks';
 import { useDetainedMexico } from '../statistics/mexico/hooks';
+
 import useReturnedFilteredQuery from '../../../../hooks/query';
 import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from '../../../../utils/query/returned';
-import DownloadTable from '../../../country/components/statistics/components/downloadTable';
-import Loader from '../../../../components/loader';
+
+const Card = ({ children }) => (
+  <Box
+    bg='white'
+    borderRadius='xl'
+    boxShadow='sm'
+    border='1px solid'
+    borderColor='blackAlpha.200'
+    p={{ base: 5, md: 6 }}
+    minH='220px'
+  >
+    {children}
+  </Box>
+);
+
+const StatNumber = ({ value, fontSize = { base: '4xl', md: '6xl' } }) => (
+  <BigStat
+    value={value}
+    compactFrom={10000}
+    mode='long'
+    withTooltip={false}
+    numberProps={{
+      fontFamily: 'Oswald',
+      fontSize,
+      lineHeight: '1',
+      fontWeight: 700,
+    }}
+  />
+);
 
 const Compare = () => {
-  const [currentPeriod, setCurrentPeriod] = useState([]);
-  const [currentYear, setCurrentYear] = useState(year);
-  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const { countryID } = useParams();
+  const { countryID } = useParams(); // gt | hn | sv
   const containerRef = useRef();
 
-  const handleYear = (ev) => setCurrentYear(ev.target.value);
+  const [currentYear, setCurrentYear] = useState('');
+  const [currentPeriod, setCurrentPeriod] = useState([]); // [from, to]
+  const [isScreenShotTime] = useState(false);
 
+  const handleYear = (ev) =>
+    setCurrentYear(ev.target.value ? Number(ev.target.value) : '');
+  const handlePeriod = (range) =>
+    setCurrentPeriod(Array.isArray(range) ? range.map(Number) : []);
+
+  const selectedYear = useMemo(
+    () => Number(currentYear || defaultYear),
+    [currentYear]
+  );
+
+  const periodLabel = useMemo(() => {
+    const [fromM, toM] = currentPeriod || [];
+    if (!fromM || !toM) return 'Selecciona año y mes para ver los datos';
+    return fromM === toM
+      ? `${monthNames[fromM]} - ${selectedYear}`
+      : `${monthNames[fromM]} - ${monthNames[toM]} ${selectedYear}`;
+  }, [currentPeriod, selectedYear]);
+
+  // EE.UU.
   const {
     dataPerMonth: dataUS,
-    updateDate,
-    files: filesUs,
+    updateDate: updateDateUS,
+    files: filesUs = [],
   } = useUSDetained({
+    countryName: 'Estados Unidos',
+    registrar: countryID,
+    year: selectedYear,
     period: currentPeriod,
-    currentYear,
-  });
-  const { dataPerMonth: dataMx, files: filesMx } = useDetainedMexico({
-    period: currentPeriod,
-    currentYear,
   });
 
+  // México
+  const {
+    dataPerMonth: dataMx,
+    updateDate: updateDateMX,
+    files: filesMx = [],
+  } = useDetainedMexico({
+    period: currentPeriod,
+    currentYear: selectedYear,
+    registrar: countryID,
+  });
+
+  // Retornados (total por país destino)
   const filesRef = useRef([]);
   const { data: returnedData, loading } = useReturnedFilteredQuery({
     filesRef,
-    year: currentYear,
+    year: selectedYear,
     period: currentPeriod,
     query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL(
       countryID,
       currentPeriod,
-      currentYear
+      selectedYear
     ),
   });
-  let totalCant = 0;
 
-  returnedData?.forEach((report) => {
-    totalCant += report.attributes?.returned?.data?.attributes?.total || 0;
+  let totalCant = 0;
+  returnedData?.forEach((r) => {
+    totalCant += r.attributes?.returned?.data?.attributes?.total || 0;
   });
 
-  let combinedFiles = [...filesMx, ...filesUs, ...filesRef.current];
+  const combinedFiles = [
+    ...(filesMx || []),
+    ...(filesUs || []),
+    ...(filesRef.current || []),
+  ];
 
-  const sources = (
-    <Stack
-      width='100%'
-      margin='auto'
-      direction='column'
-      alignItems='center'
-      justifyContent='center'
-      maxWidth='800px'
-    >
-      <a
-        href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
-        target='_blank'
-      >
-        <Text
-          textAlign='center'
-          fontFamily='Oswald'
-          fontSize={{ base: 'xl', md: '2xl' }}
-          maxWidth={'800px'}
-        >
-          Fuente: Secretaría de Gobernación/Unidad de Política Migratoria,
-          Registro e Identidad de Personas. Gobierno de México.
-        </Text>
-      </a>
-    </Stack>
-  );
+  const updateDate = useMemo(() => {
+    const toTime = (s) => (s ? new Date(s).getTime() : 0);
+    return toTime(updateDateUS) >= toTime(updateDateMX)
+      ? updateDateUS
+      : updateDateMX;
+  }, [updateDateUS, updateDateMX]);
+
+  const countryMap = getCountryContent({
+    countryID,
+    content: {
+      guatemala: MapaGuatemala,
+      honduras: MapaHonduras,
+      elsalvador: MapaElSalvador,
+    },
+  });
+
+  const ready =
+    Boolean(selectedYear) &&
+    Array.isArray(currentPeriod) &&
+    currentPeriod.length === 2;
 
   return (
-    <Box width='100%' bgColor='#d9e8e8' padding='40px 40px 80px 40px'>
+    <Box width='100%' bgColor='#d9e8e8' padding={{ base: '24px', md: '40px' }}>
       <Stack
         width='100%'
         margin='auto'
-        spacing='40px'
-        maxWidth='800px'
-        direction='column'
-        alignItems='center'
-        justifyContent='center'
+        spacing='28px'
+        maxWidth='1100px'
+        alignItems='stretch'
       >
-        <Divider
-          width='100%'
-          borderWidth='1px'
-          borderColor='black'
-          orientation='horizontal'
-          display={{ base: 'none', md: 'block' }}
-        />
-
-        <Stack justifyContent='center' alignItems='center' gap='8px'>
-          <Text
-            lineHeight='1'
-            fontSize='4xl'
-            textAlign='center'
-            fontFamily='Oswald'
-          >
+        {/* Header */}
+        <Stack
+          alignItems={{ base: 'stretch', md: 'center' }}
+          direction={{ base: 'column', md: 'row' }}
+          justifyContent='space-between'
+          gap={4}
+        >
+          <Text fontFamily='Oswald' fontSize={{ base: '3xl', md: '3xl' }}>
             COMPARAR DETENIDOS EN FRONTERA CON RETORNADOS
           </Text>
 
           <Stack
-            width='100%'
-            alignItems='center'
-            justifyContent='center'
             direction={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'stretch', md: 'center' }}
+            gap={3}
+            minW={{ md: '460px' }}
           >
-            {/* SELECT YEAR */}
             <YearSelect currentYear={currentYear} handleYear={handleYear} />
-
-            {/* SELECT PERIOD */}
-            <MonthPicker onAccept={setCurrentPeriod} />
+            <MonthPicker onAccept={handlePeriod} />
           </Stack>
         </Stack>
 
-        <Box padding='40px' ref={containerRef}>
-          <Stack
-            gap='24px'
-            width='100%'
-            justifyContent='center'
-            position='relative'
-            direction={{ base: 'column', md: 'row' }}
-            alignItems={{ base: 'center', md: 'flex-end' }}
-          >
-            <Loader
-              loading={loading && currentYear && currentPeriod.length > 0}
-            />
+        {/* Period label */}
+        <Text
+          fontFamily='Times'
+          fontSize={{ base: 'lg', md: 'xl' }}
+          textAlign='center'
+          opacity={0.9}
+        >
+          {periodLabel}
+        </Text>
 
+        {/* Empty state */}
+        {!ready && (
+          <Card>
             <Stack
-              maxWidth='210px'
-              justifyContent='center'
-              alignItems={{ base: 'center', md: 'flex-end' }}
-            >
-              <Image
-                height='200px'
-                maxWidth={{ base: '300px', md: '240px' }}
-                src={getCountryContent({
-                  countryID,
-                  content: {
-                    guatemala: MapaGuatemala,
-                    honduras: MapaHonduras,
-                    elsalvador: MapaElSalvador,
-                  },
-                })}
-              />
-              <Text
-                fontSize='2xl'
-                lineHeight='1'
-                fontFamily='Oswald'
-                textAlign={{ base: 'center', md: 'right' }}
-              >
-                TOTAL DE RETORNADOS A{' '}
-                {getCountryContent({
-                  countryID,
-                  capitalize: true,
-                }).toUpperCase()}
-              </Text>
-              <Text
-                fontSize='xl'
-                lineHeight='1'
-                fontWeight='600'
-                fontFamily='Times'
-              >
-                {currentYear || 'Año'}
-              </Text>
-              <Text
-                lineHeight='1'
-                textAlign='right'
-                fontFamily='Oswald'
-                fontSize={{ base: '4xl', md: '6xl' }}
-              >
-                {totalCant}
-              </Text>
-            </Stack>
-
-            {/* DIVIDER */}
-            <Divider
-              height='400px'
-              borderWidth='1px'
-              orientation='vertical'
-              borderColor='#000'
-              display={{ base: 'none', md: 'block' }}
-            />
-
-            <Stack
-              justifyContent='center'
               alignItems='center'
-              maxWidth='300px'
-              spacing='16px'
+              justifyContent='center'
+              minH='220px'
+              color='blackAlpha.700'
+              textAlign='center'
             >
-              <Image
-                src={MapaEEUU}
-                height='120px'
-                maxWidth='300px'
-                objectFit='contain'
-              />
-              <Text fontFamily='Oswald' fontSize='2xl' lineHeight='1'>
-                Estados Unidos
+              <Text fontFamily='Oswald' fontSize={{ base: 'xl', md: '2xl' }}>
+                Selecciona año y rango de meses
               </Text>
-              <Text
-                fontSize='xl'
-                lineHeight='1'
-                fontWeight='600'
-                fontFamily='Times'
-              >
-                {currentYear || 'Año'}
-              </Text>
-              <Text
-                lineHeight='1'
-                fontFamily='Oswald'
-                fontSize={{ base: '4xl', md: '6xl' }}
-              >
-                {dataUS.totalMes ?? 'N/D'}
+              <Text fontFamily='Montserrat' fontSize='md'>
+                Arriba puedes elegir el año y el período para ver la
+                comparación.
               </Text>
             </Stack>
+          </Card>
+        )}
 
-            <Stack justifyContent='center' alignItems='center' lineHeight='1'>
-              <Image
-                src={MapaMexico}
-                height='160px'
-                maxWidth='200px'
-                objectFit='contain'
+        {/* Results */}
+        {ready && (
+          <Box ref={containerRef} position='relative'>
+            <Loader loading={loading} />
+
+            <Grid
+              templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+              gap={{ base: 4, md: 6 }}
+            >
+              {/* Retornados */}
+              <GridItem>
+                <Card>
+                  <Stack direction='row' gap={4}>
+                    <Image
+                      src={countryMap}
+                      alt='País de retorno'
+                      boxSize={{ base: '80px', md: '100px' }}
+                      objectFit='contain'
+                    />
+                    <Stack flex={1}>
+                      <Text fontFamily='Oswald' fontSize='lg' opacity={0.85}>
+                        Total de retornados a{' '}
+                        {getCountryContent({
+                          countryID,
+                          capitalize: true,
+                        }).toUpperCase()}
+                      </Text>
+                      <Text
+                        fontFamily='Times'
+                        fontSize='md'
+                        opacity={0.9}
+                        mb={2}
+                      >
+                        {selectedYear}
+                      </Text>
+                      <StatNumber value={totalCant} />
+                    </Stack>
+                  </Stack>
+                </Card>
+              </GridItem>
+
+              {/* Estados Unidos */}
+              <GridItem>
+                <Card>
+                  <Stack direction='row' gap={4}>
+                    <Image
+                      src={MapaEEUU}
+                      alt='Estados Unidos'
+                      boxSize={{ base: '80px', md: '100px' }}
+                      objectFit='contain'
+                    />
+                    <Stack flex={1}>
+                      <Text fontFamily='Oswald' fontSize='lg' opacity={0.85}>
+                        Estados Unidos (detenidos en frontera)
+                      </Text>
+                      <Text
+                        fontFamily='Times'
+                        fontSize='md'
+                        opacity={0.9}
+                        mb={2}
+                      >
+                        {selectedYear}
+                      </Text>
+                      {loading ? (
+                        <Skeleton height='48px' />
+                      ) : (
+                        <StatNumber value={dataUS?.totalMes ?? 'N/D'} />
+                      )}
+                    </Stack>
+                  </Stack>
+                </Card>
+              </GridItem>
+
+              {/* México */}
+              <GridItem>
+                <Card>
+                  <Stack direction='row' gap={4}>
+                    <Image
+                      src={MapaMexico}
+                      alt='México'
+                      boxSize={{ base: '80px', md: '100px' }}
+                      objectFit='contain'
+                    />
+                    <Stack flex={1}>
+                      <Text fontFamily='Oswald' fontSize='lg' opacity={0.85}>
+                        México (detenidos en frontera)
+                      </Text>
+                      <Text
+                        fontFamily='Times'
+                        fontSize='md'
+                        opacity={0.9}
+                        mb={2}
+                      >
+                        {selectedYear}
+                      </Text>
+                      {loading ? (
+                        <Skeleton height='48px' />
+                      ) : (
+                        <StatNumber value={dataMx?.totalMes ?? 'N/D'} />
+                      )}
+                    </Stack>
+                  </Stack>
+                </Card>
+              </GridItem>
+            </Grid>
+
+            {/* Separador visual */}
+            <Divider my={{ base: 6, md: 8 }} borderColor='blackAlpha.400' />
+
+            {/* Fuentes y descargas (NO tocar) */}
+            <LastDate
+              sources={
+                <Stack
+                  width='100%'
+                  margin='auto'
+                  direction='column'
+                  alignItems='center'
+                  justifyContent='center'
+                  maxWidth='800px'
+                >
+                  <a
+                    href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    <Text
+                      textAlign='center'
+                      fontFamily='Oswald'
+                      fontSize={{ base: 'xl', md: '2xl' }}
+                      maxWidth='800px'
+                    >
+                      Fuente: Secretaría de Gobernación/Unidad de Política
+                      Migratoria, Registro e Identidad de Personas. Gobierno de
+                      México.
+                    </Text>
+                  </a>
+                </Stack>
+              }
+              updateDate={updateDate}
+              isScreenShotTime={isScreenShotTime}
+            />
+
+            {!isScreenShotTime && (
+              <DownloadTable
+                satisticsRef={containerRef}
+                files={combinedFiles}
               />
-              <Text fontFamily='Oswald' fontSize='2xl'>
-                México
-              </Text>
-              <Text
-                fontSize='xl'
-                lineHeight='1'
-                fontWeight='600'
-                fontFamily='Times'
-              >
-                {currentYear || 'Año'}
-              </Text>
-              <Text
-                lineHeight='1'
-                fontFamily='Oswald'
-                fontSize={{ base: '4xl', md: '6xl' }}
-              >
-                {dataMx.totalMes ?? 'N/D'}
-              </Text>
-            </Stack>
-          </Stack>
-
-          <LastDate
-            sources={sources}
-            updateDate={updateDate}
-            isScreenShotTime={isScreenShotTime}
-          />
-
-          {isScreenShotTime && <GraphFooter responsive />}
-
-          {!isScreenShotTime && (
-            <DownloadTable satisticsRef={containerRef} files={combinedFiles} />
-          )}
-        </Box>
+            )}
+            {isScreenShotTime && <GraphFooter responsive />}
+          </Box>
+        )}
       </Stack>
     </Box>
   );
