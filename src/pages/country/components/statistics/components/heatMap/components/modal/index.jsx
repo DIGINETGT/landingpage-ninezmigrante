@@ -13,6 +13,10 @@ import {
   Skeleton,
   Image,
   Divider,
+  Alert,
+  AlertIcon,
+  UnorderedList,
+  ListItem,
 } from '@chakra-ui/react';
 
 import depName from './utils';
@@ -30,15 +34,30 @@ import { formatInt } from '../../../../../../../../utils/numbers';
 // ⬇️ nuevo hook
 import useDepartmentMunicipalities from '../../hooks/useDepartmentMunicipalities';
 
+// Formatea "YYYY-MM" en español sin desfase horario
+const fmtYM = (ym) => {
+  try {
+    const [y, m] = (ym || '').split('-').map(Number);
+    const d = new Date(Date.UTC(y || 1970, (m || 1) - 1, 1));
+    return new Intl.DateTimeFormat('es-GT', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(d);
+  } catch {
+    return ym;
+  }
+};
+
 const MapModal = ({
   modalDep, // ej: 'alta_verapaz'
   onCloseModal,
   year,
-  period,
+  period, // [startMonth, endMonth]
   periodId,
   files,
-  departmentTotal, // total del depto
-  genderDepTotals, // fallback de géneros por depto (del contexto)
+  departmentTotal, // total del depto (número)
+  genderDepTotals, // fallback: { masculino, femenino } del contexto
 }) => {
   const statsCtx = useContext(StatisticsContext) || {};
   const { countryID } = statsCtx; // 'gt' | 'sv' | 'hn'
@@ -46,6 +65,7 @@ const MapModal = ({
 
   const satisticsRef = useRef(null);
 
+  // Normaliza año y periodo
   const normYear = useMemo(() => {
     const n = Number(year);
     return Number.isFinite(n) ? n : new Date().getFullYear();
@@ -60,13 +80,17 @@ const MapModal = ({
     ];
   }, [period]);
 
+  const isSingleMonth = normPeriod[0] === normPeriod[1];
+  const isHnOrSv = countryID === 'hn' || countryID === 'sv';
+
+  // Etiqueta “bonita”
   const departmentLabel = useMemo(
     () => depName?.[modalDep] ?? modalDep ?? '',
     [modalDep]
   );
 
-  // Municipios + género por municipio (y totales por género en el depto)
-  const { loading, muniTotals, genderTotals, genderByMuni } =
+  // Datos agregados por municipios + faltantes por mes
+  const { loading, muniTotals, genderTotals, genderByMuni, missingByMonth } =
     useDepartmentMunicipalities({
       country: countryID,
       year: normYear,
@@ -75,15 +99,23 @@ const MapModal = ({
       skip: !modalDep,
     });
 
-  // Totales por género para mostrar bajo “Total”
+  // Totales por género (usa los traídos por el hook; si no, los del contexto)
   const maleCount =
     (genderTotals?.masculino ?? genderDepTotals?.masculino ?? 0) || 0;
   const femaleCount =
     (genderTotals?.femenino ?? genderDepTotals?.femenino ?? 0) || 0;
 
   const nf = useMemo(() => new Intl.NumberFormat('es-GT'), []);
-
   const onCloseChange = () => onCloseModal();
+
+  // Meses con faltantes (solo GUA y solo para rangos)
+  const missingEntries = useMemo(
+    () =>
+      Object.entries(missingByMonth || {}).sort(([a], [b]) =>
+        a.localeCompare(b)
+      ),
+    [missingByMonth]
+  );
 
   return (
     <Modal
@@ -123,14 +155,14 @@ const MapModal = ({
               <ModalMapContent modalDep={modalDep} country={countryID} />
             </Stack>
 
-            {/* Columna derecha: Total + géneros + municipios */}
+            {/* Columna derecha */}
             <Stack
               spacing='24px'
               alignItems='center'
               justifyContent='center'
               width={{ base: '100%', md: '50%' }}
             >
-              {/* Este componente ya muestra “Total” grande */}
+              {/* Total grande */}
               <ModelContent
                 year={normYear}
                 total={formatInt(departmentTotal) ?? 0}
@@ -140,94 +172,149 @@ const MapModal = ({
                 dep={departmentLabel}
               />
 
-              {/* ⬇️ NUEVO: lista simple bajo “Total” con los íconos y sus totales */}
-
-              {(maleCount || femaleCount) > 0 && (
+              {/* Totales M/F bajo “Total” (solo si cada uno > 0) */}
+              {(maleCount > 0 || femaleCount > 0) && (
                 <Stack w='100%' spacing={2}>
-                  <HStack spacing={3}>
-                    <Image src={Male} alt='Masculino' boxSize='25px' />
-                    <Text fontFamily='Montserrat Medium'>Masculino</Text>
-                    <Text fontFamily='Montserrat Medium' fontWeight='semibold'>
-                      {formatInt(maleCount)}
-                    </Text>
-                  </HStack>
-
-                  <HStack spacing={3}>
-                    <Image src={Femenine} alt='Femenino' boxSize='25px' />
-                    <Text fontFamily='Montserrat Medium'>Femenino</Text>
-                    <Text fontFamily='Montserrat Medium' fontWeight='semibold'>
-                      {formatInt(femaleCount)}
-                    </Text>
-                  </HStack>
+                  {maleCount > 0 && (
+                    <HStack spacing={3}>
+                      <Image src={Male} alt='Masculino' boxSize='25px' />
+                      <Text fontFamily='Montserrat Medium'>Masculino</Text>
+                      <Text
+                        fontFamily='Montserrat Medium'
+                        fontWeight='semibold'
+                      >
+                        {formatInt(maleCount)}
+                      </Text>
+                    </HStack>
+                  )}
+                  {femaleCount > 0 && (
+                    <HStack spacing={3}>
+                      <Image src={Femenine} alt='Femenino' boxSize='25px' />
+                      <Text fontFamily='Montserrat Medium'>Femenino</Text>
+                      <Text
+                        fontFamily='Montserrat Medium'
+                        fontWeight='semibold'
+                      >
+                        {formatInt(femaleCount)}
+                      </Text>
+                    </HStack>
+                  )}
                 </Stack>
+              )}
+
+              {/* 🔔 Avisos */}
+              {/* HN / SV: aviso fijo de que no reportan por municipio */}
+              {isHnOrSv && (
+                <Alert status='info' variant='subtle' borderRadius='md'>
+                  <AlertIcon />
+                  Por el momento este país no reporta datos a nivel de
+                  municipios.
+                </Alert>
+              )}
+
+              {/* GT: aviso de meses con “no reportados” (solo si es rango y hay faltantes) */}
+              {!isHnOrSv && !isSingleMonth && missingEntries.length > 0 && (
+                <Alert status='warning' variant='subtle' borderRadius='md'>
+                  <AlertIcon />
+                  <Box>
+                    <Text>
+                      Algunos meses no reportaron datos a nivel de municipios:
+                    </Text>
+                    <UnorderedList mt={1} ml={5}>
+                      {missingEntries.map(([ym, miss]) => (
+                        <ListItem key={ym}>
+                          {fmtYM(ym)} — no reportados: {nf.format(miss)}
+                        </ListItem>
+                      ))}
+                    </UnorderedList>
+                  </Box>
+                </Alert>
               )}
 
               <Divider />
 
-              {/* Lista de municipios con pills M/F y total */}
-              <Stack
-                width='100%'
-                direction='column'
-                alignItems='stretch'
-                justifyContent='flex-start'
-                padding={{ base: '0px 16px 0px 0px', md: '0px' }}
-                gap={2}
-              >
-                {loading ? (
-                  Array.from({ length: 10 }).map((_, i) => (
-                    <Skeleton key={i} height='18px' w='100%' />
-                  ))
-                ) : !muniTotals || Object.keys(muniTotals).length === 0 ? (
-                  <Text color='gray.500' fontStyle='italic' textAlign='center'>
-                    Sin registros por municipios.
-                  </Text>
-                ) : (
-                  Object.entries(muniTotals)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([muni, total]) => {
-                      const g = genderByMuni?.[muni] || {};
-                      return (
-                        <HStack
-                          key={muni}
-                          w='100%'
-                          justify='space-between'
-                          align='center'
-                          spacing={2}
-                        >
-                          <Text fontFamily='Montserrat Medium'>{muni}</Text>
-                          <HStack spacing={3}>
-                            {/* puntos de color pequeños para M/F */}
-                            <HStack spacing={1}>
-                              <Box
-                                w='6px'
-                                h='6px'
-                                borderRadius='full'
-                                bg='#eab617'
-                              />
-                              <Text fontSize='sm'>M {g.masculino || 0}</Text>
-                            </HStack>
-                            <HStack spacing={1}>
-                              <Box
-                                w='6px'
-                                h='6px'
-                                borderRadius='full'
-                                bg='#92bd57'
-                              />
-                              <Text fontSize='sm'>F {g.femenino || 0}</Text>
-                            </HStack>
+              {/* Lista de municipios (solo GT). 
+                  En HN/SV no se renderiza la lista. */}
+              {!isHnOrSv && (
+                <Stack
+                  width='100%'
+                  direction='column'
+                  alignItems='stretch'
+                  justifyContent='flex-start'
+                  padding={{ base: '0px 16px 0px 0px', md: '0px' }}
+                  gap={2}
+                >
+                  {loading ? (
+                    Array.from({ length: 10 }).map((_, i) => (
+                      <Skeleton key={i} height='18px' w='100%' />
+                    ))
+                  ) : !muniTotals || Object.keys(muniTotals).length === 0 ? (
+                    // Mensaje solo si es 1 mes; para rangos, el aviso ya explica
+                    isSingleMonth ? (
+                      <Text
+                        color='gray.500'
+                        fontStyle='italic'
+                        textAlign='center'
+                      >
+                        Sin registros por municipios.
+                      </Text>
+                    ) : null
+                  ) : (
+                    Object.entries(muniTotals)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([muni, total]) => {
+                        const g = genderByMuni?.[muni] || {};
+                        return (
+                          <HStack
+                            key={muni}
+                            w='100%'
+                            justify='space-between'
+                            align='center'
+                            spacing={2}
+                          >
                             <Text
-                              w='56px'
-                              textAlign='right'
                               fontFamily='Montserrat Medium'
+                              fontSize={'small'}
                             >
-                              {nf.format(total)}
+                              {muni}
                             </Text>
+                            <HStack spacing={3}>
+                              <HStack flexDirection={'row'} minWidth={'30%'}>
+                                <HStack spacing={1}>
+                                  <Box
+                                    w='6px'
+                                    h='6px'
+                                    borderRadius='full'
+                                    bg='#eab617'
+                                  />
+                                  <Text fontSize='sm'>
+                                    M {g.masculino || 0}
+                                  </Text>
+                                </HStack>
+                                <HStack spacing={1}>
+                                  <Box
+                                    w='6px'
+                                    h='6px'
+                                    borderRadius='full'
+                                    bg='#92bd57'
+                                  />
+                                  <Text fontSize='sm'>F {g.femenino || 0}</Text>
+                                </HStack>
+                              </HStack>
+                              <Text
+                                w='56px'
+                                textAlign='right'
+                                fontFamily='Montserrat Medium'
+                              >
+                                {nf.format(total)}
+                              </Text>
+                            </HStack>
                           </HStack>
-                        </HStack>
-                      );
-                    })
-                )}
-              </Stack>
+                        );
+                      })
+                  )}
+                </Stack>
+              )}
             </Stack>
           </Stack>
 

@@ -9,35 +9,46 @@ export const GET_MUNICIPALITIES_FOR_COUNTRY = (
   country: string,
   period: [number, number] = [1, 12],
   year: number = currentYear,
-  departmentLabel = ''
+  departmentLabel?: string
 ) => gql`
   query {
     monthlyReports(${getFilterByCountry(country, period, year)}) {
       data {
         attributes {
+          reportMonth
           returned {
-            data {
-              attributes {
-                municipality_contributions(
-                  ${
-                    departmentLabel
-                      ? `filters: { municipality: { department: { name: { eq: "${esc(
-                          departmentLabel
-                        )}" } } } },`
-                      : ''
-                  }
-                  pagination: { limit: -1 }
-                ) {
-                  data {
-                    attributes {
-                      cant
-                      gender { data { attributes { name } } }
-                      municipality { data { attributes { name } } }
-                    }
+            data { attributes {
+
+              # Totales del departamento por mes (solo el depto seleccionado)
+              department_contributions(
+                filters: { department: { name: { eq: "${
+                  departmentLabel || ''
+                }" } } }
+                pagination: { limit: -1 }
+              ) {
+                data {
+                  attributes {
+                    cant
+                    department { data { attributes { name } } }
                   }
                 }
               }
-            }
+
+              municipality_contributions(
+                filters: { municipality: { department: { name: { eq: "${
+                  departmentLabel || ''
+                }" } } } }
+                pagination: { limit: -1 }
+              ) {
+                data {
+                  attributes {
+                    cant
+                    gender { data { attributes { name } } }
+                    municipality { data { attributes { name } } }
+                  }
+                }
+              }
+            }}
           }
         }
       }
