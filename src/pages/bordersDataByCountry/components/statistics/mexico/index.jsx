@@ -222,6 +222,7 @@ const Mexico = () => {
                             fontSize: { base: '5xl', md: '6xl' },
                             lineHeight: '1',
                             fontWeight: 700,
+                            textAlign: 'left',
                           }}
                         />
 
