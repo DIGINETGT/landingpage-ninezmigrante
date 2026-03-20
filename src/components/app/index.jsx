@@ -1,10 +1,10 @@
 // REACT
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
 
 // PROVIDERS
 import RouterProvider from "../../providers/router";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider, Spinner } from "@chakra-ui/react";
 
 // UTILS
 import { theme } from "../../utils/theme";
@@ -19,7 +19,15 @@ const App = () => {
       <ApolloProvider>
         <ChakraProvider theme={theme}>
           <Layout>
-            <RouterProvider />
+            <Suspense
+              fallback={
+                <Box minH="50vh" display="grid" placeItems="center">
+                  <Spinner thickness="6px" size="xl" color="blue.400" />
+                </Box>
+              }
+            >
+              <RouterProvider />
+            </Suspense>
           </Layout>
         </ChakraProvider>
       </ApolloProvider>

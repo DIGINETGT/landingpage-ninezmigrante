@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from '@apollo/client';
 
 import { Box, Stack, Image, Text, Tooltip } from '@chakra-ui/react';
 
@@ -8,46 +9,37 @@ import Honduras from '../../../../assets/honduras.png';
 import Salvador from '../../../../assets/salvador.png';
 
 import { year } from '../../../../utils/year';
-import { GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL } from '../../../../utils/query/returned';
-import useReturnedFilteredQuery from '../../../../hooks/query';
+import { GET_RETURNEDS_BY_TOTAL_REGION } from '../../../../utils/query/returned';
 
 import BigStat from '../../../../components/common/BigStat';
 
 const TotalReturns = () => {
-  const { data: dataGt } = useReturnedFilteredQuery({
-    year,
-    period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL('gt', [1, 12], year),
+  const { data } = useQuery(GET_RETURNEDS_BY_TOTAL_REGION, {
+    variables: {
+      isos: ['GT', 'HN', 'SV'],
+      start: `${year}-01-01`,
+      end: `${year + 1}-01-01`,
+    },
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
   });
-  let gt = 0;
+  const total = (data?.monthlyReports?.data ?? []).reduce(
+    (acc, report) => {
+      const iso =
+        report?.attributes?.users_permissions_user?.data?.[0]?.attributes
+          ?.organization?.data?.attributes?.department?.data?.attributes
+          ?.country?.data?.attributes?.isoCode;
+      const reportTotal =
+        Number(report?.attributes?.returned?.data?.attributes?.total) || 0;
 
-  dataGt?.forEach((report) => {
-    gt += report.attributes?.returned?.data?.attributes?.total || 0;
-  });
+      if (iso === 'GT') acc.gt += reportTotal;
+      if (iso === 'HN') acc.hn += reportTotal;
+      if (iso === 'SV') acc.sv += reportTotal;
 
-  const { data: dataHn } = useReturnedFilteredQuery({
-    year,
-    period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL('hn', [1, 12], year),
-  });
-  let hn = 0;
-
-  dataHn?.forEach((report) => {
-    hn += report.attributes?.returned?.data?.attributes?.total || 0;
-  });
-
-  const { data: dataSv } = useReturnedFilteredQuery({
-    year,
-    period: [1, 12],
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_TOTAL('sv', [1, 12], year),
-  });
-  let sv = 0;
-
-  dataSv?.forEach((report) => {
-    sv += report.attributes?.returned?.data?.attributes?.total || 0;
-  });
-
-  const total = { gt, hn, sv };
+      return acc;
+    },
+    { gt: 0, hn: 0, sv: 0 }
+  );
 
   return (
     <Box bg='blue.700' p={{ base: '40px 24px', md: '80px 40px' }}>
@@ -64,6 +56,7 @@ const TotalReturns = () => {
           w='160px'
           h='160px'
           src={Group}
+          loading='lazy'
           display={{ base: 'none', md: 'block' }}
         />
         {/* DATA */}
@@ -88,6 +81,7 @@ const TotalReturns = () => {
             w='150px'
             h='150px'
             src={Group}
+            loading='lazy'
             display={{ base: 'block', md: 'none' }}
           />
 
@@ -140,6 +134,7 @@ const TotalReturns = () => {
                   width='35%'
                   height='70px'
                   src={Guatemala}
+                  loading='lazy'
                   objectFit='contain'
                 />
               </Tooltip>
@@ -184,6 +179,7 @@ const TotalReturns = () => {
                   width='45%'
                   height='70px'
                   src={Honduras}
+                  loading='lazy'
                   objectFit='contain'
                 />
               </Tooltip>
@@ -228,6 +224,7 @@ const TotalReturns = () => {
                   width='45%'
                   height='70px'
                   src={Salvador}
+                  loading='lazy'
                   objectFit='contain'
                 />
               </Tooltip>

@@ -16,7 +16,7 @@ import {
   FormControl,
   useToast,
 } from "@chakra-ui/react";
-import sendContactEmail from "../../utils/email";
+import sendContactEmail, { validateEmail } from "../../utils/email";
 
 const ContactPage = () => {
   const toast = useToast();
@@ -29,7 +29,7 @@ const ContactPage = () => {
     captcha: "",
   });
 
-  const sendForm = () => {
+  const sendForm = async () => {
     // VALIDAR CAPTCHA
     if (!form.captcha) {
       toast({
@@ -48,15 +48,23 @@ const ContactPage = () => {
       return;
     }
 
-    sendContactEmail({
-      ...form,
-      callBack: () => {
-        toast({
-          title: "Hemos recibido tu información correctamente.",
-          status: "success",
-        });
-      },
-    });
+    try {
+      await sendContactEmail({
+        ...form,
+        callBack: () => {
+          toast({
+            title: "Hemos recibido tu información correctamente.",
+            status: "success",
+          });
+        },
+      });
+    } catch (error) {
+      toast({
+        title: "No se pudo enviar el mensaje.",
+        description: error?.message ?? "Intenta nuevamente.",
+        status: "error",
+      });
+    }
   };
 
   const handleInputs = (ev) =>

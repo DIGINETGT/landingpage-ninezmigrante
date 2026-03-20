@@ -175,6 +175,58 @@ export const GET_RETURNEDS_BY_TRAVEL_CONDITION_REGION = gql`
   }
 `;
 
+export const GET_RETURNEDS_BY_TOTAL_REGION = gql`
+  query ReportsByTotalRegion($isos: [String!]!, $start: Date!, $end: Date!) {
+    monthlyReports(
+      filters: {
+        reportMonth: { gte: $start, lt: $end }
+        users_permissions_user: {
+          organization: { department: { country: { isoCode: { in: $isos } } } }
+        }
+      }
+      sort: ["reportMonth:asc"]
+      pagination: { page: 1, pageSize: 500 }
+    ) {
+      data {
+        attributes {
+          returned {
+            data {
+              attributes {
+                total
+              }
+            }
+          }
+          users_permissions_user {
+            data {
+              attributes {
+                organization {
+                  data {
+                    attributes {
+                      department {
+                        data {
+                          attributes {
+                            country {
+                              data {
+                                attributes {
+                                  isoCode
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_RETURNEDS_BY_TRAVEL_CONDITION = (
   country,
   period = [1, 12],

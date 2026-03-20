@@ -1,9 +1,9 @@
 // REACT
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/client';
 
 // CHAKRA UI COMPONENTS
-import { Box, Stack, Image, Text, Tooltip } from '@chakra-ui/react';
+import { Box, Stack, Image, Text } from '@chakra-ui/react';
 
 // COMPONETS
 import Mexico from '../../../../assets/mexico.svg';
@@ -41,6 +41,7 @@ const TotalTransit = () => {
           w='180px'
           h='180px'
           src={Family}
+          loading='lazy'
           display={{ base: 'none', md: 'block' }}
         />
         {/* DATA */}
@@ -65,6 +66,7 @@ const TotalTransit = () => {
             w='150px'
             h='150px'
             src={Family}
+            loading='lazy'
             display={{ base: 'block', md: 'none' }}
           />
 

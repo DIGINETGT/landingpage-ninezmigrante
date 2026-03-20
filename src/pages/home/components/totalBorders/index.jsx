@@ -59,6 +59,7 @@ const TotalBorders = () => {
           w='180px'
           h='180px'
           src={Police}
+          loading='lazy'
           display={{ base: 'none', md: 'block' }}
         />
         {/* DATA */}
@@ -84,6 +85,7 @@ const TotalBorders = () => {
             w='150px'
             h='150px'
             src={Police}
+            loading='lazy'
             display={{ base: 'block', md: 'none' }}
           />
 
@@ -140,6 +142,7 @@ const TotalBorders = () => {
                   src={Mexico}
                   width='40%'
                   height='70px'
+                  loading='lazy'
                   objectFit='contain'
                   style={{ filter: 'brightness(0) invert(1)' }}
                 />
@@ -186,6 +189,7 @@ const TotalBorders = () => {
                   src={USA}
                   width='35%'
                   height='70px'
+                  loading='lazy'
                   objectFit='contain'
                   style={{ filter: 'brightness(0) invert(1)' }}
                 />

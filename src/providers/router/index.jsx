@@ -1,22 +1,22 @@
 // REACT
-import React from 'react';
+import React, { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // PAGES
-import HomePage from '../../pages/home';
-import TransitPage from '../../pages/transit';
-import BordersPage from '../../pages/borders';
-import CountryPage from '../../pages/country';
-import ComparePage from '../../pages/compare';
-import ContactPage from '../../pages/contact';
-import ObservatoryPage from '../../pages/observatory';
-import CustomizePage from '../../pages/customize';
-import OrganizationsPage from '../../pages/organizations';
-import DocumentationPage from '../../pages/documentation';
-import BordersDataByCountry from '../../pages/bordersDataByCountry';
-import CustomizeDataByCountry from '../../pages/customizeDataByCountry';
-import DocumentationByCountry from '../../pages/documentationByCountry';
-import TransitDataByCountry from '../../pages/transitDataByCountry';
+const HomePage = lazy(() => import('../../pages/home'));
+const TransitPage = lazy(() => import('../../pages/transit'));
+const BordersPage = lazy(() => import('../../pages/borders'));
+const CountryPage = lazy(() => import('../../pages/country'));
+const ComparePage = lazy(() => import('../../pages/compare'));
+const ContactPage = lazy(() => import('../../pages/contact'));
+const ObservatoryPage = lazy(() => import('../../pages/observatory'));
+const CustomizePage = lazy(() => import('../../pages/customize'));
+const OrganizationsPage = lazy(() => import('../../pages/organizations'));
+const DocumentationPage = lazy(() => import('../../pages/documentation'));
+const BordersDataByCountry = lazy(() => import('../../pages/bordersDataByCountry'));
+const CustomizeDataByCountry = lazy(() => import('../../pages/customizeDataByCountry'));
+const DocumentationByCountry = lazy(() => import('../../pages/documentationByCountry'));
+const TransitDataByCountry = lazy(() => import('../../pages/transitDataByCountry'));
 
 const RouterProvider = () => (
   <Routes>

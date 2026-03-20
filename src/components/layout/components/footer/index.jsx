@@ -111,36 +111,40 @@ const Footer = () => {
             direction={{ base: 'column', md: 'row' }}
           >
             <a href="https://www.kindernothilfe.org/" target="_blank">
-              <Image src={LogoKnh} maxHeight="100px" />
+              <Image src={LogoKnh} maxHeight="100px" loading="lazy" />
             </a>
 
             <a
               href="http://pami-guatemala.org/proyectobinacionalmigracion/"
               target="_blank"
             >
-              <Image src={LogoProyectoBinacional} maxWidth="100px" />
+              <Image
+                src={LogoProyectoBinacional}
+                maxWidth="100px"
+                loading="lazy"
+              />
             </a>
 
             <a href="https://redcoiproden.org/" target="_blank">
-              <Image src={LogoCoiproden} maxHeight="100px" />
+              <Image src={LogoCoiproden} maxHeight="100px" loading="lazy" />
             </a>
 
             <a href="https://pami-guatemala.org/" target="_blank">
-              <Image src={LogoPAMI} maxWidth="100px" />
+              <Image src={LogoPAMI} maxWidth="100px" loading="lazy" />
             </a>
 
             <a href="https://gmies.org" target="_blank">
-              <Image src={LogoGMIES} maxWidth="100px" />
+              <Image src={LogoGMIES} maxWidth="100px" loading="lazy" />
             </a>
 
             <a href="https://rrocm.net" target="_blank">
-              <Image src={LogoRROCM} maxWidth="100px" />
+              <Image src={LogoRROCM} maxWidth="100px" loading="lazy" />
             </a>
           </Stack>
         </Stack>
       </Box>
       <Stack width="100%">
-        <Image src={footer} objectFit="cover" />
+        <Image src={footer} objectFit="cover" loading="lazy" />
       </Stack>
     </>
   );

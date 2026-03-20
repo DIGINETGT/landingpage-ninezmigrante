@@ -1,5 +1,5 @@
 // REACT
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 // CHAKRA UI COMPONENTS
 import { Box, Stack, Image, Text } from '@chakra-ui/react';
@@ -13,10 +13,9 @@ import { year } from '../../../../utils/year';
 
 import BigStat from '../../../../components/common/BigStat';
 import { useReturnedsByGenderRegion } from '../../../../hooks/useReturnedsByGenderRegion';
-import UnknownChip from '../../../../components/common/UnknownChip';
 
 const TotalByGender = () => {
-  const { female, male, total, unknown, loading } = useReturnedsByGenderRegion({
+  const { female, male } = useReturnedsByGenderRegion({
     isos: ['GT', 'HN', 'SV'],
     period: [1, 12],
     year,
@@ -64,6 +63,7 @@ const TotalByGender = () => {
           <Image
             src={Femenine}
             height='120px'
+            loading='lazy'
             display={{ base: 'none', md: 'block' }}
           />
           <Stack direction='column' spacing='-16px'>
@@ -132,6 +132,7 @@ const TotalByGender = () => {
           <Image
             src={Male}
             height='120px'
+            loading='lazy'
             display={{ base: 'none', md: 'block' }}
           />
         </Stack>
