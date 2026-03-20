@@ -19,8 +19,10 @@ const logLink = new ApolloLink((operation, forward) => {
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_APP_BASENAME,
-  useGETForQueries: true,
-  fetchOptions: { mode: 'cors', credentials: 'omit' },
+  // Avoid browser/proxy caching of GraphQL GET URLs that can leave users with
+  // stale or empty responses for the same filters.
+  fetchOptions: { mode: 'cors', cache: 'no-store' },
+  credentials: 'omit',
 });
 
 const authLink = setContext((_, { headers }) => ({
@@ -62,7 +64,10 @@ const client = new ApolloClient({
   cache,
   queryDeduplication: true,
   defaultOptions: {
-    query: { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-first' },
+    query: {
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',
+    },
     watchQuery: {
       fetchPolicy: 'cache-and-network',
       nextFetchPolicy: 'cache-first',

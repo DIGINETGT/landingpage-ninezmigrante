@@ -8,7 +8,10 @@ type Cnts = Record<string, number>;
 export default function useCountryStats({ country, year, period }) {
   const { data, loading, error } = useQuery(
     GET_COUNTRY_STATS(country, period, year),
-    { fetchPolicy: 'cache-first' }
+    {
+      fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
+    }
   );
 
   const reports = data?.monthlyReports?.data ?? [];

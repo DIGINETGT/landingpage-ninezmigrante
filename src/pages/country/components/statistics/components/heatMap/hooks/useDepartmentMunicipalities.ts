@@ -41,7 +41,11 @@ export default function useDepartmentMunicipalities({
 
   const { data, loading, error } = useQuery(
     GET_MUNICIPALITIES_FOR_COUNTRY(country, p, y, dept),
-    { fetchPolicy: 'cache-first', skip: !dept || !!skip }
+    {
+      fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
+      skip: !dept || !!skip,
+    }
   );
 
   const reports = data?.monthlyReports?.data ?? [];
