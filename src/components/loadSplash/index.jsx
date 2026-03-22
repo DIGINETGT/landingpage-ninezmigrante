@@ -4,6 +4,7 @@ import { Box, Text, Spinner, Stack } from "@chakra-ui/react";
 const LoadSplash = ({ title, description, open, setBlur }) => {
   return (
     <Box
+      data-html2canvas-ignore="true"
       style={{
         top: -10,
         left: 0,

@@ -2,7 +2,8 @@
 import React, { useContext, useMemo } from 'react';
 
 // CHAKRA
-import { Box, Stack, Text, Image } from '@chakra-ui/react';
+import { Box, Stack, Text, Image, Icon } from '@chakra-ui/react';
+import { QuestionOutlineIcon } from '@chakra-ui/icons';
 
 // ASSETS
 import Airplane from '../../../../../../assets/airplane.png';
@@ -24,25 +25,28 @@ function diacriticless(s = '') {
 const ReturnPath = () => {
   const { loading, returnRouteTotals } = useContext(StatisticsContext);
 
-  // Suma por categorías usando prefijos (maneja "aéreo"/"aérea", acentos, etc.)
-  const { totalAerea, totalTerrestre, totalMaritimo } = useMemo(() => {
+  // Agrupa por familia textual sin exigir catálogo nuevo en backend.
+  const { totalAerea, totalTerrestre, totalMaritimo, totalOtros } = useMemo(() => {
     let aerea = 0,
       terrestre = 0,
-      maritimo = 0;
+      maritimo = 0,
+      otros = 0;
 
     for (const [rawName, cant] of Object.entries(returnRouteTotals || {})) {
       const name = diacriticless(rawName);
       const n = Number(cant || 0);
 
-      if (name.startsWith('aereo') || name.startsWith('aerea')) aerea += n;
-      else if (name.startsWith('terrestre')) terrestre += n;
-      else if (name.startsWith('maritimo')) maritimo += n;
+      if (name.includes('aere')) aerea += n;
+      else if (name.includes('terrest')) terrestre += n;
+      else if (name.includes('maritim')) maritimo += n;
+      else otros += n;
     }
 
     return {
       totalAerea: aerea,
       totalTerrestre: terrestre,
       totalMaritimo: maritimo,
+      totalOtros: otros,
     };
   }, [returnRouteTotals]);
 
@@ -120,6 +124,30 @@ const ReturnPath = () => {
             </Text>
           </Stack>
         </Stack>
+
+        {totalOtros > 0 && (
+          <Stack
+            gap='24px'
+            direction='row'
+            alignItems='center'
+            justifyContent='center'
+          >
+            <Icon as={QuestionOutlineIcon} boxSize={12} color='gray.800' />
+            <Stack
+              spacing='8px'
+              direction='column'
+              alignItems='center'
+              justifyContent='center'
+            >
+              <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
+                Otros
+              </Text>
+              <Text fontFamily='Oswald' fontSize='3xl' lineHeight='1'>
+                {formatInt(totalOtros)}
+              </Text>
+            </Stack>
+          </Stack>
+        )}
       </Stack>
     </Box>
   );

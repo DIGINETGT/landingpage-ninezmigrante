@@ -6,6 +6,63 @@ import folder from '../../assets/folder.png';
 import LoadSplash from '../loadSplash';
 
 const DownloadImage = ({ label, containerRef, onSS = (screenshot) => {} }) => {
+  const collectScrollableNodes = (rootElement) => {
+    if (!rootElement) return [];
+
+    const nodes = [rootElement, ...rootElement.querySelectorAll('*')];
+
+    return nodes.reduce((acc, node) => {
+      const computed = window.getComputedStyle(node);
+      const hasScrollableOverflow =
+        ['auto', 'scroll'].includes(computed.overflow) ||
+        ['auto', 'scroll'].includes(computed.overflowY) ||
+        ['auto', 'scroll'].includes(computed.overflowX);
+      const hasLimitedHeight =
+        computed.maxHeight !== 'none' || computed.height !== 'auto';
+      const canOverflowContent =
+        node.scrollHeight > node.clientHeight || node.scrollWidth > node.clientWidth;
+
+      if (hasScrollableOverflow || (hasLimitedHeight && canOverflowContent)) {
+        acc.push({
+          node,
+          style: {
+            overflow: node.style.overflow,
+            overflowY: node.style.overflowY,
+            overflowX: node.style.overflowX,
+            maxHeight: node.style.maxHeight,
+            height: node.style.height,
+          },
+        });
+      }
+
+      return acc;
+    }, []);
+  };
+
+  const expandForCapture = (rootElement) => {
+    const scrollableNodes = collectScrollableNodes(rootElement);
+
+    scrollableNodes.forEach(({ node }) => {
+      node.style.overflow = 'visible';
+      node.style.overflowY = 'visible';
+      node.style.overflowX = 'visible';
+      node.style.maxHeight = 'none';
+      node.style.height = 'auto';
+      node.scrollTop = 0;
+      node.scrollLeft = 0;
+    });
+
+    return () => {
+      scrollableNodes.forEach(({ node, style }) => {
+        node.style.overflow = style.overflow;
+        node.style.overflowY = style.overflowY;
+        node.style.overflowX = style.overflowX;
+        node.style.maxHeight = style.maxHeight;
+        node.style.height = style.height;
+      });
+    };
+  };
+
   // STATE
   const [screenshot, setScreenshot] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,28 +76,48 @@ const DownloadImage = ({ label, containerRef, onSS = (screenshot) => {} }) => {
     if (screenshot) {
       const take = async () => {
         setBlur(true);
-        const element = containerRef.current;
-        element.height = 2000;
-        const html2canvas = (await import('html2canvas')).default;
-        const canvas = await html2canvas(element);
-        const data = canvas.toDataURL('image/jpeg', 1.0);
-
         setLoading(true);
+        const element = containerRef.current;
+        if (!element) {
+          setLoading(false);
+          setScreenshot(false);
+          setBlur(false);
+          return;
+        }
 
-        const jsPDF = (await import('jspdf')).default;
-        const pdf = new jsPDF({
-          unit: 'pt',
-          format: [canvas.width, canvas.height],
-        });
-        const imgProps = pdf.getImageProperties(data);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        const restoreLayout = expandForCapture(element);
 
-        pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-        await pdf.save('download.pdf', { returnPromise: true });
-        setLoading(false);
-        setScreenshot(false);
-        setBlur(false);
+        try {
+          await new Promise((resolve) => window.requestAnimationFrame(resolve));
+          const html2canvas = (await import('html2canvas')).default;
+          const canvas = await html2canvas(element, {
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scale: 2,
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight,
+          });
+          const data = canvas.toDataURL('image/jpeg', 1.0);
+
+          const jsPDF = (await import('jspdf')).default;
+          const pdf = new jsPDF({
+            unit: 'pt',
+            format: [canvas.width, canvas.height],
+          });
+          const imgProps = pdf.getImageProperties(data);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          await pdf.save('download.pdf', { returnPromise: true });
+        } finally {
+          restoreLayout();
+          setLoading(false);
+          setScreenshot(false);
+          setBlur(false);
+        }
       };
       take();
     }

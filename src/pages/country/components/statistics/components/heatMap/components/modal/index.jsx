@@ -284,17 +284,20 @@ const MapModal = ({
                                 key={muni}
                                 w='100%'
                                 justify='space-between'
-                                align='center'
+                                align='flex-start'
                                 spacing={2}
                               >
                                 <Text
                                   fontFamily='Montserrat Medium'
-                                  noOfLines={1}
+                                  whiteSpace='normal'
+                                  wordBreak='break-word'
+                                  lineHeight='1.35'
+                                  flex='1'
                                   pr={2}
                                 >
                                   {muni}
                                 </Text>
-                                <HStack spacing={3} flexShrink={0}>
+                                <HStack spacing={3} flexShrink={0} align='flex-start' pt='1px'>
                                   <HStack spacing={1}>
                                     <Box
                                       w='6px'
@@ -321,6 +324,7 @@ const MapModal = ({
                                     w='64px'
                                     textAlign='right'
                                     fontFamily='Montserrat Medium'
+                                    lineHeight='1.35'
                                   >
                                     {nf.format(total)}
                                   </Text>
