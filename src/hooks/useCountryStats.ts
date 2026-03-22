@@ -151,10 +151,14 @@ export default function useCountryStats({ country, year, period }) {
       }
     }
 
-    const updatedAtStr = (() => {
-      const firstUpdated = reports?.[0]?.attributes?.updatedAt;
-      return firstUpdated ? new Date(firstUpdated).toISOString() : '';
-    })();
+    const updatedAtStr = reports.reduce((latest, report) => {
+      const updatedAt = report?.attributes?.updatedAt;
+      if (!updatedAt) return latest;
+
+      if (!latest) return updatedAt;
+
+      return new Date(updatedAt) > new Date(latest) ? updatedAt : latest;
+    }, '');
 
     return {
       totalCant: total,

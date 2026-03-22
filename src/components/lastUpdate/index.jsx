@@ -1,5 +1,17 @@
 import React from "react";
-import { Stack, Text, Divider } from "@chakra-ui/react";
+import moment from "moment-timezone";
+import { Stack, Text } from "@chakra-ui/react";
+
+const formatUpdateDate = (value) => {
+  if (!value) return "";
+
+  const parsed = moment(value);
+  if (parsed.isValid()) {
+    return parsed.tz("America/Guatemala").format("DD-MM-YYYY");
+  }
+
+  return String(value).split("T")[0];
+};
 
 const LastDate = ({ updateDate, isScreenShotTime, sources = <></> }) => {
   return (
@@ -20,7 +32,7 @@ const LastDate = ({ updateDate, isScreenShotTime, sources = <></> }) => {
         fontFamily="Oswald"
         fontSize="1.4em"
         textAlign="center"
-      >{`Fecha de última actualización: ${updateDate}`}</Text>
+      >{`Fecha de última actualización: ${formatUpdateDate(updateDate)}`}</Text>
     </Stack>
   );
 };

@@ -323,7 +323,17 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           <HeatMap files={filesUrl} period={period} year={year} periodId='1' />
         </Stack>
 
-        {/* ... resto igual: notas, LastDate, GraphFooter, DownloadTable ... */}
+        <LastDate
+          sources={sources}
+          updateDate={updatedAtStr || updateDate}
+          isScreenShotTime={isScreenShotTime}
+        />
+
+        {!loading && (
+          <DownloadTable files={filesUrl} satisticsRef={resultsRef} />
+        )}
+
+        {isScreenShotTime && <GraphFooter responsive compact />}
       </Box>
     </StatisticsContext.Provider>
   );

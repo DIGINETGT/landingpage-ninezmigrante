@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
 import {
   Stack,
   Text,
   Button,
   Image,
-  Divider,
   Accordion,
   AccordionItem,
   AccordionButton,
@@ -24,20 +23,10 @@ const DownloadTable = ({ satisticsRef, files }) => {
 
   let data = files ?? [];
 
-  // DOWNLOAD
-  const downloadFile = (url) => () =>
-    fetch(url)
-      .then((res) => res.blob())
-      .then((blob) => {
-        var a = document.createElement("a");
-        a.href = window.URL.createObjectURL(blob);
-        a.download = `${filesUrl}`;
-        a.click();
-      });
-
   return (
     <>
       <Stack
+        data-html2canvas-ignore="true"
         gap="40px"
         margin="auto"
         maxWidth="750px"
@@ -46,7 +35,7 @@ const DownloadTable = ({ satisticsRef, files }) => {
         justifyContent="center"
         mt={10}
       >
-        <Accordion>
+        <Accordion allowToggle>
           <AccordionItem>
             <AccordionButton>
               <Stack
