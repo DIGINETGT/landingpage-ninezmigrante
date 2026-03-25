@@ -56,6 +56,12 @@ const slugify = (value = '') =>
     .replace(/^-+|-+$/g, '');
 
 const formatInt = (value = 0) => new Intl.NumberFormat('es-GT').format(value);
+const formatGapPercentage = (value) => {
+  if (value === null || Number.isNaN(value)) return 'Porcentaje no disponible';
+
+  const roundedValue = value >= 100 ? Math.round(value) : value.toFixed(1);
+  return `${roundedValue}% por encima de la menor selección`;
+};
 
 const ComparePage = () => {
   const [countValue, setCountValue] = useState('0');
@@ -143,53 +149,82 @@ const ComparePage = () => {
       ? highestSummary.total - lowestSummary.total
       : null;
 
+  const gapPercentage =
+    highestSummary &&
+    lowestSummary &&
+    typeof lowestSummary.total === 'number' &&
+    lowestSummary.total > 0
+      ? (gapSummary / lowestSummary.total) * 100
+      : null;
+
+  const selectedCountries = [1, 2, 3]
+    .slice(0, Number(countValue))
+    .map((key) => options[key]?.country)
+    .filter(Boolean);
+
+  const compareSources = Array.from(
+    new Set(
+      selectedCountries
+        .map((country) => {
+          if (country === 'gt' || country === 'guatemala') {
+            return 'Fuente Guatemala: Instituto Guatemalteco de Migración -IGM-';
+          }
+
+          if (country === 'hn' || country === 'honduras') {
+            return 'Fuente Honduras: DINAF';
+          }
+
+          return null;
+        })
+        .filter(Boolean)
+    )
+  );
+
+  const compareMethodology = [
+    selectedCountries.some((country) => country === 'gt' || country === 'guatemala') &&
+      selectedCountries.some((country) => country === 'hn' || country === 'honduras')
+      ? 'Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de Niñez Migrante Guatemala-Honduras'
+      : null,
+    selectedCountries.some((country) => country === 'sv' || country === 'elsalvador')
+      ? 'Esta información ha sido procesada por Niñez Migrante Guatemala-El Salvador'
+      : null,
+  ].filter(Boolean);
+
   const sources = (
     <Stack
       width='100%'
       margin='auto'
       direction='column'
       alignItems='center'
-      marginBottom='40px'
+      marginBottom='24px'
+      spacing='8px'
       justifyContent='center'
-      maxWidth={{ base: '300px', md: '800px' }}
+      maxWidth={{ base: '320px', md: '760px' }}
     >
-      <Text
-        textAlign='center'
-        fontFamily='Oswald'
-        fontSize={{ base: 'xl', md: 'md' }}
-        maxWidth={{ base: '300px', md: '800px' }}
-      >
-        {(options[1].country === 'guatemala' || options[1].country === 'gt') &&
-          `Fuente Guatemala: Instituto Guatemalteco de Migración -IGM-`}
-      </Text>
-      <Text
-        textAlign='center'
-        fontFamily='Oswald'
-        fontSize={{ base: 'xl', md: 'md' }}
-        maxWidth={{ base: '300px', md: '800px' }}
-      >
-        {(options[2].country === 'honduras' || options[2].country === 'hn') &&
-          'Fuente Honduras: DINAF'}
-      </Text>
+      {compareSources.map((source) => (
+        <Text
+          key={source}
+          textAlign='center'
+          fontFamily='Oswald'
+          fontSize={{ base: 'sm', md: 'md' }}
+          maxWidth={{ base: '320px', md: '760px' }}
+          lineHeight='1.2'
+        >
+          {source}
+        </Text>
+      ))}
 
-      <Text
-        textAlign='center'
-        fontFamily='Montserrat Medium'
-        fontSize={{ base: 'xs', md: 'sm' }}
-      >
-        Esta información ha sido procesada por: Monitoreo de niñez y
-        adolescencia migrante -Monitoreo Binacional de Niñez Migrante
-        Guatemala-Honduras
-      </Text>
-
-      <Text
-        textAlign='center'
-        fontFamily='Montserrat Medium'
-        fontSize={{ base: 'xs', md: 'sm' }}
-      >
-        Esta información ha sido procesada por Niñez Migrante Guatemala-El
-        Salvador
-      </Text>
+      {compareMethodology.map((note) => (
+        <Text
+          key={note}
+          textAlign='center'
+          fontFamily='Montserrat Medium'
+          fontSize={{ base: 'xs', md: 'sm' }}
+          lineHeight='1.35'
+        >
+          {note}
+        </Text>
+      ))}
     </Stack>
   );
 
@@ -314,6 +349,14 @@ const ComparePage = () => {
                     </Text>
                     <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
                       {gapSummary === null ? '...' : formatInt(gapSummary)}
+                    </Text>
+                    <Text
+                      marginTop='8px'
+                      fontFamily='Montserrat Medium'
+                      fontSize='sm'
+                      color='gray.700'
+                    >
+                      {formatGapPercentage(gapPercentage)}
                     </Text>
                   </Box>
                 </SimpleGrid>

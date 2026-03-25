@@ -49,6 +49,8 @@ const buildFallbackPeriodId = (year, period) => {
   return null;
 };
 
+const formatInt = (value = 0) => new Intl.NumberFormat('es-GT').format(value);
+
 const Statistics = ({
   data,
   setUpdateDate,
@@ -158,7 +160,7 @@ const Statistics = ({
           lineHeight='1'
           fontFamily='Oswald'
           textAlign='center'
-          fontSize={{ base: '4xl', md: '6xl' }}
+          fontSize={{ base: '4xl', md: '5xl' }}
         >
           {countryTitleByCode[data.country] ?? ''}
         </Text>
@@ -189,7 +191,7 @@ const Statistics = ({
           fontSize={{ base: '6xl', md: '7xl' }}
           lineHeight='1'
         >
-          {totalAmount ?? 0}
+          {formatInt(totalAmount ?? 0)}
         </Text>
       </Stack>
 
