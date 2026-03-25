@@ -42,8 +42,11 @@ export default function useDepartmentMunicipalities({
   const { data, loading, error } = useQuery(
     GET_MUNICIPALITIES_FOR_COUNTRY(country, p, y, dept),
     {
-      fetchPolicy: 'cache-and-network',
-      notifyOnNetworkStatusChange: true,
+      // This query reuses the same monthlyReports root field as the main
+      // country stats query, but requests a narrower nested shape. Keeping it
+      // out of Apollo cache avoids clobbering the compare view data on first
+      // open for each map.
+      fetchPolicy: 'no-cache',
       skip: !dept || !!skip,
     }
   );

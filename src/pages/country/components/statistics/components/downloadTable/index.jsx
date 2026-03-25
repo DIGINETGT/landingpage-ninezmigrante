@@ -71,7 +71,9 @@ const DownloadTable = ({ satisticsRef, files }) => {
                       direction={{ base: "column", md: "row" }}
                     >
                       <Text fontFamily="Oswald" fontSize="2xl">
-                        {`REPORTE DE ${file?.name}`}
+                        {`REPORTE DE ${file?.name}${
+                          file?.countryName ? ` - ${file.countryName}` : ""
+                        }`}
                       </Text>
                       <Button
                         size="lg"

@@ -101,8 +101,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
       alignItems="center"
       maxWidth="unset"
       margin="0 auto"
-      paddingLeft="100px"
-      paddingRight="100px"
+      paddingLeft={isCompact ? "32px" : "100px"}
+      paddingRight={isCompact ? "32px" : "100px"}
       justifyContent="center"
     >
       <Stack direction={{ base: "column", md: "row" }} justifyContent="center">
@@ -131,10 +131,11 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           >
             <Link to="/">
               <Image
-                w="80px"
-                mb="-25px"
+                w={isCompact ? "44px" : "80px"}
+                mb={isCompact ? "0" : "-25px"}
                 src={LogoNinezMigrante}
                 minW={isCompact ? "40px" : "80px"}
+                objectFit="contain"
               />
             </Link>
 
@@ -168,33 +169,44 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           marginBottom="40px"
         >
           <Stack
-            gap="30px"
+            gap={isCompact ? "16px" : "30px"}
             alignItems={"center"}
             direction={{ base: "column", md: "row" }}
           >
             <a href="https://www.kindernothilfe.org/" target="_blank">
               <Image
                 src={LogoKnh}
-                minWidth={isCompact ? "100px" : "250px"}
+                maxH={isCompact ? "70px" : "unset"}
+                maxW={isCompact ? "200px" : "250px"}
+                minWidth={isCompact ? "unset" : "250px"}
+                objectFit="contain"
               />
             </a>
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoProyectoBinacional}
-                maxWidth={isCompact ? "200px" : "80px"}
-                minWidth="80px"
+                maxH={isCompact ? "58px" : "unset"}
+                maxWidth={isCompact ? "90px" : "80px"}
+                minWidth={isCompact ? "unset" : "80px"}
+                objectFit="contain"
               />
             </a>
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoCoiproden}
-                minWidth={isCompact ? "100px" : "200px"}
+                maxH={isCompact ? "92px" : "unset"}
+                maxW={isCompact ? "220px" : "unset"}
+                minWidth={isCompact ? "unset" : "200px"}
+                objectFit="contain"
               />
             </a>
             <a href="https://pami-guatemala.org/" target="_blank">
               <Image
                 src={LogoPAMI}
-                minWidth={isCompact ? "50px" : "80px"}
+                maxH={isCompact ? "96px" : "unset"}
+                maxW={isCompact ? "120px" : "unset"}
+                minWidth={isCompact ? "unset" : "80px"}
+                objectFit="contain"
               />
             </a>
           </Stack>

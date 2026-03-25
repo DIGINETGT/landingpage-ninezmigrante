@@ -9,6 +9,15 @@ import GraphFooter from '../../components/graphFooter';
 import StatisticsContext from '../country/components/statistics/context';
 import LastDate from '../../components/lastUpdate';
 
+const countryDisplayName = {
+  gt: 'Guatemala',
+  hn: 'Honduras',
+  sv: 'El Salvador',
+  guatemala: 'Guatemala',
+  honduras: 'Honduras',
+  elsalvador: 'El Salvador',
+};
+
 const ComparePage = () => {
   const [countValue, setCountValue] = useState('0');
   const [options, setOptions] = useState({
@@ -32,6 +41,16 @@ const ComparePage = () => {
     setOptions((prevOptions) => ({ ...prevOptions, [id]: data }));
   };
 
+  const compareFiles = [1, 2, 3].flatMap((key) => {
+    const currentFiles = Array.isArray(files[key]) ? files[key] : [];
+    const currentCountry = countryDisplayName[options[key]?.country] || '';
+
+    return currentFiles.map((file) => ({
+      ...file,
+      countryName: currentCountry,
+    }));
+  });
+
   const sources = (
     <Stack
       width='100%'
@@ -48,7 +67,7 @@ const ComparePage = () => {
         fontSize={{ base: 'xl', md: 'md' }}
         maxWidth={{ base: '300px', md: '800px' }}
       >
-        {options[1].country === 'guatemala' &&
+        {(options[1].country === 'guatemala' || options[1].country === 'gt') &&
           `Fuente Guatemala: Instituto Guatemalteco de Migración -IGM-`}
       </Text>
       <Text
@@ -57,7 +76,8 @@ const ComparePage = () => {
         fontSize={{ base: 'xl', md: 'md' }}
         maxWidth={{ base: '300px', md: '800px' }}
       >
-        {options[2].country === 'honduras' && 'Fuente Honduras: DINAF'}
+        {(options[2].country === 'honduras' || options[2].country === 'hn') &&
+          'Fuente Honduras: DINAF'}
       </Text>
 
       <Text
@@ -143,11 +163,7 @@ const ComparePage = () => {
           />
           {isScreenShotTime && <GraphFooter responsive />}
           <DownloadTable
-            files={[
-              ...(Array.isArray(files['1']) ? [...files['1']] : []),
-              ...(Array.isArray(files['2']) ? [...files['2']] : []),
-              ...(Array.isArray(files['3']) ? [...files['3']] : []),
-            ]}
+            files={compareFiles}
             satisticsRef={satisticsRef}
             periodId={periodId}
           />
