@@ -18,10 +18,17 @@ import { generateGraphDataFromRange } from "../utils/events";
 const datasetLabels = {
   gender: ["Femenino", "Masculino"],
   age: ["Primera infancia", "Niñez", "Adolescencia", "No registrado"],
-  via: ["Terrestre", "Aérea"],
+  via: ["Terrestre", "Aérea", "Marítimo", "Otros"],
   condition: ["Acompañado", "No acompañado"],
   return: ["Estados Unidos", "México", "Canada"],
 };
+
+const normalizeText = (value = "") =>
+  value
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
 /**
  * Toma tres parámetros, realiza una solicitud a una API y devuelve los datos en un formato que puede
@@ -118,6 +125,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
         let totals = { total1: 0, total2: 0, total3: 0, total4: 0 };
         const { data: queryData } = await apolloClient.query({
           query: selectedQuery,
+          fetchPolicy: "network-only",
         });
 
         const filteredData = queryData?.monthlyReports?.data?.filter(
@@ -151,10 +159,11 @@ const useGraphData = (period, graphType, chartType, countryID) => {
             ]?.data;
 
           contributionRawData?.forEach((contributionData) => {
-            const rawData =
+            const rawData = normalizeText(
               contributionData.attributes?.[
                 selectedContribution?.replace("_contributions", "")
-              ]?.data?.attributes?.name?.toLowerCase();
+              ]?.data?.attributes?.name
+            );
 
             const total = contributionData.attributes?.cant || 0;
 
@@ -164,29 +173,29 @@ const useGraphData = (period, graphType, chartType, countryID) => {
             }
 
             if (graphType === "via") {
-              if (rawData.includes("terrestre")) totals.total1 += total;
-
-              if (rawData.includes("aérea")) {
-                totals.total2 += total;
-              }
+              if (rawData.includes("terrest")) totals.total1 += total;
+              else if (rawData.includes("aere")) totals.total2 += total;
+              else if (rawData.includes("maritim")) totals.total3 += total;
+              else totals.total4 += total;
             }
 
             if (graphType === "condition") {
-              if (rawData === "acompañado") totals.total1 += total;
-              if (rawData === "no acompañado") totals.total2 += total;
+              if (rawData === "acompanado") totals.total1 += total;
+              if (rawData === "no acompanado") totals.total2 += total;
             }
 
             if (graphType === "return") {
               if (rawData === "estados unidos") totals.total1 += total;
-              if (rawData === "méxico") totals.total2 += total;
-              if (rawData === "canadá") totals.total3 += total;
+              if (rawData === "mexico") totals.total2 += total;
+              if (rawData === "canada") totals.total3 += total;
             }
 
             if (graphType === "age") {
               if (rawData === "primera infancia") totals.total1 += total;
-              if (rawData === "niñez") totals.total2 += total;
+              if (rawData === "ninez") totals.total2 += total;
               if (rawData === "adolescencia") totals.total3 += total;
-              if (rawData === "no registrados") totals.total4 += total;
+              if (rawData === "no registrados" || rawData === "no registrado")
+                totals.total4 += total;
             }
           });
         });
@@ -197,7 +206,10 @@ const useGraphData = (period, graphType, chartType, countryID) => {
       // RESOLVER
       Promise.allSettled(requests)
         .then((res) => {
-          let data = res?.map((r) => r.value) ?? [];
+          let data =
+            res
+              ?.filter((r) => r.status === "fulfilled")
+              ?.map((r) => r.value) ?? [];
 
           // REVERSE PARA PERIODO 1
           if (period === "1") data = data.reverse();
@@ -245,7 +257,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
         })
         .catch((err) => console.log(err));
     }
-  }, [period, graphType, chartType]);
+  }, [period, graphType, chartType, countryID]);
 
   return graphData;
 };
