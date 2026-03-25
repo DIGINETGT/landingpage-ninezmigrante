@@ -29,6 +29,8 @@ import ModalContentHN from '../../../../../../components/departments/components/
 import ModalContentSV from '../../../../../../components/departments/components/sv';
 
 import DepartmentListCarousel from '../../../../../../components/departmentListCarousel';
+import DownloadImage from '../../../../../../components/downloadImage';
+import GraphFooter from '../../../../../../components/graphFooter';
 
 // ----------------------------------------------------
 // Componente
@@ -51,6 +53,7 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
     { reload: true },
     { reload: true },
   ]);
+  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
   // UI helpers
   const [windowWidth, setWindowWidth] = useState(
@@ -104,6 +107,44 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
   };
 
   // const iso = isoFromCountrySlug(countryID);
+
+  const sources = (
+    <Stack
+      width='100%'
+      margin='auto'
+      direction='column'
+      alignItems='center'
+      marginBottom='40px'
+      padding='20px'
+      justifyContent='center'
+      maxWidth='800px'
+    >
+      <Text
+        textAlign='center'
+        fontFamily='Oswald'
+        fontSize={{ base: 'xl', md: 'md' }}
+        maxWidth='800px'
+      >
+        {getCountryContent({
+          countryID,
+          content: {
+            guatemala: 'Instituto Guatemalteco de Migración -IGM-',
+            honduras: 'DINAF',
+          },
+        })}
+      </Text>
+
+      <Text
+        textAlign='center'
+        fontFamily='Montserrat Medium'
+        fontSize={{ base: 'xs', md: 'sm' }}
+      >
+        Esta información ha sido procesada por: Monitoreo de niñez y
+        adolescencia migrante -Monitoreo Binacional de Niñez Migrante
+        Guatemala-Honduras-.
+      </Text>
+    </Stack>
+  );
 
   return (
     <Box
@@ -218,6 +259,15 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
               )}
             </SimpleGrid>
           </Stack>
+
+          {!isScreenShotTime && sources}
+          {isScreenShotTime && <GraphFooter sources={sources} responsive />}
+
+          <DownloadImage
+            containerRef={containerRef}
+            label='Descargar imagen de comparación'
+            onSS={setIsScreenShotTime}
+          />
         </Box>
       </DragDropContext>
     </Box>
