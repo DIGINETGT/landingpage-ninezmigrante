@@ -41,6 +41,10 @@ const Header = () => {
             guardar la imagen en su dispositivo haciendo clic en el botón
             “descargar imagen”.
           </Text>
+          <Text fontFamily="Arial" fontSize="xs" color="gray.600" marginTop="8px">
+            Nota: en "Últimos 3 años" se muestran solo años con registros
+            disponibles.
+          </Text>
         </Stack>
       </Stack>
     </Box>

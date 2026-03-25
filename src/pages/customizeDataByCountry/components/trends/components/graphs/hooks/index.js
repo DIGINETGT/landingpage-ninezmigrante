@@ -30,6 +30,12 @@ const normalizeText = (value = "") =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
+const getSeriesTotal = (totals = {}) =>
+  (totals?.total1 || 0) +
+  (totals?.total2 || 0) +
+  (totals?.total3 || 0) +
+  (totals?.total4 || 0);
+
 /**
  * Toma tres parámetros, realiza una solicitud a una API y devuelve los datos en un formato que puede
  * ser utilizado por una biblioteca de gráficos.
@@ -54,7 +60,7 @@ const useGraphData = (period, graphType, chartType, countryID) => {
   // UTIMO AÑO
   if (period === "0") {
     barLengths = 3;
-    generateGraphDataFromRange(1, 12, year).forEach((data) =>
+    generateGraphDataFromRange(1, month, year).forEach((data) =>
       localData.push(data)
     );
   }
@@ -62,29 +68,24 @@ const useGraphData = (period, graphType, chartType, countryID) => {
   // ULTIMOS 4 MESES
   if (period === "1") {
     barLengths = 4;
-    let resultData = [];
-
-    if (month >= 5) {
-      resultData = generateGraphDataFromRange(
-        month - 3,
-        month ,
-        currentYear
-      ).forEach((data) => localData.push(data));
+    if (month >= 4) {
+      generateGraphDataFromRange(month - 3, month, currentYear).forEach(
+        (data) => localData.push(data)
+      );
     } else {
-      const startDiff = 5 - month;
+      const previousYearMonths = 4 - month;
+      const previousYearStartMonth = 12 - previousYearMonths + 1;
 
-      if (startDiff > 1) {
-        resultData = generateGraphDataFromRange(
-          12 - startDiff,
-          12,
-          currentYear
-        );
-      } else {
-        resultData = generateGraphDataFromRange(1, month, currentYear);
-      }
+      generateGraphDataFromRange(
+        previousYearStartMonth,
+        12,
+        currentYear - 1
+      ).forEach((data) => localData.push(data));
+
+      generateGraphDataFromRange(1, month, currentYear).forEach((data) =>
+        localData.push(data)
+      );
     }
-
-    resultData?.forEach((data) => localData.push(data));
   }
 
   // ULTIMOS 3 AÑOS
@@ -210,6 +211,10 @@ const useGraphData = (period, graphType, chartType, countryID) => {
             res
               ?.filter((r) => r.status === "fulfilled")
               ?.map((r) => r.value) ?? [];
+
+          if (period === "2") {
+            data = data.filter((totals) => getSeriesTotal(totals) > 0);
+          }
 
           // REVERSE PARA PERIODO 1
           if (period === "1") data = data.reverse();
