@@ -5,7 +5,12 @@ import { DownloadIcon } from '@chakra-ui/icons';
 import folder from '../../assets/folder.png';
 import LoadSplash from '../loadSplash';
 
-const DownloadImage = ({ label, containerRef, onSS = (screenshot) => {} }) => {
+const DownloadImage = ({
+  label,
+  containerRef,
+  fileName = 'download.pdf',
+  onSS = (screenshot) => {},
+}) => {
   const collectScrollableNodes = (rootElement) => {
     if (!rootElement) return [];
 
@@ -111,7 +116,7 @@ const DownloadImage = ({ label, containerRef, onSS = (screenshot) => {} }) => {
           const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
           pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-          await pdf.save('download.pdf', { returnPromise: true });
+          await pdf.save(fileName, { returnPromise: true });
         } finally {
           restoreLayout();
           setLoading(false);
@@ -121,7 +126,7 @@ const DownloadImage = ({ label, containerRef, onSS = (screenshot) => {} }) => {
       };
       take();
     }
-  }, [screenshot]);
+  }, [fileName, screenshot]);
 
   return (
     <>

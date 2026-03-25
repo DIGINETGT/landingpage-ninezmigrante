@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, SimpleGrid, Stack, Text } from '@chakra-ui/react';
 
 import SelectOptions from './components/selectOptions';
 import Statistics from './components/statistics';
@@ -8,6 +8,22 @@ import DownloadTable from '../country/components/statistics/components/downloadT
 import GraphFooter from '../../components/graphFooter';
 import StatisticsContext from '../country/components/statistics/context';
 import LastDate from '../../components/lastUpdate';
+
+const shortMonthNames = [
+  '',
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+];
 
 const countryDisplayName = {
   gt: 'Guatemala',
@@ -17,6 +33,29 @@ const countryDisplayName = {
   honduras: 'Honduras',
   elsalvador: 'El Salvador',
 };
+
+const formatSelectionLabel = (option = {}) => {
+  const countryName = countryDisplayName[option?.country] || '';
+  const year = option?.year;
+  const startMonth = shortMonthNames[Number(option?.period?.[0]) || 1];
+  const endMonth = shortMonthNames[Number(option?.period?.[1]) || 1];
+
+  if (!countryName) return '';
+  if (!year) return countryName;
+
+  return `${countryName} | ${startMonth} - ${endMonth} ${year}`;
+};
+
+const slugify = (value = '') =>
+  value
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const formatInt = (value = 0) => new Intl.NumberFormat('es-GT').format(value);
 
 const ComparePage = () => {
   const [countValue, setCountValue] = useState('0');
@@ -28,6 +67,11 @@ const ComparePage = () => {
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const [updateDate, setUpdateDate] = useState('');
+  const [compareSummary, setCompareSummary] = useState({
+    1: { total: null, loading: false },
+    2: { total: null, loading: false },
+    3: { total: null, loading: false },
+  });
   const [files, setFiles] = useState({
     1: [],
     2: [],
@@ -44,12 +88,60 @@ const ComparePage = () => {
   const compareFiles = [1, 2, 3].flatMap((key) => {
     const currentFiles = Array.isArray(files[key]) ? files[key] : [];
     const currentCountry = countryDisplayName[options[key]?.country] || '';
+    const selectionLabel = formatSelectionLabel(options[key]);
 
     return currentFiles.map((file) => ({
       ...file,
       countryName: currentCountry,
+      selectionLabel,
+      downloadLabel: `REPORTE DE ${file?.name}${
+        selectionLabel ? ` - ${selectionLabel}` : ''
+      }`,
     }));
   });
+
+  const imageFileName = (() => {
+    const labels = [1, 2, 3]
+      .map((key) => formatSelectionLabel(options[key]))
+      .filter(Boolean)
+      .map((label) => slugify(label));
+
+    if (!labels.length) return 'comparacion.pdf';
+
+    return `comparacion-${labels.join('__')}.pdf`;
+  })();
+
+  const selectionSummaries = [1, 2, 3]
+    .slice(0, Number(countValue))
+    .map((key) => ({
+      key,
+      shortLabel: `Selección ${key}`,
+      label: formatSelectionLabel(options[key]),
+      total: compareSummary[key]?.total,
+      loading: compareSummary[key]?.loading,
+    }))
+    .filter((item) => item.label.length > 0);
+
+  const readySummaries = selectionSummaries.filter(
+    (item) => !item.loading && typeof item.total === 'number'
+  );
+
+  const highestSummary = readySummaries.length
+    ? readySummaries.reduce((highest, current) =>
+        current.total > highest.total ? current : highest
+      )
+    : null;
+
+  const lowestSummary = readySummaries.length
+    ? readySummaries.reduce((lowest, current) =>
+        current.total < lowest.total ? current : lowest
+      )
+    : null;
+
+  const gapSummary =
+    highestSummary && lowestSummary
+      ? highestSummary.total - lowestSummary.total
+      : null;
 
   const sources = (
     <Stack
@@ -122,6 +214,113 @@ const ComparePage = () => {
           bgColor={isScreenShotTime ? '#fff' : '#eee'}
           padding={{ base: '40px 24px', md: '80px 40px' }}
         >
+          {selectionSummaries.length >= 2 && (
+            <Box
+              bgColor='white'
+              borderRadius='20px'
+              padding={{ base: '24px', md: '32px' }}
+              margin='0 auto 40px auto'
+              maxWidth='1200px'
+            >
+              <Stack spacing='20px'>
+                <Text fontFamily='Oswald' fontSize={{ base: '2xl', md: '3xl' }}>
+                  Comparación rápida
+                </Text>
+
+                <SimpleGrid
+                  columns={{ base: 1, md: Math.min(selectionSummaries.length + 2, 5) }}
+                  spacing='16px'
+                >
+                  {selectionSummaries.map((item) => (
+                    <Box
+                      key={item.key}
+                      border='1px solid #ddd'
+                      borderRadius='16px'
+                      padding='16px'
+                      bgColor='rgba(0,0,0,0.02)'
+                    >
+                      <Text
+                        fontFamily='Montserrat Medium'
+                        fontSize='sm'
+                        color='gray.600'
+                        marginBottom='8px'
+                      >
+                        {item.shortLabel}
+                      </Text>
+                      <Text
+                        fontFamily='Oswald'
+                        fontSize='lg'
+                        lineHeight='1.2'
+                        marginBottom='12px'
+                      >
+                        {item.label}
+                      </Text>
+                      <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
+                        {item.loading || typeof item.total !== 'number'
+                          ? '...'
+                          : formatInt(item.total)}
+                      </Text>
+                    </Box>
+                  ))}
+
+                  <Box
+                    border='1px solid #ddd'
+                    borderRadius='16px'
+                    padding='16px'
+                    bgColor='rgba(117,184,65,0.08)'
+                  >
+                    <Text
+                      fontFamily='Montserrat Medium'
+                      fontSize='sm'
+                      color='gray.600'
+                      marginBottom='8px'
+                    >
+                      Mayor valor
+                    </Text>
+                    <Text
+                      fontFamily='Oswald'
+                      fontSize='lg'
+                      lineHeight='1.2'
+                      marginBottom='12px'
+                    >
+                      {highestSummary?.label || 'Calculando...'}
+                    </Text>
+                    <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
+                      {highestSummary ? formatInt(highestSummary.total) : '...'}
+                    </Text>
+                  </Box>
+
+                  <Box
+                    border='1px solid #ddd'
+                    borderRadius='16px'
+                    padding='16px'
+                    bgColor='rgba(51,132,169,0.08)'
+                  >
+                    <Text
+                      fontFamily='Montserrat Medium'
+                      fontSize='sm'
+                      color='gray.600'
+                      marginBottom='8px'
+                    >
+                      Brecha
+                    </Text>
+                    <Text
+                      fontFamily='Oswald'
+                      fontSize='lg'
+                      lineHeight='1.2'
+                      marginBottom='12px'
+                    >
+                      Diferencia entre la mayor y la menor selección
+                    </Text>
+                    <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
+                      {gapSummary === null ? '...' : formatInt(gapSummary)}
+                    </Text>
+                  </Box>
+                </SimpleGrid>
+              </Stack>
+            </Box>
+          )}
+
           <Stack
             gap='40px'
             alignContent='center'
@@ -135,6 +334,7 @@ const ComparePage = () => {
               setFiles={setFiles}
               setUpdateDate={setUpdateDate}
               setPeriodId={setPeriodId}
+              setCompareSummary={setCompareSummary}
             />
             {(countValue === '2' || countValue === '3') && (
               <Statistics
@@ -143,6 +343,7 @@ const ComparePage = () => {
                 id='2'
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
+                setCompareSummary={setCompareSummary}
               />
             )}
             {countValue === '3' && (
@@ -152,6 +353,7 @@ const ComparePage = () => {
                 setFiles={setFiles}
                 setUpdateDate={setUpdateDate}
                 setPeriodId={setPeriodId}
+                setCompareSummary={setCompareSummary}
               />
             )}
           </Stack>
@@ -166,6 +368,7 @@ const ComparePage = () => {
             files={compareFiles}
             satisticsRef={satisticsRef}
             periodId={periodId}
+            imageFileName={imageFileName}
           />
         </Box>
       )}

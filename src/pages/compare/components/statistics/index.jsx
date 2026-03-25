@@ -32,6 +32,15 @@ const toCountryID = (c) => {
   return m[c] ?? 'gt';
 };
 
+const countryTitleByCode = {
+  gt: 'GUATEMALA',
+  hn: 'HONDURAS',
+  sv: 'EL SALVADOR',
+  guatemala: 'GUATEMALA',
+  honduras: 'HONDURAS',
+  elsalvador: 'EL SALVADOR',
+};
+
 // (opcional) si quieres un periodId estable cuando la API no lo provee
 const buildFallbackPeriodId = (year, period) => {
   if (year && Array.isArray(period) && period[0] && period[1]) {
@@ -40,7 +49,14 @@ const buildFallbackPeriodId = (year, period) => {
   return null;
 };
 
-const Statistics = ({ data, setUpdateDate, id, setFiles, setPeriodId }) => {
+const Statistics = ({
+  data,
+  setUpdateDate,
+  id,
+  setFiles,
+  setPeriodId,
+  setCompareSummary,
+}) => {
   // Validación básica
   const canQuery = !!(
     data?.country &&
@@ -104,6 +120,18 @@ const Statistics = ({ data, setUpdateDate, id, setFiles, setPeriodId }) => {
     data?.period,
   ]);
 
+  useEffect(() => {
+    if (typeof setCompareSummary !== 'function') return;
+
+    setCompareSummary((prev) => ({
+      ...prev,
+      [id]: {
+        loading,
+        total: canQuery ? Number(totalCant || 0) : null,
+      },
+    }));
+  }, [canQuery, id, loading, setCompareSummary, totalCant]);
+
   // Puedes seguir mostrando tu total calculado, o usar totalCant del hook
   const totalAmount = useMemo(() => Number(totalCant || 0), [totalCant]);
 
@@ -132,9 +160,7 @@ const Statistics = ({ data, setUpdateDate, id, setFiles, setPeriodId }) => {
           textAlign='center'
           fontSize={{ base: '4xl', md: '6xl' }}
         >
-          {data.country === 'guatemala' && 'GUATEMALA'}
-          {data.country === 'honduras' && 'HONDURAS'}
-          {data.country === 'elsalvador' && 'EL SALVADOR'}
+          {countryTitleByCode[data.country] ?? ''}
         </Text>
 
         <Text

@@ -9,6 +9,28 @@ import MapaSalvador from '../../../../../../assets/MapaElSalvador.svg';
 import YearSelect from '../../../../../../components/yearSelect';
 import MonthPicker from '../../../../../../components/monthPicker';
 
+const countryNames = {
+  gt: 'Guatemala',
+  hn: 'Honduras',
+  sv: 'El Salvador',
+};
+
+const monthLabels = [
+  '',
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+];
+
 const countryImages = {
   default: {
     src: LogoNinezMigrante,
@@ -30,6 +52,13 @@ const countryImages = {
 
 const Options = ({ id, onChange, satisticsRef, countValue }) => {
   const [data, setData] = useState({ country: '', period: [1, 1], year: 0 });
+
+  const selectionLabel =
+    data.country && data.year
+      ? `${countryNames[data.country] ?? ''} | ${
+          monthLabels[data.period?.[0]] ?? 'Ene'
+        } - ${monthLabels[data.period?.[1]] ?? 'Ene'} ${data.year}`
+      : '';
 
   const handleChange = (ev) => {
     setData((prevData) => ({ ...prevData, [ev.target.name]: ev.target.value }));
@@ -66,8 +95,20 @@ const Options = ({ id, onChange, satisticsRef, countValue }) => {
       justifyContent='center'
     >
       <Text fontFamily='Montserrat Medium' fontSize='2xl'>
-        Data {id}
+        Selección {id}
       </Text>
+      {selectionLabel.length > 0 && (
+        <Text
+          fontSize='sm'
+          lineHeight='1.3'
+          textAlign='center'
+          fontFamily='Montserrat Medium'
+          color='gray.700'
+          minH='36px'
+        >
+          {selectionLabel}
+        </Text>
+      )}
       {/* SELECT COUNTRY */}
       <Select
         name='country'

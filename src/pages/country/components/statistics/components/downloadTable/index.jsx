@@ -18,7 +18,7 @@ import DownloadImage from "../../../../../../components/downloadImage";
 import { useContext } from "react";
 import StatisticsContext from "../../context";
 
-const DownloadTable = ({ satisticsRef, files }) => {
+const DownloadTable = ({ satisticsRef, files, imageFileName }) => {
   const { setIsScreenShotTime } = useContext(StatisticsContext);
 
   let data = files ?? [];
@@ -71,9 +71,10 @@ const DownloadTable = ({ satisticsRef, files }) => {
                       direction={{ base: "column", md: "row" }}
                     >
                       <Text fontFamily="Oswald" fontSize="2xl">
-                        {`REPORTE DE ${file?.name}${
-                          file?.countryName ? ` - ${file.countryName}` : ""
-                        }`}
+                        {file?.downloadLabel ??
+                          `REPORTE DE ${file?.name}${
+                            file?.countryName ? ` - ${file.countryName}` : ""
+                          }`}
                       </Text>
                       <Button
                         size="lg"
@@ -104,6 +105,7 @@ const DownloadTable = ({ satisticsRef, files }) => {
               <DownloadImage
                 label="Descargar infografía del período"
                 containerRef={satisticsRef}
+                fileName={imageFileName}
                 onSS={setIsScreenShotTime}
               />
             </AccordionButton>
