@@ -22,7 +22,8 @@ export const options = {
 };
 
 const TravelCondition = () => {
-  const { loading, travelConditionTotals } = useContext(StatisticsContext);
+  const { loading, travelConditionTotals, isCompareView } =
+    useContext(StatisticsContext);
 
   // nombres esperados en tu data: "acompañado" | "no acompañado" | "otros"
   const { ACD, NO_ACD, UN_REGISTRED } = useMemo(() => {
@@ -48,6 +49,11 @@ const TravelCondition = () => {
     ],
   };
 
+  const chartWidth = isCompareView ? '180px' : '200px';
+  const labelFontSize = isCompareView ? 'sm' : 'md';
+  const valueFontSize = isCompareView ? 'xl' : '2xl';
+  const legendSpacing = isCompareView ? '2px' : '-8px';
+
   return (
     <Box width='100%' position='relative'>
       <Loader loading={loading} />
@@ -57,37 +63,37 @@ const TravelCondition = () => {
           Condición de viaje
         </Text>
 
-        <Box maxWidth='200px'>
+        <Box maxWidth={chartWidth}>
           <Pie data={data} options={options} />
         </Box>
 
-        <Stack direction='column' spacing='-8px'>
+        <Stack direction='column' spacing={legendSpacing}>
           <Stack direction='row' alignItems='center'>
             <Box bgColor='blue.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
+            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
               No Acompañados
             </Text>
-            <Text fontFamily='Oswald' fontSize='2xl'>
+            <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(NO_ACD)}
             </Text>
           </Stack>
 
           <Stack direction='row' alignItems='center'>
             <Box bgColor='green.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
+            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
               Acompañados
             </Text>
-            <Text fontFamily='Oswald' fontSize='2xl'>
+            <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(ACD)}
             </Text>
           </Stack>
 
           <Stack direction='row' alignItems='center'>
             <Box bgColor='yellow.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize='md' lineHeight='1'>
+            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
               Otros
             </Text>
-            <Text fontFamily='Oswald' fontSize='2xl'>
+            <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(UN_REGISTRED)}
             </Text>
           </Stack>

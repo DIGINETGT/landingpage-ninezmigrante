@@ -234,7 +234,7 @@ const ComparePage = () => {
 
   return (
     <StatisticsContext.Provider
-      value={{ isScreenShotTime, setIsScreenShotTime }}
+      value={{ isScreenShotTime, isCompareView: true, setIsScreenShotTime }}
     >
       <SelectOptions
         countValue={countValue}
@@ -253,9 +253,9 @@ const ComparePage = () => {
             <Box
               bgColor='white'
               borderRadius='20px'
-              padding={{ base: '24px', md: '32px' }}
+              padding={{ base: '24px', md: '36px' }}
               margin='0 auto 40px auto'
-              maxWidth='1200px'
+              maxWidth='1280px'
             >
               <Stack spacing='20px'>
                 <Text fontFamily='Oswald' fontSize={{ base: '2xl', md: '3xl' }}>
@@ -273,6 +273,7 @@ const ComparePage = () => {
                       borderRadius='16px'
                       padding='16px'
                       bgColor='rgba(0,0,0,0.02)'
+                      minHeight='180px'
                     >
                       <Text
                         fontFamily='Montserrat Medium'
@@ -303,6 +304,7 @@ const ComparePage = () => {
                     borderRadius='16px'
                     padding='16px'
                     bgColor='rgba(117,184,65,0.08)'
+                    minHeight='180px'
                   >
                     <Text
                       fontFamily='Montserrat Medium'
@@ -330,6 +332,7 @@ const ComparePage = () => {
                     borderRadius='16px'
                     padding='16px'
                     bgColor='rgba(51,132,169,0.08)'
+                    minHeight='180px'
                   >
                     <Text
                       fontFamily='Montserrat Medium'

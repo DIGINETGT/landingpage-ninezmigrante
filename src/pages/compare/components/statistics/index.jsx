@@ -219,6 +219,7 @@ const Statistics = ({
         <StatisticsContext.Provider
           value={{
             isScreenShotTime: false,
+            isCompareView: true,
             setIsScreenShotTime: () => {},
             reports,
             loading,

@@ -15,22 +15,25 @@ import Loader from '../../../../../../components/loader';
 import { formatInt } from '../../../../../../utils/numbers';
 
 const Gender = () => {
-  const { loading, genderTotals } = useContext(StatisticsContext);
+  const { loading, genderTotals, isCompareView } = useContext(StatisticsContext);
 
   const tfemale = genderTotals?.['femenino'] ?? 0;
   const tmale = genderTotals?.['masculino'] ?? 0;
+  const iconHeight = isCompareView ? '42px' : '50px';
+  const valueFontSize = isCompareView ? '3xl' : '4xl';
+  const spacing = isCompareView ? '12px' : '16px';
 
   return (
     <Box width='100%' position='relative'>
       <Loader loading={loading} />
 
-      <Stack justifyContent='center' alignItems='center' spacing='16px'>
+      <Stack justifyContent='center' alignItems='center' spacing={spacing}>
         <Text fontFamily='Oswald' fontSize='2xl'>
           Sexo
         </Text>
 
         <Stack
-          gap='16px'
+          gap={spacing}
           direction='row'
           alignItems='center'
           justifyContent='center'
@@ -45,15 +48,15 @@ const Gender = () => {
             bgColor='blue.700'
             fontFamily='Oswald'
           >
-            <Image src={Femenine} height='50px' />
+            <Image src={Femenine} height={iconHeight} />
           </Tooltip>
-          <Text fontFamily='Oswald' fontSize='4xl' color='green.700'>
+          <Text fontFamily='Oswald' fontSize={valueFontSize} color='green.700'>
             {formatInt(tfemale)}
           </Text>
         </Stack>
 
         <Stack
-          gap='16px'
+          gap={spacing}
           direction='row'
           alignItems='center'
           justifyContent='center'
@@ -68,9 +71,9 @@ const Gender = () => {
             bgColor='blue.700'
             fontFamily='Oswald'
           >
-            <Image src={Male} height='50px' />
+            <Image src={Male} height={iconHeight} />
           </Tooltip>
-          <Text fontFamily='Oswald' fontSize='4xl' color='yellow.700'>
+          <Text fontFamily='Oswald' fontSize={valueFontSize} color='yellow.700'>
             {formatInt(tmale)}
           </Text>
         </Stack>

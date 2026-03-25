@@ -14,6 +14,7 @@ import { colors } from '../../../../../../utils/theme';
 const ReturnCountry = () => {
   const {
     loading,
+    isCompareView,
     returnCountryTotals, // { 'Estados Unidos': 123, 'México': 45, ... }
     returnCountryMaps, // { 'Estados Unidos': 'https://...', ... }
   } = useContext(StatisticsContext);
@@ -63,25 +64,28 @@ const ReturnCountry = () => {
       </Stack>
 
       <Stack
-        spacing='24px'
+        spacing={isCompareView ? '18px' : '24px'}
         justifyContent='center'
         direction={{ base: 'column', md: 'row' }}
         alignItems={{ base: 'center', md: 'flex-end' }}
+        flexWrap={isCompareView ? 'wrap' : 'nowrap'}
+        rowGap={isCompareView ? '24px' : '0'}
       >
         {entries.map(([country, total], idx) =>
           total > 0 ? (
             <Stack
               key={`${country}-${idx}`}
-              gap='24px'
+              gap={isCompareView ? '16px' : '24px'}
               direction='column'
               alignItems='center'
               justifyContent='center'
+              minWidth={isCompareView ? '110px' : 'unset'}
             >
               {/* Mapa/imagen del país (si existe) */}
               <img
                 src={returnCountryMaps?.[country] || ''}
                 alt={country}
-                width='130'
+                width={isCompareView ? '110' : '130'}
                 height='100%'
                 style={{ objectFit: 'contain' }}
                 onError={(e) => {
@@ -98,7 +102,7 @@ const ReturnCountry = () => {
               >
                 <Text
                   fontFamily='Oswald'
-                  fontSize='md'
+                  fontSize={isCompareView ? 'sm' : 'md'}
                   lineHeight='1'
                   textAlign='center'
                 >
@@ -106,7 +110,7 @@ const ReturnCountry = () => {
                 </Text>
                 <Text
                   fontFamily='Oswald'
-                  fontSize='3xl'
+                  fontSize={isCompareView ? '2xl' : '3xl'}
                   lineHeight='1'
                   textAlign='center'
                 >

@@ -23,7 +23,8 @@ export const options = {
 };
 
 const AgeRanges = ({ disableFirstAge = false }) => {
-  const { loading, ageGroupTotals } = useContext(StatisticsContext);
+  const { loading, ageGroupTotals, isCompareView } =
+    useContext(StatisticsContext);
 
   // nombres esperados en tu data: "primera infancia" | "niñez" | "adolescencia" | "no registrados"
   const { f1, f2, f3, f4 } = useMemo(() => {
@@ -66,24 +67,29 @@ const AgeRanges = ({ disableFirstAge = false }) => {
     ],
   };
 
+  const chartWidth = isCompareView ? '260px' : '300px';
+  const labelFontSize = isCompareView ? 'sm' : 'md';
+  const valueFontSize = isCompareView ? 'xl' : '2xl';
+  const itemMinWidth = isCompareView ? 140 : 160;
+
   return (
     <Box width='100%' position='relative'>
       <Loader loading={loading} />
 
-      <Stack justifyContent='center' alignItems='center'>
+      <Stack justifyContent='center' alignItems='center' spacing='12px'>
         <Text fontFamily='Oswald' fontSize='2xl'>
           Rangos etarios
         </Text>
 
-        <Box width='300px'>
+        <Box width={chartWidth}>
           <Bar options={options} data={data} />
         </Box>
 
         <Grid
           templateColumns='1fr 1fr'
           templateRows='1fr 1fr'
-          columnGap={2}
-          rowGap={0}
+          columnGap={4}
+          rowGap={2}
         >
           {chartColors.map((color, index) => (
             <Stack
@@ -91,15 +97,15 @@ const AgeRanges = ({ disableFirstAge = false }) => {
               alignItems='center'
               justifyContent='space-between'
               key={`age_${index}`}
-              minWidth={160}
+              minWidth={itemMinWidth}
             >
               <Stack direction='row' alignItems='center'>
                 <Box bgColor={color} width='18px' height='18px' />
-                <Text fontFamily='Oswald' fontSize='md'>
+                <Text fontFamily='Oswald' fontSize={labelFontSize}>
                   {agesLabels[index]}
                 </Text>
               </Stack>
-              <Text fontFamily='Oswald' fontSize='2xl'>
+              <Text fontFamily='Oswald' fontSize={valueFontSize}>
                 {formatInt(totals[index]) || 0}
               </Text>
             </Stack>

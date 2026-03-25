@@ -151,6 +151,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
     <StatisticsContext.Provider
       value={{
         isScreenShotTime,
+        isCompareView: false,
         setIsScreenShotTime,
         reports,
         loading,
