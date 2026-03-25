@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Image, Stack, Text, Link } from "@chakra-ui/react";
+import { Box, Image, Stack, Text, Link } from "@chakra-ui/react";
 
 // ASSETS
 import LogoProyectoBinacional from "../../assets/LogoProyectoBinacional.png";
@@ -9,23 +9,105 @@ import LogoCoiproden from "../../assets/LogoCoiproden.png";
 import LogoPAMI from "../../assets/LogoPAMI.png";
 import LogoKnh from "../../assets/LogoKnh.png";
 
-const GraphFooter = ({ responsive, compact = false }) => {
+const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
   const isCompact = responsive || compact;
+
+  if (compact) {
+    return (
+      <Stack
+        mt={6}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        width="100%"
+        maxWidth={fullWidth ? "100%" : "800px"}
+        margin="0 auto"
+        px={fullWidth ? "24px" : "0"}
+        spacing={4}
+      >
+        <Stack direction="column" alignItems="center" spacing={2}>
+          <Text
+            lineHeight={1}
+            fontWeight="600"
+            fontFamily="Montserrat"
+            fontSize="0.55em"
+            textAlign="center"
+          >
+            Esta información ha sido procesada por:
+          </Text>
+        </Stack>
+
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(5, minmax(0, 1fr))"
+          alignItems="center"
+          width="100%"
+          columnGap={fullWidth ? "16px" : "12px"}
+        >
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Link to="/" _hover={{ textDecoration: "none" }}>
+              <Stack direction="row" alignItems="center" spacing={2} minW="0">
+                <Image
+                  src={LogoNinezMigrante}
+                  h="42px"
+                  w="42px"
+                  minW="42px"
+                  objectFit="contain"
+                />
+                <Text
+                  lineHeight={1}
+                  fontFamily="Oswald"
+                  fontSize="0.8em"
+                  whiteSpace="nowrap"
+                >
+                  NiñezMigrante.org
+                </Text>
+              </Stack>
+            </Link>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://www.kindernothilfe.org/" target="_blank">
+              <Image src={LogoKnh} h="52px" objectFit="contain" />
+            </a>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://redcoiproden.org/" target="_blank">
+              <Image src={LogoProyectoBinacional} h="52px" objectFit="contain" />
+            </a>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://redcoiproden.org/" target="_blank">
+              <Image src={LogoCoiproden} h="58px" objectFit="contain" />
+            </a>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://pami-guatemala.org/" target="_blank">
+              <Image src={LogoPAMI} h="62px" objectFit="contain" />
+            </a>
+          </Box>
+        </Box>
+      </Stack>
+    );
+  }
 
   return (
     <Stack
       mt={10}
       direction="column"
       alignItems="center"
-      maxWidth={compact ? "800px" : "unset"}
+      maxWidth="unset"
       margin="0 auto"
-      paddingLeft={compact ? "40px" : "100px"}
-      paddingRight={compact ? "40px" : "100px"}
+      paddingLeft="100px"
+      paddingRight="100px"
       justifyContent="center"
     >
       <Stack direction={{ base: "column", md: "row" }} justifyContent="center">
         <Stack
-          pr={compact ? 3 : 4}
+          pr={4}
           direction="column"
           alignItems="center"
           justifyContent="center"
@@ -49,10 +131,10 @@ const GraphFooter = ({ responsive, compact = false }) => {
           >
             <Link to="/">
               <Image
-                w={compact ? "56px" : "80px"}
-                mb={compact ? "-12px" : "-25px"}
+                w="80px"
+                mb="-25px"
                 src={LogoNinezMigrante}
-                minW={isCompact ? (compact ? "56px" : "40px") : "80px"}
+                minW={isCompact ? "40px" : "80px"}
               />
             </Link>
 
@@ -68,7 +150,7 @@ const GraphFooter = ({ responsive, compact = false }) => {
           </Stack>
           <Text
             maxW={260}
-            paddingTop={compact ? 3 : 6}
+            paddingTop={6}
             fontSize={isCompact ? "0.5em" : "1em"}
             fontWeight="600"
             fontFamily="Times"
@@ -79,43 +161,40 @@ const GraphFooter = ({ responsive, compact = false }) => {
           </Text>
         </Stack>
         <Stack
-          pl={compact ? 3 : 4}
+          pl={4}
           direction="column"
           alignItems="center"
           justifyContent="center"
-          marginBottom={compact ? "20px" : "40px"}
+          marginBottom="40px"
         >
           <Stack
-            gap={compact ? "18px" : "30px"}
+            gap="30px"
             alignItems={"center"}
             direction={{ base: "column", md: "row" }}
           >
             <a href="https://www.kindernothilfe.org/" target="_blank">
               <Image
                 src={LogoKnh}
-                minWidth={compact ? "72px" : isCompact ? "100px" : "250px"}
-                maxWidth={compact ? "120px" : "unset"}
+                minWidth={isCompact ? "100px" : "250px"}
               />
             </a>
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoProyectoBinacional}
-                maxWidth={compact ? "64px" : isCompact ? "200px" : "80px"}
-                minWidth={compact ? "64px" : "80px"}
+                maxWidth={isCompact ? "200px" : "80px"}
+                minWidth="80px"
               />
             </a>
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoCoiproden}
-                minWidth={compact ? "100px" : isCompact ? "100px" : "200px"}
-                maxWidth={compact ? "180px" : "unset"}
+                minWidth={isCompact ? "100px" : "200px"}
               />
             </a>
             <a href="https://pami-guatemala.org/" target="_blank">
               <Image
                 src={LogoPAMI}
-                minWidth={compact ? "44px" : isCompact ? "50px" : "80px"}
-                maxWidth={compact ? "110px" : "unset"}
+                minWidth={isCompact ? "50px" : "80px"}
               />
             </a>
           </Stack>

@@ -143,210 +143,217 @@ const MapModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Grid
-            templateColumns={{ base: '1fr', md: '300px 1fr' }}
-            gap={{ base: 4, md: 6 }}
-            alignItems='start'
-          >
-            {/* Columna izquierda: mapa en tarjeta */}
-            <GridItem>
-              <Box
-                bg='blackAlpha.50'
-                borderRadius='xl'
-                p={{ base: 3, md: 4 }}
-                boxShadow='sm'
-              >
+          <Stack spacing={{ base: 5, md: 6 }}>
+            <Grid
+              templateColumns={{ base: '1fr', md: '300px 1fr' }}
+              gap={{ base: 4, md: 6 }}
+              alignItems='start'
+            >
+              {/* Columna izquierda: mapa en tarjeta */}
+              <GridItem>
                 <Box
-                  bg='#eef6e7'
-                  border='1px solid #e6eedc'
-                  borderRadius='lg'
+                  bg='blackAlpha.50'
+                  borderRadius='xl'
                   p={{ base: 3, md: 4 }}
+                  boxShadow='sm'
                 >
                   <Box
-                    aspectRatio={1}
-                    minH={{ base: 'auto', md: 'auto' }}
-                    overflow='hidden'
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='center'
+                    bg='#eef6e7'
+                    border='1px solid #e6eedc'
+                    borderRadius='lg'
+                    p={{ base: 3, md: 4 }}
                   >
-                    <ModalMapContent modalDep={modalDep} country={countryID} />
+                    <Box
+                      aspectRatio={1}
+                      minH={{ base: 'auto', md: 'auto' }}
+                      overflow='hidden'
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='center'
+                    >
+                      <ModalMapContent modalDep={modalDep} country={countryID} />
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </GridItem>
+              </GridItem>
 
-            {/* Columna derecha */}
-            <GridItem minW={0}>
-              <Stack spacing={{ base: 4, md: 5 }} minW={0}>
-                {/* Total grande (tu componente actual) */}
-                <ModelContent
-                  year={normYear}
-                  total={formatInt(departmentTotal) ?? 0}
-                  period={normPeriod}
-                  country={countryID}
-                  dataRes={genderDepTotals}
-                  dep={departmentLabel}
-                />
+              {/* Columna derecha */}
+              <GridItem minW={0}>
+                <Stack spacing={{ base: 4, md: 5 }} minW={0}>
+                  {/* Total grande (tu componente actual) */}
+                  <ModelContent
+                    year={normYear}
+                    total={formatInt(departmentTotal) ?? 0}
+                    period={normPeriod}
+                    country={countryID}
+                    dataRes={genderDepTotals}
+                    dep={departmentLabel}
+                  />
 
-                {/* Totales M/F bajo “Total” (solo si cada uno > 0) */}
-                {(maleCount > 0 || femaleCount > 0) && (
-                  <HStack spacing={6} flexWrap='wrap'>
-                    {maleCount > 0 && (
-                      <HStack spacing={3}>
-                        <Image src={Male} alt='Masculino' boxSize='25px' />
-                        <Text fontFamily='Montserrat Medium'>Masculino</Text>
-                        <Text
-                          fontFamily='Montserrat Medium'
-                          fontWeight='semibold'
-                        >
-                          {formatInt(maleCount)}
-                        </Text>
-                      </HStack>
-                    )}
-                    {femaleCount > 0 && (
-                      <HStack spacing={3}>
-                        <Image src={Femenine} alt='Femenino' boxSize='25px' />
-                        <Text fontFamily='Montserrat Medium'>Femenino</Text>
-                        <Text
-                          fontFamily='Montserrat Medium'
-                          fontWeight='semibold'
-                        >
-                          {formatInt(femaleCount)}
-                        </Text>
-                      </HStack>
-                    )}
-                  </HStack>
-                )}
+                  {/* Totales M/F bajo “Total” (solo si cada uno > 0) */}
+                  {(maleCount > 0 || femaleCount > 0) && (
+                    <HStack spacing={6} flexWrap='wrap'>
+                      {maleCount > 0 && (
+                        <HStack spacing={3}>
+                          <Image src={Male} alt='Masculino' boxSize='25px' />
+                          <Text fontFamily='Montserrat Medium'>Masculino</Text>
+                          <Text
+                            fontFamily='Montserrat Medium'
+                            fontWeight='semibold'
+                          >
+                            {formatInt(maleCount)}
+                          </Text>
+                        </HStack>
+                      )}
+                      {femaleCount > 0 && (
+                        <HStack spacing={3}>
+                          <Image src={Femenine} alt='Femenino' boxSize='25px' />
+                          <Text fontFamily='Montserrat Medium'>Femenino</Text>
+                          <Text
+                            fontFamily='Montserrat Medium'
+                            fontWeight='semibold'
+                          >
+                            {formatInt(femaleCount)}
+                          </Text>
+                        </HStack>
+                      )}
+                    </HStack>
+                  )}
 
-                {/* Mensajes contextuales */}
-                {noMunicipalBreakdown ? (
-                  <Alert status='info' variant='subtle' borderRadius='md'>
-                    <AlertIcon />
-                    Este país actualmente no reporta datos desagregados a nivel
-                    de municipios. El total mostrado corresponde al
-                    departamento.
-                  </Alert>
-                ) : (
-                  !isSingleMonth &&
-                  missingEntries.length > 0 && (
-                    <Alert status='warning' variant='subtle' borderRadius='md'>
+                  {/* Mensajes contextuales */}
+                  {noMunicipalBreakdown ? (
+                    <Alert status='info' variant='subtle' borderRadius='md'>
                       <AlertIcon />
-                      <Box>
-                        <Text>
-                          Algunos meses no reportaron datos a nivel de
-                          municipios:
-                        </Text>
-                        <UnorderedList mt={1} ml={5}>
-                          {missingEntries.map(([ym, miss]) => (
-                            <ListItem key={ym}>
-                              <strong>{fmtYM(ym)}</strong> — no reportados:{' '}
-                              <strong>{nf.format(miss)}</strong>
-                            </ListItem>
-                          ))}
-                        </UnorderedList>
-                      </Box>
+                      Este país actualmente no reporta datos desagregados a nivel
+                      de municipios. El total mostrado corresponde al
+                      departamento.
                     </Alert>
-                  )
-                )}
+                  ) : (
+                    !isSingleMonth &&
+                    missingEntries.length > 0 && (
+                      <Alert status='warning' variant='subtle' borderRadius='md'>
+                        <AlertIcon />
+                        <Box>
+                          <Text>
+                            Algunos meses no reportaron datos a nivel de
+                            municipios:
+                          </Text>
+                          <UnorderedList mt={1} ml={5}>
+                            {missingEntries.map(([ym, miss]) => (
+                              <ListItem key={ym}>
+                                <strong>{fmtYM(ym)}</strong> — no reportados:{' '}
+                                <strong>{nf.format(miss)}</strong>
+                              </ListItem>
+                            ))}
+                          </UnorderedList>
+                        </Box>
+                      </Alert>
+                    )
+                  )}
 
-                <Divider />
+                  <Divider />
 
-                {/* Lista de municipios (sólo GT). Con scroll interno */}
-                {!noMunicipalBreakdown && (
-                  <Box
-                    maxH={{ base: '45vh', md: '56vh' }} // ← scroll interno para muchos municipios
-                    overflowY='auto'
-                    pr={2}
-                  >
-                    {loading ? (
-                      Array.from({ length: 12 }).map((_, i) => (
-                        <Skeleton key={i} height='18px' w='100%' mb={2} />
-                      ))
-                    ) : !muniTotals || Object.keys(muniTotals).length === 0 ? (
-                      isSingleMonth ? (
-                        <Text
-                          color='gray.500'
-                          fontStyle='italic'
-                          textAlign='center'
-                        >
-                          Sin registros por municipios.
-                        </Text>
-                      ) : null
-                    ) : (
-                      <Stack spacing={2}>
-                        {Object.entries(muniTotals)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([muni, total]) => {
-                            const g = genderByMuni?.[muni] || {};
-                            return (
-                              <HStack
-                                key={muni}
-                                w='100%'
-                                justify='space-between'
-                                align='flex-start'
-                                spacing={2}
-                              >
-                                <Text
-                                  fontFamily='Montserrat Medium'
-                                  whiteSpace='normal'
-                                  wordBreak='break-word'
-                                  lineHeight='1.35'
-                                  flex='1'
-                                  pr={2}
+                  {/* Lista de municipios (sólo GT). Con scroll interno */}
+                  {!noMunicipalBreakdown && (
+                    <Box
+                      maxH={{ base: '45vh', md: '56vh' }}
+                      overflowY='auto'
+                      pr={2}
+                    >
+                      {loading ? (
+                        Array.from({ length: 12 }).map((_, i) => (
+                          <Skeleton key={i} height='18px' w='100%' mb={2} />
+                        ))
+                      ) : !muniTotals || Object.keys(muniTotals).length === 0 ? (
+                        isSingleMonth ? (
+                          <Text
+                            color='gray.500'
+                            fontStyle='italic'
+                            textAlign='center'
+                          >
+                            Sin registros por municipios.
+                          </Text>
+                        ) : null
+                      ) : (
+                        <Stack spacing={2}>
+                          {Object.entries(muniTotals)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([muni, total]) => {
+                              const g = genderByMuni?.[muni] || {};
+                              return (
+                                <HStack
+                                  key={muni}
+                                  w='100%'
+                                  justify='space-between'
+                                  align='flex-start'
+                                  spacing={2}
                                 >
-                                  {muni}
-                                </Text>
-                                <HStack spacing={3} flexShrink={0} align='flex-start' pt='1px'>
-                                  <HStack spacing={1}>
-                                    <Box
-                                      w='6px'
-                                      h='6px'
-                                      borderRadius='full'
-                                      bg='#eab617'
-                                    />
-                                    <Text fontSize='sm'>
-                                      M {g.masculino || 0}
-                                    </Text>
-                                  </HStack>
-                                  <HStack spacing={1}>
-                                    <Box
-                                      w='6px'
-                                      h='6px'
-                                      borderRadius='full'
-                                      bg='#92bd57'
-                                    />
-                                    <Text fontSize='sm'>
-                                      F {g.femenino || 0}
-                                    </Text>
-                                  </HStack>
                                   <Text
-                                    w='64px'
-                                    textAlign='right'
                                     fontFamily='Montserrat Medium'
+                                    whiteSpace='normal'
+                                    wordBreak='break-word'
                                     lineHeight='1.35'
+                                    flex='1'
+                                    pr={2}
                                   >
-                                    {nf.format(total)}
+                                    {muni}
                                   </Text>
+                                  <HStack spacing={3} flexShrink={0} align='flex-start' pt='1px'>
+                                    <HStack spacing={1}>
+                                      <Box
+                                        w='6px'
+                                        h='6px'
+                                        borderRadius='full'
+                                        bg='#eab617'
+                                      />
+                                      <Text fontSize='sm'>
+                                        M {g.masculino || 0}
+                                      </Text>
+                                    </HStack>
+                                    <HStack spacing={1}>
+                                      <Box
+                                        w='6px'
+                                        h='6px'
+                                        borderRadius='full'
+                                        bg='#92bd57'
+                                      />
+                                      <Text fontSize='sm'>
+                                        F {g.femenino || 0}
+                                      </Text>
+                                    </HStack>
+                                    <Text
+                                      w='64px'
+                                      textAlign='right'
+                                      fontFamily='Montserrat Medium'
+                                      lineHeight='1.35'
+                                    >
+                                      {nf.format(total)}
+                                    </Text>
+                                  </HStack>
                                 </HStack>
-                              </HStack>
-                            );
-                          })}
-                      </Stack>
-                    )}
-                  </Box>
-                )}
+                              );
+                            })}
+                        </Stack>
+                      )}
+                    </Box>
+                  )}
+                </Stack>
+              </GridItem>
+            </Grid>
 
-                {isScreenShotTime && <GraphFooter responsive />}
+            {isScreenShotTime && (
+              <>
+                <Divider />
+                <GraphFooter responsive compact fullWidth />
+              </>
+            )}
 
-                <DownloadTable
-                  satisticsRef={satisticsRef}
-                  periodId={periodId}
-                  files={files}
-                />
-              </Stack>
-            </GridItem>
-          </Grid>
+            <DownloadTable
+              satisticsRef={satisticsRef}
+              periodId={periodId}
+              files={files}
+            />
+          </Stack>
         </ModalBody>
       </ModalContent>
     </Modal>
