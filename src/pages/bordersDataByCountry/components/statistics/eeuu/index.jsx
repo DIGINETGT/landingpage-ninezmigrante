@@ -17,6 +17,7 @@ import YearSelect from '../../../../../components/yearSelect';
 import MonthPicker from '../../../../../components/monthPicker';
 import GraphFooter from '../../../../../components/graphFooter';
 import DownloadTable from '../../../../country/components/statistics/components/downloadTable';
+import StatisticsContext from '../../../../../pages/country/components/statistics/context';
 import Loader from '../../../../../components/loader';
 import { monthNames } from '../../../../../hooks/fetch';
 import BigStat from '../../../../../components/common/BigStat';
@@ -228,155 +229,162 @@ const EEUU = () => {
         </Stack>
 
         {/* Contenedor principal */}
-        <Box ref={containerRef} padding='0'>
+        <StatisticsContext.Provider
+          value={{ isScreenShotTime, setIsScreenShotTime }}
+        >
           <Box
+            ref={containerRef}
+            padding='0'
+            display='flow-root'
+            width='100%'
             bg='#fff'
             borderRadius='16px'
-            p={{ base: 4, md: 8 }}
             boxShadow='sm'
-            position='relative'
+            p={{ base: 4, md: 8 }}
           >
-            <Loader loading={loading} />
+            <Box position='relative'>
+              <Loader loading={loading} />
 
-            {/* Estado vacío antes de elegir */}
-            {!hasSelection && !loading ? (
-              <Stack
-                alignItems='center'
-                justifyContent='center'
-                minH='260px'
-                spacing={2}
-              >
-                <Text fontFamily='Oswald' fontSize='2xl'>
-                  Selecciona año y mes para ver los datos
-                </Text>
-                <Text fontFamily='Montserrat Medium' opacity={0.7}>
-                  Arriba puedes elegir el año y el rango de meses.
-                </Text>
-              </Stack>
-            ) : (
-              <Grid
-                templateColumns={{ base: '1fr', lg: '360px 1fr' }}
-                gap={{ base: 6, md: 8 }}
-                alignItems='start'
-              >
-                {/* Columna izquierda: mapa + total */}
-                <GridItem>
-                  <Stack spacing={5}>
-                    <Image
-                      src={MapaEEUU}
-                      maxW='320px'
-                      w='100%'
-                      mx={{ base: 'auto', lg: '0' }}
-                    />
-                    <Stack spacing={1}>
-                      <Text fontFamily='Oswald' fontSize='xl' opacity={0.8}>
-                        {periodLabel ? `Total ${periodLabel}` : 'Total'}
-                      </Text>
-                      <BigStat
-                        value={dataPerMonth?.totalMes ?? 0}
-                        compactFrom={10000}
-                        mode='long'
-                        withTooltip={false}
-                        numberProps={{
-                          fontFamily: 'Oswald',
-                          fontSize: { base: '5xl', md: '6xl' },
-                          lineHeight: '1',
-                          fontWeight: 700,
-                        }}
+              {/* Estado vacío antes de elegir */}
+              {!hasSelection && !loading ? (
+                <Stack
+                  alignItems='center'
+                  justifyContent='center'
+                  minH='260px'
+                  spacing={2}
+                >
+                  <Text fontFamily='Oswald' fontSize='2xl'>
+                    Selecciona año y mes para ver los datos
+                  </Text>
+                  <Text fontFamily='Montserrat Medium' opacity={0.7}>
+                    Arriba puedes elegir el año y el rango de meses.
+                  </Text>
+                </Stack>
+              ) : (
+                <Grid
+                  templateColumns={{ base: '1fr', lg: '360px 1fr' }}
+                  gap={{ base: 6, md: 8 }}
+                  alignItems='start'
+                >
+                  {/* Columna izquierda: mapa + total */}
+                  <GridItem>
+                    <Stack spacing={5}>
+                      <Image
+                        src={MapaEEUU}
+                        maxW='320px'
+                        w='100%'
+                        mx={{ base: 'auto', lg: '0' }}
                       />
-                      <Stack direction='row' spacing={6} pt={1}>
-                        <Stack spacing={0}>
-                          <Text
-                            fontFamily='Montserrat Medium'
-                            fontSize='sm'
-                            opacity={0.7}
-                          >
-                            Acompañados
-                          </Text>
-                          <BigStat
-                            value={dataPerMonth?.totalAcompaniados ?? 0}
-                            compactFrom={10000}
-                            mode='long'
-                            withTooltip={false}
-                            numberProps={{
-                              fontFamily: 'Oswald',
-                              fontSize: '2xl',
-                              lineHeight: '1',
-                              fontWeight: 600,
-                            }}
-                          />
-                        </Stack>
-                        <Stack spacing={0}>
-                          <Text
-                            fontFamily='Montserrat Medium'
-                            fontSize='sm'
-                            opacity={0.7}
-                          >
-                            No acompañados
-                          </Text>
-                          <BigStat
-                            value={dataPerMonth?.totalNoAcompaniados ?? 0}
-                            compactFrom={10000}
-                            mode='long'
-                            withTooltip={false}
-                            numberProps={{
-                              fontFamily: 'Oswald',
-                              fontSize: '2xl',
-                              lineHeight: '1',
-                              fontWeight: 600,
-                            }}
-                          />
+                      <Stack spacing={1}>
+                        <Text fontFamily='Oswald' fontSize='xl' opacity={0.8}>
+                          {periodLabel ? `Total ${periodLabel}` : 'Total'}
+                        </Text>
+                        <BigStat
+                          value={dataPerMonth?.totalMes ?? 0}
+                          compactFrom={10000}
+                          mode='long'
+                          withTooltip={false}
+                          numberProps={{
+                            fontFamily: 'Oswald',
+                            fontSize: { base: '5xl', md: '6xl' },
+                            lineHeight: '1',
+                            fontWeight: 700,
+                          }}
+                        />
+                        <Stack direction='row' spacing={6} pt={1}>
+                          <Stack spacing={0}>
+                            <Text
+                              fontFamily='Montserrat Medium'
+                              fontSize='sm'
+                              opacity={0.7}
+                            >
+                              Acompañados
+                            </Text>
+                            <BigStat
+                              value={dataPerMonth?.totalAcompaniados ?? 0}
+                              compactFrom={10000}
+                              mode='long'
+                              withTooltip={false}
+                              numberProps={{
+                                fontFamily: 'Oswald',
+                                fontSize: '2xl',
+                                lineHeight: '1',
+                                fontWeight: 600,
+                              }}
+                            />
+                          </Stack>
+                          <Stack spacing={0}>
+                            <Text
+                              fontFamily='Montserrat Medium'
+                              fontSize='sm'
+                              opacity={0.7}
+                            >
+                              No acompañados
+                            </Text>
+                            <BigStat
+                              value={dataPerMonth?.totalNoAcompaniados ?? 0}
+                              compactFrom={10000}
+                              mode='long'
+                              withTooltip={false}
+                              numberProps={{
+                                fontFamily: 'Oswald',
+                                fontSize: '2xl',
+                                lineHeight: '1',
+                                fontWeight: 600,
+                              }}
+                            />
+                          </Stack>
                         </Stack>
                       </Stack>
                     </Stack>
-                  </Stack>
-                </GridItem>
+                  </GridItem>
 
-                {/* Columna derecha: dos tarjetas en grid */}
-                <GridItem>
-                  {!hasData && !loading ? (
-                    <Stack
-                      alignItems='center'
-                      justifyContent='center'
-                      minH='200px'
-                    >
-                      <Text fontFamily='Montserrat Medium' opacity={0.7}>
-                        Sin datos para el rango seleccionado.
-                      </Text>
-                    </Stack>
-                  ) : (
-                    <Grid
-                      templateColumns={{ base: '1fr', md: '1fr 1fr' }}
-                      gap={4}
-                    >
-                      <StatGroup
-                        title='Acompañados'
-                        data={dataPerDeps?.acm}
-                        totalKey='totalAcompañados'
-                      />
-                      <StatGroup
-                        title='No acompañados'
-                        data={dataPerDeps?.noacm}
-                        totalKey='totalNoAcompañados'
-                      />
-                    </Grid>
-                  )}
-                </GridItem>
-              </Grid>
-            )}
+                  {/* Columna derecha: dos tarjetas en grid */}
+                  <GridItem>
+                    {!hasData && !loading ? (
+                      <Stack
+                        alignItems='center'
+                        justifyContent='center'
+                        minH='200px'
+                      >
+                        <Text fontFamily='Montserrat Medium' opacity={0.7}>
+                          Sin datos para el rango seleccionado.
+                        </Text>
+                      </Stack>
+                    ) : (
+                      <Grid
+                        templateColumns={{ base: '1fr', md: '1fr 1fr' }}
+                        gap={4}
+                      >
+                        <StatGroup
+                          title='Acompañados'
+                          data={dataPerDeps?.acm}
+                          totalKey='totalAcompañados'
+                        />
+                        <StatGroup
+                          title='No acompañados'
+                          data={dataPerDeps?.noacm}
+                          totalKey='totalNoAcompañados'
+                        />
+                      </Grid>
+                    )}
+                  </GridItem>
+                </Grid>
+              )}
+            </Box>
+
+            {/* Fuentes / descargas / footer */}
+            <LastDate
+              sources={sources}
+              updateDate={updateDate}
+              isScreenShotTime={isScreenShotTime}
+            />
+            {isScreenShotTime && <GraphFooter responsive />}
           </Box>
-
-          {/* Fuentes / descargas / footer */}
-          <LastDate
-            sources={sources}
-            updateDate={updateDate}
-            isScreenShotTime={isScreenShotTime}
-          />
           {!isScreenShotTime && (
             <DownloadTable files={files} satisticsRef={containerRef} />
           )}
-          {isScreenShotTime && <GraphFooter responsive />}
-        </Box>
+        </StatisticsContext.Provider>
       </Stack>
     </Box>
   );

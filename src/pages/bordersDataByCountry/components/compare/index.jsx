@@ -16,6 +16,7 @@ import YearSelect from '../../../../components/yearSelect';
 import GraphFooter from '../../../../components/graphFooter';
 import LastDate from '../../../../components/lastUpdate';
 import DownloadTable from '../../../country/components/statistics/components/downloadTable';
+import StatisticsContext from '../../../country/components/statistics/context';
 import Loader from '../../../../components/loader';
 import BigStat from '../../../../components/common/BigStat';
 
@@ -70,7 +71,7 @@ const Compare = () => {
 
   const [currentYear, setCurrentYear] = useState('');
   const [currentPeriod, setCurrentPeriod] = useState([]); // [from, to]
-  const [isScreenShotTime] = useState(false);
+  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
 
   const handleYear = (ev) =>
     setCurrentYear(ev.target.value ? Number(ev.target.value) : '');
@@ -222,13 +223,16 @@ const Compare = () => {
 
         {/* Results */}
         {ready && (
-          <Box ref={containerRef} position='relative'>
-            <Loader loading={loading} />
+          <StatisticsContext.Provider
+            value={{ isScreenShotTime, setIsScreenShotTime }}
+          >
+            <Box ref={containerRef} position='relative' display='flow-root'>
+              <Loader loading={loading} />
 
-            <Grid
-              templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
-              gap={{ base: 4, md: 6 }}
-            >
+              <Grid
+                templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+                gap={{ base: 4, md: 6 }}
+              >
               {/* Retornados */}
               <GridItem>
                 <Card>
@@ -324,52 +328,52 @@ const Compare = () => {
                   </Stack>
                 </Card>
               </GridItem>
-            </Grid>
+              </Grid>
 
-            {/* Separador visual */}
-            <Divider my={{ base: 6, md: 8 }} borderColor='blackAlpha.400' />
+              {/* Separador visual */}
+              <Divider my={{ base: 6, md: 8 }} borderColor='blackAlpha.400' />
 
-            {/* Fuentes y descargas (NO tocar) */}
-            <LastDate
-              sources={
-                <Stack
-                  width='100%'
-                  margin='auto'
-                  direction='column'
-                  alignItems='center'
-                  justifyContent='center'
-                  maxWidth='800px'
-                >
-                  <a
-                    href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
-                    target='_blank'
-                    rel='noreferrer'
+              {/* Fuentes y descargas (NO tocar) */}
+              <LastDate
+                sources={
+                  <Stack
+                    width='100%'
+                    margin='auto'
+                    direction='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    maxWidth='800px'
                   >
-                    <Text
-                      textAlign='center'
-                      fontFamily='Oswald'
-                      fontSize={{ base: 'xl', md: '2xl' }}
-                      maxWidth='800px'
+                    <a
+                      href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
+                      target='_blank'
+                      rel='noreferrer'
                     >
-                      Fuente: Secretaría de Gobernación/Unidad de Política
-                      Migratoria, Registro e Identidad de Personas. Gobierno de
-                      México.
-                    </Text>
-                  </a>
-                </Stack>
-              }
-              updateDate={updateDate}
-              isScreenShotTime={isScreenShotTime}
-            />
-
+                      <Text
+                        textAlign='center'
+                        fontFamily='Oswald'
+                        fontSize={{ base: 'xl', md: '2xl' }}
+                        maxWidth='800px'
+                      >
+                        Fuente: Secretaría de Gobernación/Unidad de Política
+                        Migratoria, Registro e Identidad de Personas. Gobierno de
+                        México.
+                      </Text>
+                    </a>
+                  </Stack>
+                }
+                updateDate={updateDate}
+                isScreenShotTime={isScreenShotTime}
+              />
+              {isScreenShotTime && <GraphFooter responsive />}
+            </Box>
             {!isScreenShotTime && (
               <DownloadTable
                 satisticsRef={containerRef}
                 files={combinedFiles}
               />
             )}
-            {isScreenShotTime && <GraphFooter responsive />}
-          </Box>
+          </StatisticsContext.Provider>
         )}
       </Stack>
     </Box>

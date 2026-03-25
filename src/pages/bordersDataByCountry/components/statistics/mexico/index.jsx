@@ -33,7 +33,7 @@ const Mexico = () => {
 
   const [period, setPeriod] = useState([]);
   const [currentYear, setCurrentYear] = useState('');
-  const [isScreenShotTime] = useState(false);
+  const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const containerRef = useRef(null);
 
   // normaliza a números
@@ -166,20 +166,25 @@ const Mexico = () => {
         {/* Estadísticas */}
         <StatisticsContext.Provider
           value={{
+            isScreenShotTime,
+            setIsScreenShotTime,
             loading,
             genderTotals,
             travelConditionTotals,
             ageGroupTotals,
           }}
         >
-          <Box ref={containerRef} padding='0'>
-            <Box
-              bg='#fff'
-              borderRadius='16px'
-              p={{ base: 4, md: 8 }}
-              boxShadow='sm'
-              position='relative'
-            >
+          <Box
+            ref={containerRef}
+            padding='0'
+            display='flow-root'
+            width='100%'
+            bg='#fff'
+            borderRadius='16px'
+            boxShadow='sm'
+            p={{ base: 4, md: 8 }}
+          >
+            <Box position='relative'>
               <Loader loading={loading} />
 
               {!hasSelection && !loading ? (
@@ -339,9 +344,11 @@ const Mexico = () => {
               updateDate={updateDate}
               isScreenShotTime={isScreenShotTime}
             />
-            <DownloadTable files={files} satisticsRef={containerRef} />
             {isScreenShotTime && <GraphFooter responsive />}
           </Box>
+          {!isScreenShotTime && (
+            <DownloadTable files={files} satisticsRef={containerRef} />
+          )}
         </StatisticsContext.Provider>
       </Stack>
     </Box>

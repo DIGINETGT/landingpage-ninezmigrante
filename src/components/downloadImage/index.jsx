@@ -11,6 +11,30 @@ const DownloadImage = ({
   fileName = 'download.pdf',
   onSS = (screenshot) => {},
 }) => {
+  const waitForNextPaint = () =>
+    new Promise((resolve) =>
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(resolve)
+      )
+    );
+
+  const waitForImages = async (rootElement) => {
+    if (!rootElement) return;
+
+    const images = Array.from(rootElement.querySelectorAll('img'));
+    const pendingImages = images.filter((img) => !img.complete);
+
+    await Promise.all(
+      pendingImages.map(
+        (img) =>
+          new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+          })
+      )
+    );
+  };
+
   const collectScrollableNodes = (rootElement) => {
     if (!rootElement) return [];
 
@@ -76,33 +100,49 @@ const DownloadImage = ({
 
   // TAKE SCREEN SHOOT
   useEffect(() => {
-    onSS(screenshot);
-
     if (screenshot) {
       const take = async () => {
         setBlur(true);
         setLoading(true);
         const element = containerRef.current;
         if (!element) {
+          onSS(false);
           setLoading(false);
           setScreenshot(false);
           setBlur(false);
           return;
         }
 
+        onSS(true);
         const restoreLayout = expandForCapture(element);
 
         try {
-          await new Promise((resolve) => window.requestAnimationFrame(resolve));
+          await waitForNextPaint();
+          await waitForNextPaint();
+          if (document.fonts?.ready) {
+            await document.fonts.ready;
+          }
+          await waitForImages(element);
+
+          const captureWidth = Math.ceil(
+            Math.max(element.scrollWidth, element.getBoundingClientRect().width)
+          );
+          const captureHeight = Math.ceil(
+            Math.max(
+              element.scrollHeight,
+              element.getBoundingClientRect().height
+            )
+          );
+
           const html2canvas = (await import('html2canvas')).default;
           const canvas = await html2canvas(element, {
             useCORS: true,
             backgroundColor: '#ffffff',
             scale: 2,
-            width: element.scrollWidth,
-            height: element.scrollHeight,
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
+            width: captureWidth,
+            height: captureHeight,
+            windowWidth: captureWidth,
+            windowHeight: captureHeight,
           });
           const data = canvas.toDataURL('image/jpeg', 1.0);
 
@@ -119,6 +159,7 @@ const DownloadImage = ({
           await pdf.save(fileName, { returnPromise: true });
         } finally {
           restoreLayout();
+          onSS(false);
           setLoading(false);
           setScreenshot(false);
           setBlur(false);
