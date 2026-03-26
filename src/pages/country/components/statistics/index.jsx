@@ -55,6 +55,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   const {
     reports,
     loading,
+    mapLoading,
     totalCant,
     filesUrl,
     updatedAtStr,
@@ -152,6 +153,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
       value={{
         isScreenShotTime,
         isCompareView: false,
+        mapLoading,
         setIsScreenShotTime,
         reports,
         loading,
@@ -321,7 +323,21 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           justifyContent='center'
           direction={{ base: 'column', md: 'row' }}
         >
-          <HeatMap files={filesUrl} period={period} year={year} periodId='1' />
+          {mapLoading ? (
+            <Stack width='100%' maxWidth='450px' spacing={4} alignItems='center'>
+              <Text
+                fontFamily='Oswald'
+                fontSize='2xl'
+                textAlign='center'
+                color='blackAlpha.700'
+              >
+                Cargando departamento de origen...
+              </Text>
+              <Skeleton width='100%' height='420px' borderRadius='lg' />
+            </Stack>
+          ) : (
+            <HeatMap files={filesUrl} period={period} year={year} periodId='1' />
+          )}
         </Stack>
 
         <LastDate

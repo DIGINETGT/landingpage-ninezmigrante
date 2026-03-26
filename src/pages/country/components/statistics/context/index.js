@@ -3,6 +3,7 @@ import { createContext } from "react";
 const defContext = {
   isScreenShotTime: false,
   isCompareView: false,
+  mapLoading: false,
   setIsScreenShotTime: () => {},
 };
 

@@ -80,6 +80,7 @@ const Statistics = ({
     totalCant, // si quieres usar este total en vez del que calculabas a mano
     filesUrl, // array de archivos/fuentes
     updatedAtStr, // string ya formateado
+    mapLoading,
     genderTotals,
     travelConditionTotals,
     ageGroupTotals,
@@ -224,6 +225,7 @@ const Statistics = ({
             isCompareView: true,
             reports,
             loading,
+            mapLoading,
             period: data.period,
             year: data.year,
             countryID, // <- IMPORTANTE para HeatMap
