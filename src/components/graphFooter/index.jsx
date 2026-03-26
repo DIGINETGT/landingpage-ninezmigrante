@@ -42,22 +42,22 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           gridTemplateColumns="repeat(5, minmax(0, 1fr))"
           alignItems="center"
           width="100%"
-          columnGap={fullWidth ? "16px" : "12px"}
+          columnGap={fullWidth ? "12px" : "10px"}
         >
           <Box display="flex" justifyContent="center" alignItems="center">
             <Link to="/" _hover={{ textDecoration: "none" }}>
               <Stack direction="row" alignItems="center" spacing={2} minW="0">
                 <Image
                   src={LogoNinezMigrante}
-                  h="42px"
-                  w="42px"
-                  minW="42px"
+                  h="36px"
+                  w="36px"
+                  minW="36px"
                   objectFit="contain"
                 />
                 <Text
                   lineHeight={1}
                   fontFamily="Oswald"
-                  fontSize="0.8em"
+                  fontSize="0.75em"
                   whiteSpace="nowrap"
                 >
                   NiñezMigrante.org
@@ -68,25 +68,25 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
 
           <Box display="flex" justifyContent="center" alignItems="center">
             <a href="https://www.kindernothilfe.org/" target="_blank">
-              <Image src={LogoKnh} h="52px" objectFit="contain" />
+              <Image src={LogoKnh} h="44px" objectFit="contain" />
             </a>
           </Box>
 
           <Box display="flex" justifyContent="center" alignItems="center">
             <a href="https://redcoiproden.org/" target="_blank">
-              <Image src={LogoProyectoBinacional} h="52px" objectFit="contain" />
+              <Image src={LogoProyectoBinacional} h="40px" objectFit="contain" />
             </a>
           </Box>
 
           <Box display="flex" justifyContent="center" alignItems="center">
             <a href="https://redcoiproden.org/" target="_blank">
-              <Image src={LogoCoiproden} h="58px" objectFit="contain" />
+              <Image src={LogoCoiproden} h="46px" objectFit="contain" />
             </a>
           </Box>
 
           <Box display="flex" justifyContent="center" alignItems="center">
             <a href="https://pami-guatemala.org/" target="_blank">
-              <Image src={LogoPAMI} h="62px" objectFit="contain" />
+              <Image src={LogoPAMI} h="50px" objectFit="contain" />
             </a>
           </Box>
         </Box>
@@ -131,10 +131,10 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           >
             <Link to="/">
               <Image
-                w={isCompact ? "44px" : "80px"}
+                w={isCompact ? "36px" : "80px"}
                 mb={isCompact ? "0" : "-25px"}
                 src={LogoNinezMigrante}
-                minW={isCompact ? "40px" : "80px"}
+                minW={isCompact ? "36px" : "80px"}
                 objectFit="contain"
               />
             </Link>
@@ -143,7 +143,7 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
               <Text
                 lineHeight={1}
                 fontFamily="Oswald"
-                fontSize={isCompact ? "0.8em" : "1em"}
+                fontSize={isCompact ? "0.72em" : "1em"}
               >
                 NiñezMigrante.org
               </Text>
@@ -169,15 +169,15 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           marginBottom="40px"
         >
           <Stack
-            gap={isCompact ? "16px" : "30px"}
+            gap={isCompact ? "12px" : "30px"}
             alignItems={"center"}
             direction={{ base: "column", md: "row" }}
           >
             <a href="https://www.kindernothilfe.org/" target="_blank">
               <Image
                 src={LogoKnh}
-                maxH={isCompact ? "70px" : "unset"}
-                maxW={isCompact ? "200px" : "250px"}
+                maxH={isCompact ? "56px" : "unset"}
+                maxW={isCompact ? "170px" : "250px"}
                 minWidth={isCompact ? "unset" : "250px"}
                 objectFit="contain"
               />
@@ -185,8 +185,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoProyectoBinacional}
-                maxH={isCompact ? "58px" : "unset"}
-                maxWidth={isCompact ? "90px" : "80px"}
+                maxH={isCompact ? "44px" : "unset"}
+                maxWidth={isCompact ? "72px" : "80px"}
                 minWidth={isCompact ? "unset" : "80px"}
                 objectFit="contain"
               />
@@ -194,8 +194,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
             <a href="https://redcoiproden.org/" target="_blank">
               <Image
                 src={LogoCoiproden}
-                maxH={isCompact ? "92px" : "unset"}
-                maxW={isCompact ? "220px" : "unset"}
+                maxH={isCompact ? "72px" : "unset"}
+                maxW={isCompact ? "180px" : "unset"}
                 minWidth={isCompact ? "unset" : "200px"}
                 objectFit="contain"
               />
@@ -203,8 +203,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
             <a href="https://pami-guatemala.org/" target="_blank">
               <Image
                 src={LogoPAMI}
-                maxH={isCompact ? "96px" : "unset"}
-                maxW={isCompact ? "120px" : "unset"}
+                maxH={isCompact ? "74px" : "unset"}
+                maxW={isCompact ? "96px" : "unset"}
                 minWidth={isCompact ? "unset" : "80px"}
                 objectFit="contain"
               />

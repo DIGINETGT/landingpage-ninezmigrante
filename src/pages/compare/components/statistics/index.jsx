@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { Stack, Text } from '@chakra-ui/react';
 
 import Gender from '../../../country/components/statistics/components/gender';
@@ -59,6 +59,8 @@ const Statistics = ({
   setPeriodId,
   setCompareSummary,
 }) => {
+  const parentStatsCtx = useContext(StatisticsContext);
+
   // Validación básica
   const canQuery = !!(
     data?.country &&
@@ -218,9 +220,8 @@ const Statistics = ({
         // 🔹 Provider con el MISMO shape que en la vista país
         <StatisticsContext.Provider
           value={{
-            isScreenShotTime: false,
+            ...parentStatsCtx,
             isCompareView: true,
-            setIsScreenShotTime: () => {},
             reports,
             loading,
             period: data.period,

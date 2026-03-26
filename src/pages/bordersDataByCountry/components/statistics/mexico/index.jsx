@@ -205,7 +205,7 @@ const Mexico = () => {
                 >
                   {/* Columna izquierda: mapa + total + subtotales */}
                   <GridItem>
-                    <Stack spacing={5}>
+                    <Stack spacing={6} height='100%'>
                       <Image
                         src={MapaMexico}
                         maxW='320px'
@@ -213,7 +213,19 @@ const Mexico = () => {
                         mx={{ base: 'auto', lg: '0' }}
                       />
 
-                      <Stack spacing={1}>
+                      <Box
+                        flex='1'
+                        bg='gray.50'
+                        border='1px solid'
+                        borderColor='gray.200'
+                        borderRadius='xl'
+                        p={5}
+                      >
+                        <Stack
+                          spacing={4}
+                          height='100%'
+                          justifyContent='center'
+                        >
                         <Text fontFamily='Oswald' fontSize='xl' opacity={0.8}>
                           {periodLabel ? `Total ${periodLabel}` : 'Total'}
                         </Text>
@@ -231,7 +243,11 @@ const Mexico = () => {
                           }}
                         />
 
-                        <Stack direction='row' spacing={6} pt={1}>
+                        <Grid
+                          templateColumns='repeat(2, minmax(0, 1fr))'
+                          gap={4}
+                          pt={1}
+                        >
                           <Stack spacing={0}>
                             <Text
                               fontFamily='Montserrat Medium'
@@ -275,8 +291,9 @@ const Mexico = () => {
                               }}
                             />
                           </Stack>
+                        </Grid>
                         </Stack>
-                      </Stack>
+                      </Box>
                     </Stack>
                   </GridItem>
 

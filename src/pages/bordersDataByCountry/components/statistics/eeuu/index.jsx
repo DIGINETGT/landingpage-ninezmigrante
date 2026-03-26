@@ -21,6 +21,7 @@ import StatisticsContext from '../../../../../pages/country/components/statistic
 import Loader from '../../../../../components/loader';
 import { monthNames } from '../../../../../hooks/fetch';
 import BigStat from '../../../../../components/common/BigStat';
+import { formatInt } from '../../../../../utils/numbers';
 
 // Hook que ya hiciste
 import { useUSDetained } from './hooks';
@@ -65,6 +66,7 @@ function StatGroup({ title, data = {}, totalKey }) {
       borderRadius='xl'
       p={4}
       w='100%'
+      height='100%'
     >
       <Stack spacing={3}>
         <Text fontFamily='Oswald' fontSize='2xl' lineHeight='1'>
@@ -77,9 +79,10 @@ function StatGroup({ title, data = {}, totalKey }) {
           </Text>
           <BigStat
             value={total}
-            compactFrom={10000}
+            compactFrom={Number.POSITIVE_INFINITY}
             mode='long'
             withTooltip={false}
+            showExactHelper={false}
             numberProps={{
               fontFamily: 'Oswald',
               fontSize: { base: '3xl', md: '4xl' },
@@ -104,7 +107,7 @@ function StatGroup({ title, data = {}, totalKey }) {
                   {labelFor(k)}
                 </Text>
                 <Text fontFamily='Montserrat Medium' fontSize='md'>
-                  {v}
+                  {formatInt(Number(v))}
                 </Text>
               </Stack>
             ))}
@@ -268,22 +271,36 @@ const EEUU = () => {
                 >
                   {/* Columna izquierda: mapa + total */}
                   <GridItem>
-                    <Stack spacing={5}>
+                    <Stack spacing={6} height='100%'>
                       <Image
                         src={MapaEEUU}
                         maxW='320px'
                         w='100%'
                         mx={{ base: 'auto', lg: '0' }}
                       />
-                      <Stack spacing={1}>
+
+                      <Box
+                        flex='1'
+                        bg='gray.50'
+                        border='1px solid'
+                        borderColor='gray.200'
+                        borderRadius='xl'
+                        p={5}
+                      >
+                        <Stack
+                          spacing={4}
+                          height='100%'
+                          justifyContent='center'
+                        >
                         <Text fontFamily='Oswald' fontSize='xl' opacity={0.8}>
                           {periodLabel ? `Total ${periodLabel}` : 'Total'}
                         </Text>
                         <BigStat
                           value={dataPerMonth?.totalMes ?? 0}
-                          compactFrom={10000}
+                          compactFrom={Number.POSITIVE_INFINITY}
                           mode='long'
                           withTooltip={false}
+                          showExactHelper={false}
                           numberProps={{
                             fontFamily: 'Oswald',
                             fontSize: { base: '5xl', md: '6xl' },
@@ -291,7 +308,12 @@ const EEUU = () => {
                             fontWeight: 700,
                           }}
                         />
-                        <Stack direction='row' spacing={6} pt={1}>
+
+                        <Grid
+                          templateColumns='repeat(2, minmax(0, 1fr))'
+                          gap={4}
+                          pt={1}
+                        >
                           <Stack spacing={0}>
                             <Text
                               fontFamily='Montserrat Medium'
@@ -302,9 +324,10 @@ const EEUU = () => {
                             </Text>
                             <BigStat
                               value={dataPerMonth?.totalAcompaniados ?? 0}
-                              compactFrom={10000}
+                              compactFrom={Number.POSITIVE_INFINITY}
                               mode='long'
                               withTooltip={false}
+                              showExactHelper={false}
                               numberProps={{
                                 fontFamily: 'Oswald',
                                 fontSize: '2xl',
@@ -313,6 +336,7 @@ const EEUU = () => {
                               }}
                             />
                           </Stack>
+
                           <Stack spacing={0}>
                             <Text
                               fontFamily='Montserrat Medium'
@@ -323,9 +347,10 @@ const EEUU = () => {
                             </Text>
                             <BigStat
                               value={dataPerMonth?.totalNoAcompaniados ?? 0}
-                              compactFrom={10000}
+                              compactFrom={Number.POSITIVE_INFINITY}
                               mode='long'
                               withTooltip={false}
+                              showExactHelper={false}
                               numberProps={{
                                 fontFamily: 'Oswald',
                                 fontSize: '2xl',
@@ -334,8 +359,9 @@ const EEUU = () => {
                               }}
                             />
                           </Stack>
+                        </Grid>
                         </Stack>
-                      </Stack>
+                      </Box>
                     </Stack>
                   </GridItem>
 

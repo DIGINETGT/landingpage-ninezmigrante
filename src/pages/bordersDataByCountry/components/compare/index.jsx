@@ -50,20 +50,34 @@ const Card = ({ children }) => (
   </Box>
 );
 
-const StatNumber = ({ value, fontSize = { base: '4xl', md: '6xl' } }) => (
-  <BigStat
-    value={value}
-    compactFrom={10000}
-    mode='long'
-    withTooltip={false}
-    numberProps={{
-      fontFamily: 'Oswald',
-      fontSize,
-      lineHeight: '1',
-      fontWeight: 700,
-    }}
-  />
-);
+const StatNumber = ({ value, fontSize = { base: '4xl', md: '5xl' } }) => {
+  const numericValue = Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    return (
+      <Text fontFamily='Oswald' fontSize={fontSize} lineHeight='1' fontWeight={700}>
+        N/D
+      </Text>
+    );
+  }
+
+  return (
+    <BigStat
+      value={numericValue}
+      compactFrom={Number.POSITIVE_INFINITY}
+      mode='long'
+      withTooltip={false}
+      showExactHelper={false}
+      statProps={{ textAlign: 'left' }}
+      numberProps={{
+        fontFamily: 'Oswald',
+        fontSize,
+        lineHeight: '1',
+        fontWeight: 700,
+      }}
+    />
+  );
+};
 
 const Compare = () => {
   const { countryID } = useParams(); // gt | hn | sv
@@ -226,7 +240,12 @@ const Compare = () => {
           <StatisticsContext.Provider
             value={{ isScreenShotTime, setIsScreenShotTime }}
           >
-            <Box ref={containerRef} position='relative' display='flow-root'>
+            <Box
+              ref={containerRef}
+              position='relative'
+              display='flow-root'
+              pt={{ base: 8, md: 14 }}
+            >
               <Loader loading={loading} />
 
               <Grid
