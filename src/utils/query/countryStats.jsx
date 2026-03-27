@@ -1,6 +1,27 @@
 import { gql } from '@apollo/client';
-import { getFilterByCountry } from './filters';
 import { year as currentYear } from '../year';
+
+const pad = (value) => String(value).padStart(2, '0');
+
+const nextMonthStart = (year, month) => {
+  const numericMonth = Number(month);
+  const numericYear = Number(year);
+  const nextMonth = numericMonth === 12 ? 1 : numericMonth + 1;
+  const nextYear = numericMonth === 12 ? numericYear + 1 : numericYear;
+  return `${nextYear}-${pad(nextMonth)}-01`;
+};
+
+const buildCountryStatsArgs = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => {
+  const [startMonth, endMonth] = period;
+  const start = `${year}-${pad(startMonth)}-01`;
+  const end = nextMonthStart(year, endMonth);
+
+  return `country: "${country?.toUpperCase() ?? ''}", start: "${start}", end: "${end}"`;
+};
 
 export const GET_COUNTRY_HEAD_STATS = (
   country,
@@ -8,29 +29,13 @@ export const GET_COUNTRY_HEAD_STATS = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country, period, year)}) {
-      data {
-        id
-        attributes {
-          reportMonth
-          updatedAt
-          returned {
-            data {
-              id
-              attributes {
-                total
-                fuentes(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+    countryHeadStats(${buildCountryStatsArgs(country, period, year)}) {
+      totalCant
+      filesUrl {
+        name
+        url
       }
+      updatedAtStr
     }
   }
 `;
@@ -41,61 +46,10 @@ export const GET_COUNTRY_DEMOGRAPHIC_STATS = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country, period, year)}) {
-      data {
-        id
-        attributes {
-          returned {
-            data {
-              id
-              attributes {
-                gender_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      gender {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                travel_condition_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      travel_condition {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                age_group_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      age_group {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    countryDemographicStats(${buildCountryStatsArgs(country, period, year)}) {
+      genderTotals
+      travelConditionTotals
+      ageGroupTotals
     }
   }
 `;
@@ -106,54 +60,10 @@ export const GET_COUNTRY_RETURN_STATS = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country, period, year)}) {
-      data {
-        id
-        attributes {
-          returned {
-            data {
-              id
-              attributes {
-                return_route_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      return_route {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                country_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      country {
-                        data {
-                          attributes {
-                            name
-                            map {
-                              data {
-                                attributes {
-                                  url
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    countryReturnStats(${buildCountryStatsArgs(country, period, year)}) {
+      returnRouteTotals
+      returnCountryTotals
+      returnCountryMaps
     }
   }
 `;
@@ -164,33 +74,8 @@ export const GET_COUNTRY_DEPARTMENT_STATS = (
   year = currentYear
 ) => gql`
   query {
-    monthlyReports(${getFilterByCountry(country, period, year)}) {
-      data {
-        id
-        attributes {
-          updatedAt
-          returned {
-            data {
-              attributes {
-                department_contributions(pagination: { limit: -1 }) {
-                  data {
-                    attributes {
-                      cant
-                      department {
-                        data {
-                          attributes {
-                            name
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    countryDepartmentStats(${buildCountryStatsArgs(country, period, year)}) {
+      depTotals
     }
   }
 `;

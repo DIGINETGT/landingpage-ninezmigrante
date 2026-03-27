@@ -9,22 +9,6 @@ import {
 
 type Cnts = Record<string, number>;
 
-const monthNames = [
-  '',
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre',
-];
-
 export default function useCountryStats({ country, year, period }) {
   const periodKey = Array.isArray(period) ? period.join('-') : '';
   const [loadDetails, setLoadDetails] = useState(false);
@@ -111,142 +95,49 @@ export default function useCountryStats({ country, year, period }) {
     skip: !loadDepartments,
   });
 
-  const headReports = headData?.monthlyReports?.data ?? [];
-  const demographicReports = demographicData?.monthlyReports?.data ?? [];
-  const returnReports = returnData?.monthlyReports?.data ?? [];
-  const departmentReports = departmentData?.monthlyReports?.data ?? [];
-
   const headStats = useMemo(() => {
-    let total = 0;
-    const files: { name: string; url: string }[] = [];
-
-    for (const report of headReports) {
-      const attr = report?.attributes;
-      const ret = attr?.returned?.data?.attributes;
-
-      total += Number(ret?.total) || 0;
-
-      const [, month] = String(attr?.reportMonth || '')
-        .split('-')
-        .map(Number);
-
-      for (const file of ret?.fuentes?.data ?? []) {
-        files.push({
-          name: monthNames[month] || 'Mes',
-          url: file?.attributes?.url,
-        });
-      }
-    }
-
-    const updatedAtStr = headReports.reduce((latest, report) => {
-      const updatedAt = report?.attributes?.updatedAt;
-      if (!updatedAt) return latest;
-      if (!latest) return updatedAt;
-
-      return new Date(updatedAt) > new Date(latest) ? updatedAt : latest;
-    }, '');
+    const payload = headData?.countryHeadStats;
 
     return {
-      totalCant: total,
-      filesUrl: files,
-      updatedAtStr,
+      totalCant: Number(payload?.totalCant) || 0,
+      filesUrl: Array.isArray(payload?.filesUrl) ? payload.filesUrl : [],
+      updatedAtStr: payload?.updatedAtStr || '',
     };
-  }, [headReports]);
+  }, [headData]);
 
   const demographicStats = useMemo(() => {
-    const genders: Cnts = {};
-    const travel: Cnts = {};
-    const ages: Cnts = {};
-
-    for (const report of demographicReports) {
-      const ret = report?.attributes?.returned?.data?.attributes;
-
-      for (const gender of ret?.gender_contributions?.data ?? []) {
-        const name =
-          gender?.attributes?.gender?.data?.attributes?.name?.toLowerCase();
-        const cant = Number(gender?.attributes?.cant) || 0;
-        if (name) genders[name] = (genders[name] || 0) + cant;
-      }
-
-      for (const condition of ret?.travel_condition_contributions?.data ?? []) {
-        const name =
-          condition?.attributes?.travel_condition?.data?.attributes?.name?.toLowerCase();
-        const cant = Number(condition?.attributes?.cant) || 0;
-        if (name) travel[name] = (travel[name] || 0) + cant;
-      }
-
-      for (const age of ret?.age_group_contributions?.data ?? []) {
-        const name =
-          age?.attributes?.age_group?.data?.attributes?.name?.toLowerCase();
-        const cant = Number(age?.attributes?.cant) || 0;
-        if (name) ages[name] = (ages[name] || 0) + cant;
-      }
-    }
+    const payload = demographicData?.countryDemographicStats;
 
     return {
-      genderTotals: genders,
-      travelConditionTotals: travel,
-      ageGroupTotals: ages,
+      genderTotals: payload?.genderTotals || {},
+      travelConditionTotals: payload?.travelConditionTotals || {},
+      ageGroupTotals: payload?.ageGroupTotals || {},
     };
-  }, [demographicReports]);
+  }, [demographicData]);
 
   const returnStats = useMemo(() => {
-    const routes: Cnts = {};
-    const rcTotals: Cnts = {};
-    const rcMaps: Record<string, string> = {};
-
-    for (const report of returnReports) {
-      const ret = report?.attributes?.returned?.data?.attributes;
-
-      for (const route of ret?.return_route_contributions?.data ?? []) {
-        const name =
-          route?.attributes?.return_route?.data?.attributes?.name?.toLowerCase();
-        const cant = Number(route?.attributes?.cant) || 0;
-        if (name) routes[name] = (routes[name] || 0) + cant;
-      }
-
-      for (const contribution of ret?.country_contributions?.data ?? []) {
-        const name = contribution?.attributes?.country?.data?.attributes?.name;
-        const cant = Number(contribution?.attributes?.cant) || 0;
-
-        if (!name) continue;
-
-        rcTotals[name] = (rcTotals[name] || 0) + cant;
-
-        const mapUrl =
-          contribution?.attributes?.country?.data?.attributes?.map?.data?.attributes?.url;
-        if (mapUrl) rcMaps[name] = mapUrl;
-      }
-    }
+    const payload = returnData?.countryReturnStats;
 
     return {
-      returnRouteTotals: routes,
-      returnCountryTotals: rcTotals,
-      returnCountryMaps: rcMaps,
+      returnRouteTotals: payload?.returnRouteTotals || {},
+      returnCountryTotals: payload?.returnCountryTotals || {},
+      returnCountryMaps: payload?.returnCountryMaps || {},
     };
-  }, [returnReports]);
+  }, [returnData]);
 
   const departmentStats = useMemo(() => {
     const depTotals: Cnts = {};
+    const rawDepTotals = departmentData?.countryDepartmentStats?.depTotals || {};
 
-    for (const report of departmentReports) {
-      const contributions =
-        report?.attributes?.returned?.data?.attributes?.department_contributions?.data ??
-        [];
+    for (const [rawKey, rawValue] of Object.entries(rawDepTotals)) {
+      const key = rawKey
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll('department', '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
 
-      for (const contribution of contributions) {
-        const depName =
-          contribution?.attributes?.department?.data?.attributes?.name || 'Otros';
-        const key = depName
-          .toLowerCase()
-          .replaceAll(' ', '_')
-          .replaceAll('department', '')
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '');
-
-        depTotals[key] =
-          (depTotals[key] || 0) + (Number(contribution?.attributes?.cant) || 0);
-      }
+      depTotals[key] = Number(rawValue) || 0;
     }
 
     return {
@@ -254,7 +145,7 @@ export default function useCountryStats({ country, year, period }) {
       depSubDepTotals: {},
       depSubDepGenderTotals: {},
     };
-  }, [departmentReports]);
+  }, [departmentData]);
 
   return {
     loading: headLoading,
@@ -262,7 +153,7 @@ export default function useCountryStats({ country, year, period }) {
     returnsLoading: !loadDetails || returnsQueryLoading,
     mapLoading: !loadDepartments || departmentQueryLoading,
     error: headError || demographicError || returnError || departmentError,
-    reports: headReports,
+    reports: [],
     totalCant: headStats.totalCant,
     filesUrl: headStats.filesUrl,
     genderTotals: demographicStats.genderTotals,

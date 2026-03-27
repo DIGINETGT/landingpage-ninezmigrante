@@ -47,26 +47,16 @@ function nextMonthStart(year, month) {
   return `${nextYear}-${pad(nextMonth)}-01`;
 }
 
-function buildCountryFilter(country, startMonth, endMonth, year, field = 'reportMonth') {
+function buildDateRange(year, startMonth, endMonth) {
   const start = `${year}-${pad(startMonth)}-01`;
   const end = nextMonthStart(year, endMonth);
 
-  return `
-    pagination: { page: 1, pageSize: 12 },
-    filters: {
-      ${field}: {
-        gte: "${start}",
-        lt: "${end}"
-      },
-      users_permissions_user: {
-        organization: {
-          department: {
-            country: { isoCode: { eq: "${country}" } }
-          }
-        }
-      }
-    }
-  `;
+  return { start, end };
+}
+
+function buildCountryResolverArgs(country, startMonth, endMonth, year) {
+  const { start, end } = buildDateRange(year, startMonth, endMonth);
+  return `country: "${country}", start: "${start}", end: "${end}"`;
 }
 
 function escapeGraphqlString(value = '') {
@@ -104,25 +94,13 @@ function buildHeaders() {
 function buildCountryHeadQuery() {
   return `
     query {
-      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
-        data {
-          id
-          attributes {
-            reportMonth
-            updatedAt
-            returned {
-              data {
-                id
-                attributes {
-                  total
-                fuentes(pagination: { limit: -1 }) {
-                  data { attributes { url } }
-                }
-                }
-              }
-            }
-          }
+      countryHeadStats(${buildCountryResolverArgs(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        totalCant
+        filesUrl {
+          name
+          url
         }
+        updatedAtStr
       }
     }
   `;
@@ -131,43 +109,10 @@ function buildCountryHeadQuery() {
 function buildCountryDemographicQuery() {
   return `
     query {
-      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
-        data {
-          id
-          attributes {
-            returned {
-              data {
-                id
-                attributes {
-                  gender_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        gender { data { attributes { name } } }
-                      }
-                    }
-                  }
-                  travel_condition_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        travel_condition { data { attributes { name } } }
-                      }
-                    }
-                  }
-                  age_group_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        age_group { data { attributes { name } } }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+      countryDemographicStats(${buildCountryResolverArgs(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        genderTotals
+        travelConditionTotals
+        ageGroupTotals
       }
     }
   `;
@@ -176,42 +121,10 @@ function buildCountryDemographicQuery() {
 function buildCountryReturnQuery() {
   return `
     query {
-      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
-        data {
-          id
-          attributes {
-            returned {
-              data {
-                id
-                attributes {
-                  return_route_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        return_route { data { attributes { name } } }
-                      }
-                    }
-                  }
-                  country_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        country {
-                          data {
-                            attributes {
-                              name
-                              map { data { attributes { url } } }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+      countryReturnStats(${buildCountryResolverArgs(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        returnRouteTotals
+        returnCountryTotals
+        returnCountryMaps
       }
     }
   `;
@@ -220,27 +133,8 @@ function buildCountryReturnQuery() {
 function buildCountryDepartmentsQuery() {
   return `
     query {
-      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
-        data {
-          id
-          attributes {
-            updatedAt
-            returned {
-              data {
-                attributes {
-                  department_contributions(pagination: { limit: -1 }) {
-                    data {
-                      attributes {
-                        cant
-                        department { data { attributes { name } } }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+      countryDepartmentStats(${buildCountryResolverArgs(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        depTotals
       }
     }
   `;
@@ -251,7 +145,22 @@ function buildDepartmentModalQuery() {
 
   return `
     query {
-      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+      monthlyReports(
+        pagination: { page: 1, pageSize: 12 },
+        filters: {
+          reportMonth: {
+            gte: "${buildDateRange(YEAR, START_MONTH, END_MONTH).start}",
+            lt: "${buildDateRange(YEAR, START_MONTH, END_MONTH).end}"
+          },
+          users_permissions_user: {
+            organization: {
+              department: {
+                country: { isoCode: { eq: "${COUNTRY}" } }
+              }
+            }
+          }
+        }
+      ) {
         data {
           attributes {
             reportMonth
