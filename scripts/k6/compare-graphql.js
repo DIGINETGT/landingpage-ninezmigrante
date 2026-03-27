@@ -16,8 +16,6 @@ const SELECTION_COUNT = Math.min(
   3,
   Math.max(1, Number(__ENV.SELECTION_COUNT || 3))
 );
-const INCLUDE_MODAL =
-  String(__ENV.INCLUDE_MODAL || 'false').toLowerCase() === 'true';
 const DEBUG_ERRORS =
   String(__ENV.DEBUG_ERRORS || 'false').toLowerCase() === 'true';
 
@@ -69,149 +67,52 @@ function escapeGraphqlString(value = '') {
 }
 
 function getSelection(index) {
-  return {
-    key: `selection_${index}`,
-    country: String(
-      __ENV[`COUNTRY_${index}`] || ['GT', 'HN', 'SV'][index - 1] || 'GT'
-    ).toUpperCase(),
-    year: Number(__ENV[`YEAR_${index}`] || 2024),
-    startMonth: Number(__ENV[`START_MONTH_${index}`] || 1),
-    endMonth: Number(__ENV[`END_MONTH_${index}`] || 12),
-    departmentLabel: String(
-      __ENV[`DEPARTMENT_LABEL_${index}`] || 'Guatemala'
-    ),
-  };
-}
+  const country = String(
+    __ENV[`COUNTRY_${index}`] || ['GT', 'HN', 'SV'][index - 1] || 'GT'
+  ).toUpperCase();
+  const year = Number(__ENV[`YEAR_${index}`] || 2024);
+  const startMonth = Number(__ENV[`START_MONTH_${index}`] || 1);
+  const endMonth = Number(__ENV[`END_MONTH_${index}`] || 12);
 
-function buildDateRange(year, startMonth, endMonth) {
   return {
+    country,
     start: `${year}-${pad(startMonth)}-01`,
     end: nextMonthStart(year, endMonth),
   };
 }
 
-function buildResolverArgs(selection) {
-  const { start, end } = buildDateRange(
-    selection.year,
-    selection.startMonth,
-    selection.endMonth
-  );
-
-  return `country: "${selection.country}", start: "${start}", end: "${end}"`;
+function buildSelectionsLiteral(selections = []) {
+  return `[${selections
+    .map(
+      (selection) =>
+        `{ country: "${escapeGraphqlString(selection.country)}", start: "${escapeGraphqlString(
+          selection.start
+        )}", end: "${escapeGraphqlString(selection.end)}" }`
+    )
+    .join(', ')}]`;
 }
 
-function buildHeadQuery(selection) {
+function buildCompareQuery(selections) {
   return `
     query {
-      countryHeadStats(${buildResolverArgs(selection)}) {
-        totalCant
-        filesUrl {
-          name
-          url
-        }
-        updatedAtStr
-      }
-    }
-  `;
-}
-
-function buildDemographicsQuery(selection) {
-  return `
-    query {
-      countryDemographicStats(${buildResolverArgs(selection)}) {
-        genderTotals
-        travelConditionTotals
-        ageGroupTotals
-      }
-    }
-  `;
-}
-
-function buildReturnsQuery(selection) {
-  return `
-    query {
-      countryReturnStats(${buildResolverArgs(selection)}) {
-        returnRouteTotals
-        returnCountryTotals
-        returnCountryMaps
-      }
-    }
-  `;
-}
-
-function buildDepartmentsQuery(selection) {
-  return `
-    query {
-      countryDepartmentStats(${buildResolverArgs(selection)}) {
-        depTotals
-      }
-    }
-  `;
-}
-
-function buildDepartmentModalQuery(selection) {
-  const department = escapeGraphqlString(selection.departmentLabel);
-  const { start, end } = buildDateRange(
-    selection.year,
-    selection.startMonth,
-    selection.endMonth
-  );
-
-  return `
-    query {
-      monthlyReports(
-        pagination: { page: 1, pageSize: 12 },
-        filters: {
-          reportMonth: {
-            gte: "${start}",
-            lt: "${end}"
-          },
-          users_permissions_user: {
-            organization: {
-              department: {
-                country: { isoCode: { eq: "${selection.country}" } }
-              }
-            }
+      compareCountryStats(selections: ${buildSelectionsLiteral(selections)}) {
+        selections {
+          country
+          start
+          end
+          totalCant
+          updatedAtStr
+          filesUrl {
+            name
+            url
           }
-        }
-      ) {
-        data {
-          attributes {
-            reportMonth
-            returned {
-              data {
-                attributes {
-                  department_contributions(
-                    filters: { department: { name: { eq: "${department}" } } }
-                    pagination: { limit: -1 }
-                  ) {
-                    data {
-                      attributes {
-                        cant
-                        department { data { attributes { name } } }
-                      }
-                    }
-                  }
-                  municipality_contributions(
-                    filters: {
-                      municipality: {
-                        department: { name: { eq: "${department}" } }
-                      }
-                    }
-                    pagination: { limit: -1 }
-                  ) {
-                    data {
-                      attributes {
-                        cant
-                        gender { data { attributes { name } } }
-                        municipality { data { attributes { name } } }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          genderTotals
+          travelConditionTotals
+          ageGroupTotals
+          returnRouteTotals
+          returnCountryTotals
+          returnCountryMaps
+          depTotals
         }
       }
     }
@@ -225,11 +126,7 @@ export const options = {
     http_req_duration: ['p(95)<4000', 'p(99)<7000'],
     compare_batch_duration: ['p(95)<5000'],
     compare_graphql_errors: ['rate<0.01'],
-    'compare_graphql_errors{operation:compare_head}': ['rate<0.01'],
-    'compare_graphql_errors{operation:compare_demographics}': ['rate<0.01'],
-    'compare_graphql_errors{operation:compare_returns}': ['rate<0.01'],
-    'compare_graphql_errors{operation:compare_departments}': ['rate<0.01'],
-    'compare_graphql_errors{operation:compare_department_modal}': ['rate<0.01'],
+    'compare_graphql_errors{operation:compare_country_stats}': ['rate<0.01'],
   },
 };
 
@@ -238,125 +135,53 @@ export default function () {
   const selections = Array.from({ length: SELECTION_COUNT }, (_, idx) =>
     getSelection(idx + 1)
   );
-  const headRequests = {};
-  const detailRequests = {};
-  const departmentRequests = {};
-  const modalRequests = {};
 
-  selections.forEach((selection, index) => {
-    const selectionId = index + 1;
-
-    headRequests[`compare_head_${selectionId}`] = {
-      method: 'POST',
-      url: GRAPHQL_URL,
-      body: JSON.stringify({ query: buildHeadQuery(selection) }),
-      params: {
-        headers,
-        tags: {
-          name: 'compare_head',
-          selection: String(selectionId),
-          country: selection.country,
-        },
+  const request = {
+    method: 'POST',
+    url: GRAPHQL_URL,
+    body: JSON.stringify({
+      query: buildCompareQuery(selections),
+    }),
+    params: {
+      headers,
+      tags: {
+        name: 'compare_country_stats',
+        selections: String(SELECTION_COUNT),
       },
-    };
-
-    detailRequests[`compare_demographics_${selectionId}`] = {
-      method: 'POST',
-      url: GRAPHQL_URL,
-      body: JSON.stringify({ query: buildDemographicsQuery(selection) }),
-      params: {
-        headers,
-        tags: {
-          name: 'compare_demographics',
-          selection: String(selectionId),
-          country: selection.country,
-        },
-      },
-    };
-
-    detailRequests[`compare_returns_${selectionId}`] = {
-      method: 'POST',
-      url: GRAPHQL_URL,
-      body: JSON.stringify({ query: buildReturnsQuery(selection) }),
-      params: {
-        headers,
-        tags: {
-          name: 'compare_returns',
-          selection: String(selectionId),
-          country: selection.country,
-        },
-      },
-    };
-
-    departmentRequests[`compare_departments_${selectionId}`] = {
-      method: 'POST',
-      url: GRAPHQL_URL,
-      body: JSON.stringify({ query: buildDepartmentsQuery(selection) }),
-      params: {
-        headers,
-        tags: {
-          name: 'compare_departments',
-          selection: String(selectionId),
-          country: selection.country,
-        },
-      },
-    };
-
-    if (INCLUDE_MODAL) {
-      modalRequests[`compare_department_modal_${selectionId}`] = {
-        method: 'POST',
-        url: GRAPHQL_URL,
-        body: JSON.stringify({ query: buildDepartmentModalQuery(selection) }),
-        params: {
-          headers,
-          tags: {
-            name: 'compare_department_modal',
-            selection: String(selectionId),
-            country: selection.country,
-            department: selection.departmentLabel,
-          },
-        },
-      };
-    }
-  });
+    },
+  };
 
   const startedAt = Date.now();
-  const responses = {
-    ...http.batch(headRequests),
-    ...http.batch(detailRequests),
-    ...http.batch(departmentRequests),
-    ...(INCLUDE_MODAL ? http.batch(modalRequests) : {}),
-  };
+  const response = http.post(request.url, request.body, request.params);
   compareBatchDuration.add(Date.now() - startedAt);
 
-  for (const [name, response] of Object.entries(responses)) {
-    let body = null;
-    try {
-      body = response.json();
-    } catch (_) {
-      body = null;
-    }
+  let body = null;
+  try {
+    body = response.json();
+  } catch (_) {
+    body = null;
+  }
 
-    const hasErrors = Array.isArray(body?.errors) && body.errors.length > 0;
-    const operationName = response.request?.tags?.name || name;
-    compareGraphqlErrors.add(hasErrors ? 1 : 0, { operation: operationName });
+  const hasErrors = Array.isArray(body?.errors) && body.errors.length > 0;
+  compareGraphqlErrors.add(hasErrors ? 1 : 0, {
+    operation: 'compare_country_stats',
+  });
 
-    check(response, {
-      [`${name} responde 200`]: (r) => r.status === 200,
-      [`${name} sin errores graphql`]: () => !hasErrors,
-    });
+  check(response, {
+    'compare_country_stats responde 200': (r) => r.status === 200,
+    'compare_country_stats sin errores graphql': () => !hasErrors,
+  });
 
-    if (DEBUG_ERRORS && hasErrors) {
-      const messages = body.errors
-        .map((error) => error?.message)
-        .filter(Boolean)
-        .slice(0, 2)
-        .join(' | ');
+  if (DEBUG_ERRORS && hasErrors) {
+    const messages = body.errors
+      .map((error) => error?.message)
+      .filter(Boolean)
+      .slice(0, 2)
+      .join(' | ');
 
-      console.error(
-        `[compare-graphql-error] ${name}: ${messages || 'Error GraphQL sin mensaje'}`
-      );
-    }
+    console.error(
+      `[compare-graphql-error] ${messages || 'Error GraphQL sin mensaje'}`
+    );
   }
 
   sleep(THINK_TIME);

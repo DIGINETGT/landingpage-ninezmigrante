@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useQuery } from '@apollo/client';
 
 import { Box, SimpleGrid, Stack, Text } from '@chakra-ui/react';
 
@@ -8,6 +9,7 @@ import DownloadTable from '../country/components/statistics/components/downloadT
 import GraphFooter from '../../components/graphFooter';
 import StatisticsContext from '../country/components/statistics/context';
 import LastDate from '../../components/lastUpdate';
+import { GET_COMPARE_COUNTRY_STATS } from '../../utils/query/compareStats';
 
 const shortMonthNames = [
   '',
@@ -63,6 +65,11 @@ const formatGapPercentage = (value) => {
   return `${roundedValue}% por encima de la menor selección`;
 };
 
+const formatUpdateValue = (value) => {
+  const time = Date.parse(value || '');
+  return Number.isNaN(time) ? null : time;
+};
+
 const ComparePage = () => {
   const [countValue, setCountValue] = useState('0');
   const [options, setOptions] = useState({
@@ -72,24 +79,86 @@ const ComparePage = () => {
   });
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
-  const [updateDate, setUpdateDate] = useState('');
-  const [compareSummary, setCompareSummary] = useState({
-    1: { total: null, loading: false },
-    2: { total: null, loading: false },
-    3: { total: null, loading: false },
-  });
-  const [files, setFiles] = useState({
-    1: [],
-    2: [],
-    3: [],
-  });
-  const [periodId, setPeriodId] = useState('');
-
   const satisticsRef = useRef(null);
 
   const onChange = (id, data) => {
     setOptions((prevOptions) => ({ ...prevOptions, [id]: data }));
   };
+
+  const activeKeys = [1, 2, 3].slice(0, Number(countValue));
+  const validSelections = useMemo(
+    () =>
+      activeKeys
+        .map((key) => ({ key, ...options[key] }))
+        .filter(
+          (item) =>
+            item?.country &&
+            item?.year &&
+            Array.isArray(item?.period) &&
+            item.period[0] &&
+            item.period[1]
+        ),
+    [activeKeys, options]
+  );
+
+  const compareQuery = useMemo(() => {
+    if (!validSelections.length) return null;
+    return GET_COMPARE_COUNTRY_STATS(validSelections);
+  }, [validSelections]);
+
+  const { data: compareData, loading: compareLoading } = useQuery(
+    compareQuery || GET_COMPARE_COUNTRY_STATS([]),
+    {
+      fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
+      skip: !compareQuery,
+    }
+  );
+
+  const compareSelectionsData = compareData?.compareCountryStats?.selections ?? [];
+  const compareDataByKey = validSelections.reduce((acc, selection, index) => {
+    acc[selection.key] = compareSelectionsData[index] || null;
+    return acc;
+  }, {});
+
+  const compareSummary = activeKeys.reduce((acc, key) => {
+    const isReady = Boolean(compareDataByKey[key]);
+    acc[key] = {
+      loading: Boolean(
+        options[key]?.country &&
+          options[key]?.year &&
+          Array.isArray(options[key]?.period) &&
+          !isReady &&
+          compareLoading
+      ),
+      total:
+        typeof compareDataByKey[key]?.totalCant === 'number'
+          ? Number(compareDataByKey[key].totalCant)
+          : null,
+    };
+    return acc;
+  }, {});
+
+  const files = activeKeys.reduce((acc, key) => {
+    acc[key] = Array.isArray(compareDataByKey[key]?.filesUrl)
+      ? compareDataByKey[key].filesUrl
+      : [];
+    return acc;
+  }, {});
+
+  const updateDate = activeKeys
+    .map((key) => compareDataByKey[key]?.updatedAtStr)
+    .filter(Boolean)
+    .sort((a, b) => (formatUpdateValue(b) || 0) - (formatUpdateValue(a) || 0))[0];
+
+  const periodId =
+    activeKeys
+      .map((key) =>
+        options[key]?.year && Array.isArray(options[key]?.period)
+          ? `${options[key].year}-${options[key].period[0]}-${options[key].period[1]}`
+          : null
+      )
+      .find(Boolean) || '';
 
   const compareFiles = [1, 2, 3].flatMap((key) => {
     const currentFiles = Array.isArray(files[key]) ? files[key] : [];
@@ -117,8 +186,7 @@ const ComparePage = () => {
     return `comparacion-${labels.join('__')}.pdf`;
   })();
 
-  const selectionSummaries = [1, 2, 3]
-    .slice(0, Number(countValue))
+  const selectionSummaries = activeKeys
     .map((key) => ({
       key,
       shortLabel: `Selección ${key}`,
@@ -377,29 +445,23 @@ const ComparePage = () => {
             <Statistics
               data={options['1']}
               id='1'
-              setFiles={setFiles}
-              setUpdateDate={setUpdateDate}
-              setPeriodId={setPeriodId}
-              setCompareSummary={setCompareSummary}
+              selectionStats={compareDataByKey['1']}
+              compareLoading={compareLoading}
             />
             {(countValue === '2' || countValue === '3') && (
               <Statistics
                 data={options['2']}
-                setFiles={setFiles}
                 id='2'
-                setUpdateDate={setUpdateDate}
-                setPeriodId={setPeriodId}
-                setCompareSummary={setCompareSummary}
+                selectionStats={compareDataByKey['2']}
+                compareLoading={compareLoading}
               />
             )}
             {countValue === '3' && (
               <Statistics
                 data={options['3']}
                 id='3'
-                setFiles={setFiles}
-                setUpdateDate={setUpdateDate}
-                setPeriodId={setPeriodId}
-                setCompareSummary={setCompareSummary}
+                selectionStats={compareDataByKey['3']}
+                compareLoading={compareLoading}
               />
             )}
           </Stack>
