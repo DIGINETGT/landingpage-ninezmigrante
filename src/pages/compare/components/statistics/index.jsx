@@ -7,6 +7,7 @@ import TravelCondition from '../../../country/components/statistics/components/t
 import ReturnPath from '../../../country/components/statistics/components/returnPath';
 import ReturnCountry from '../../../country/components/statistics/components/returnCountry';
 import HeatMap from '../../../country/components/statistics/components/heatMap';
+import depKey from '../../../country/components/statistics/components/heatMap/utils/depKey';
 
 import StatisticsContext from '../../../country/components/statistics/context';
 
@@ -47,6 +48,16 @@ const buildFallbackPeriodId = (year, period) => {
 
 const formatInt = (value = 0) => new Intl.NumberFormat('es-GT').format(value);
 
+const normalizeDepartmentTotals = (rawTotals = {}) => {
+  const normalizedTotals = {};
+
+  for (const [rawKey, rawValue] of Object.entries(rawTotals || {})) {
+    normalizedTotals[depKey(rawKey)] = Number(rawValue) || 0;
+  }
+
+  return normalizedTotals;
+};
+
 const Statistics = ({
   data,
   id,
@@ -78,7 +89,10 @@ const Statistics = ({
   const returnRouteTotals = selectionStats?.returnRouteTotals || {};
   const returnCountryTotals = selectionStats?.returnCountryTotals || {};
   const returnCountryMaps = selectionStats?.returnCountryMaps || {};
-  const depTotals = selectionStats?.depTotals || {};
+  const depTotals = useMemo(
+    () => normalizeDepartmentTotals(selectionStats?.depTotals || {}),
+    [selectionStats?.depTotals]
+  );
   const depSubDepTotals = {};
   const depSubDepGenderTotals = {};
   const totalAmount = useMemo(() => totalCant, [totalCant]);
