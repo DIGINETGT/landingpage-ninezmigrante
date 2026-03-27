@@ -9,10 +9,27 @@ import {
 
 type Cnts = Record<string, number>;
 
-export default function useCountryStats({ country, year, period }) {
+type UseCountryStatsOptions = {
+  detailsDelayMs?: number;
+  departmentsDelayMs?: number;
+};
+
+export default function useCountryStats({
+  country,
+  year,
+  period,
+  options = {},
+}: {
+  country: string;
+  year: number | string;
+  period: number[] | string[];
+  options?: UseCountryStatsOptions;
+}) {
   const periodKey = Array.isArray(period) ? period.join('-') : '';
   const [loadDetails, setLoadDetails] = useState(false);
   const [loadDepartments, setLoadDepartments] = useState(false);
+  const detailsDelayMs = Number(options?.detailsDelayMs ?? 120);
+  const departmentsDelayMs = Number(options?.departmentsDelayMs ?? 120);
 
   const headQuery = useMemo(
     () => GET_COUNTRY_HEAD_STATS(country, period, year),
@@ -50,10 +67,10 @@ export default function useCountryStats({ country, year, period }) {
 
     const timer = window.setTimeout(() => {
       setLoadDetails(true);
-    }, 120);
+    }, detailsDelayMs);
 
     return () => window.clearTimeout(timer);
-  }, [headLoading, country, year, periodKey]);
+  }, [headLoading, country, year, periodKey, detailsDelayMs]);
 
   const {
     data: demographicData,
@@ -80,10 +97,15 @@ export default function useCountryStats({ country, year, period }) {
 
     const timer = window.setTimeout(() => {
       setLoadDepartments(true);
-    }, 120);
+    }, departmentsDelayMs);
 
     return () => window.clearTimeout(timer);
-  }, [loadDetails, demographicsQueryLoading, returnsQueryLoading]);
+  }, [
+    loadDetails,
+    demographicsQueryLoading,
+    returnsQueryLoading,
+    departmentsDelayMs,
+  ]);
 
   const {
     data: departmentData,

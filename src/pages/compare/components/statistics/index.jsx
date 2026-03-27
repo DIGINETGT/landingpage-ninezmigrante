@@ -96,6 +96,10 @@ const Statistics = ({
     country: countryID,
     year: data?.year,
     period: data?.period,
+    options: {
+      detailsDelayMs: 120 + (Number(id) - 1) * 140,
+      departmentsDelayMs: 220 + (Number(id) - 1) * 220,
+    },
   });
 
   // 🔹 Sube metadata al padre (igual que lo hacías antes)
