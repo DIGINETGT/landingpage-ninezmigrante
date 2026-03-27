@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import {
+  GET_COUNTRY_DEMOGRAPHIC_STATS,
   GET_COUNTRY_DEPARTMENT_STATS,
-  GET_COUNTRY_SUMMARY_STATS,
+  GET_COUNTRY_HEAD_STATS,
+  GET_COUNTRY_RETURN_STATS,
 } from '../utils/query/countryStats';
 
 type Cnts = Record<string, number>;
@@ -25,10 +27,19 @@ const monthNames = [
 
 export default function useCountryStats({ country, year, period }) {
   const periodKey = Array.isArray(period) ? period.join('-') : '';
+  const [loadDetails, setLoadDetails] = useState(false);
   const [loadDepartments, setLoadDepartments] = useState(false);
 
-  const summaryQuery = useMemo(
-    () => GET_COUNTRY_SUMMARY_STATS(country, period, year),
+  const headQuery = useMemo(
+    () => GET_COUNTRY_HEAD_STATS(country, period, year),
+    [country, year, periodKey]
+  );
+  const demographicQuery = useMemo(
+    () => GET_COUNTRY_DEMOGRAPHIC_STATS(country, period, year),
+    [country, year, periodKey]
+  );
+  const returnQuery = useMemo(
+    () => GET_COUNTRY_RETURN_STATS(country, period, year),
     [country, year, periodKey]
   );
   const departmentQuery = useMemo(
@@ -37,31 +48,62 @@ export default function useCountryStats({ country, year, period }) {
   );
 
   useEffect(() => {
+    setLoadDetails(false);
     setLoadDepartments(false);
   }, [country, year, periodKey]);
 
   const {
-    data: summaryData,
-    loading: summaryLoading,
-    error: summaryError,
-  } = useQuery(summaryQuery, {
+    data: headData,
+    loading: headLoading,
+    error: headError,
+  } = useQuery(headQuery, {
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
   useEffect(() => {
-    if (summaryLoading) return;
+    if (headLoading) return;
+
+    const timer = window.setTimeout(() => {
+      setLoadDetails(true);
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [headLoading, country, year, periodKey]);
+
+  const {
+    data: demographicData,
+    loading: demographicsQueryLoading,
+    error: demographicError,
+  } = useQuery(demographicQuery, {
+    fetchPolicy: 'no-cache',
+    notifyOnNetworkStatusChange: true,
+    skip: !loadDetails,
+  });
+
+  const {
+    data: returnData,
+    loading: returnsQueryLoading,
+    error: returnError,
+  } = useQuery(returnQuery, {
+    fetchPolicy: 'no-cache',
+    notifyOnNetworkStatusChange: true,
+    skip: !loadDetails,
+  });
+
+  useEffect(() => {
+    if (!loadDetails || demographicsQueryLoading || returnsQueryLoading) return;
 
     const timer = window.setTimeout(() => {
       setLoadDepartments(true);
-    }, 150);
+    }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [summaryLoading, country, year, periodKey]);
+  }, [loadDetails, demographicsQueryLoading, returnsQueryLoading]);
 
   const {
     data: departmentData,
-    loading: mapLoading,
+    loading: departmentQueryLoading,
     error: departmentError,
   } = useQuery(departmentQuery, {
     fetchPolicy: 'no-cache',
@@ -69,20 +111,16 @@ export default function useCountryStats({ country, year, period }) {
     skip: !loadDepartments,
   });
 
-  const summaryReports = summaryData?.monthlyReports?.data ?? [];
+  const headReports = headData?.monthlyReports?.data ?? [];
+  const demographicReports = demographicData?.monthlyReports?.data ?? [];
+  const returnReports = returnData?.monthlyReports?.data ?? [];
   const departmentReports = departmentData?.monthlyReports?.data ?? [];
 
-  const summaryStats = useMemo(() => {
+  const headStats = useMemo(() => {
     let total = 0;
     const files: { name: string; url: string }[] = [];
-    const genders: Cnts = {};
-    const travel: Cnts = {};
-    const ages: Cnts = {};
-    const routes: Cnts = {};
-    const rcTotals: Cnts = {};
-    const rcMaps: Record<string, string> = {};
 
-    for (const report of summaryReports) {
+    for (const report of headReports) {
       const attr = report?.attributes;
       const ret = attr?.returned?.data?.attributes;
 
@@ -98,6 +136,30 @@ export default function useCountryStats({ country, year, period }) {
           url: file?.attributes?.url,
         });
       }
+    }
+
+    const updatedAtStr = headReports.reduce((latest, report) => {
+      const updatedAt = report?.attributes?.updatedAt;
+      if (!updatedAt) return latest;
+      if (!latest) return updatedAt;
+
+      return new Date(updatedAt) > new Date(latest) ? updatedAt : latest;
+    }, '');
+
+    return {
+      totalCant: total,
+      filesUrl: files,
+      updatedAtStr,
+    };
+  }, [headReports]);
+
+  const demographicStats = useMemo(() => {
+    const genders: Cnts = {};
+    const travel: Cnts = {};
+    const ages: Cnts = {};
+
+    for (const report of demographicReports) {
+      const ret = report?.attributes?.returned?.data?.attributes;
 
       for (const gender of ret?.gender_contributions?.data ?? []) {
         const name =
@@ -119,6 +181,22 @@ export default function useCountryStats({ country, year, period }) {
         const cant = Number(age?.attributes?.cant) || 0;
         if (name) ages[name] = (ages[name] || 0) + cant;
       }
+    }
+
+    return {
+      genderTotals: genders,
+      travelConditionTotals: travel,
+      ageGroupTotals: ages,
+    };
+  }, [demographicReports]);
+
+  const returnStats = useMemo(() => {
+    const routes: Cnts = {};
+    const rcTotals: Cnts = {};
+    const rcMaps: Record<string, string> = {};
+
+    for (const report of returnReports) {
+      const ret = report?.attributes?.returned?.data?.attributes;
 
       for (const route of ret?.return_route_contributions?.data ?? []) {
         const name =
@@ -141,26 +219,12 @@ export default function useCountryStats({ country, year, period }) {
       }
     }
 
-    const updatedAtStr = summaryReports.reduce((latest, report) => {
-      const updatedAt = report?.attributes?.updatedAt;
-      if (!updatedAt) return latest;
-      if (!latest) return updatedAt;
-
-      return new Date(updatedAt) > new Date(latest) ? updatedAt : latest;
-    }, '');
-
     return {
-      totalCant: total,
-      filesUrl: files,
-      genderTotals: genders,
-      travelConditionTotals: travel,
-      ageGroupTotals: ages,
       returnRouteTotals: routes,
       returnCountryTotals: rcTotals,
       returnCountryMaps: rcMaps,
-      updatedAtStr,
     };
-  }, [summaryReports]);
+  }, [returnReports]);
 
   const departmentStats = useMemo(() => {
     const depTotals: Cnts = {};
@@ -193,21 +257,23 @@ export default function useCountryStats({ country, year, period }) {
   }, [departmentReports]);
 
   return {
-    loading: summaryLoading,
-    mapLoading: loadDepartments ? mapLoading : true,
-    error: summaryError || departmentError,
-    reports: summaryReports,
-    totalCant: summaryStats.totalCant,
-    filesUrl: summaryStats.filesUrl,
-    genderTotals: summaryStats.genderTotals,
-    travelConditionTotals: summaryStats.travelConditionTotals,
-    ageGroupTotals: summaryStats.ageGroupTotals,
-    returnRouteTotals: summaryStats.returnRouteTotals,
-    returnCountryTotals: summaryStats.returnCountryTotals,
-    returnCountryMaps: summaryStats.returnCountryMaps,
+    loading: headLoading,
+    demographicsLoading: !loadDetails || demographicsQueryLoading,
+    returnsLoading: !loadDetails || returnsQueryLoading,
+    mapLoading: !loadDepartments || departmentQueryLoading,
+    error: headError || demographicError || returnError || departmentError,
+    reports: headReports,
+    totalCant: headStats.totalCant,
+    filesUrl: headStats.filesUrl,
+    genderTotals: demographicStats.genderTotals,
+    travelConditionTotals: demographicStats.travelConditionTotals,
+    ageGroupTotals: demographicStats.ageGroupTotals,
+    returnRouteTotals: returnStats.returnRouteTotals,
+    returnCountryTotals: returnStats.returnCountryTotals,
+    returnCountryMaps: returnStats.returnCountryMaps,
     depTotals: departmentStats.depTotals,
     depSubDepTotals: departmentStats.depSubDepTotals,
     depSubDepGenderTotals: departmentStats.depSubDepGenderTotals,
-    updatedAtStr: summaryStats.updatedAtStr,
+    updatedAtStr: headStats.updatedAtStr,
   };
 }

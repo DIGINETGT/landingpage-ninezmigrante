@@ -23,7 +23,7 @@ function diacriticless(s = '') {
 }
 
 const ReturnPath = () => {
-  const { loading, returnRouteTotals, isCompareView } =
+  const { returnsLoading, returnRouteTotals, isCompareView } =
     useContext(StatisticsContext);
 
   // Agrupa por familia textual sin exigir catálogo nuevo en backend.
@@ -59,7 +59,7 @@ const ReturnPath = () => {
 
   return (
     <Box width='100%' position='relative'>
-      <Loader loading={loading} />
+      <Loader loading={returnsLoading} />
 
       <Stack justifyContent='center' alignItems='center' spacing={itemSpacing}>
         <Text fontFamily='Oswald' fontSize='2xl'>

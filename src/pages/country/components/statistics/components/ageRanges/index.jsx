@@ -23,7 +23,7 @@ export const options = {
 };
 
 const AgeRanges = ({ disableFirstAge = false }) => {
-  const { loading, ageGroupTotals, isCompareView } =
+  const { demographicsLoading, ageGroupTotals, isCompareView } =
     useContext(StatisticsContext);
 
   // nombres esperados en tu data: "primera infancia" | "niñez" | "adolescencia" | "no registrados"
@@ -74,7 +74,7 @@ const AgeRanges = ({ disableFirstAge = false }) => {
 
   return (
     <Box width='100%' position='relative'>
-      <Loader loading={loading} />
+      <Loader loading={demographicsLoading} />
 
       <Stack justifyContent='center' alignItems='center' spacing='12px'>
         <Text fontFamily='Oswald' fontSize='2xl'>

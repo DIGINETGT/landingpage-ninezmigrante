@@ -13,7 +13,7 @@ import { colors } from '../../../../../../utils/theme';
 
 const ReturnCountry = () => {
   const {
-    loading,
+    returnsLoading,
     isCompareView,
     returnCountryTotals, // { 'Estados Unidos': 123, 'México': 45, ... }
     returnCountryMaps, // { 'Estados Unidos': 'https://...', ... }
@@ -27,7 +27,7 @@ const ReturnCountry = () => {
   }, [returnCountryTotals]);
 
   // Estados de carga / vacío
-  if (loading) {
+  if (returnsLoading) {
     return (
       <Box width='100%'>
         <Text fontFamily='Oswald' fontSize='2xl' textAlign='center'>

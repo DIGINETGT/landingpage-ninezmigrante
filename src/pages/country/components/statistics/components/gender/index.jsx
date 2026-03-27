@@ -15,7 +15,8 @@ import Loader from '../../../../../../components/loader';
 import { formatInt } from '../../../../../../utils/numbers';
 
 const Gender = () => {
-  const { loading, genderTotals, isCompareView } = useContext(StatisticsContext);
+  const { demographicsLoading, genderTotals, isCompareView } =
+    useContext(StatisticsContext);
 
   const tfemale = genderTotals?.['femenino'] ?? 0;
   const tmale = genderTotals?.['masculino'] ?? 0;
@@ -25,7 +26,7 @@ const Gender = () => {
 
   return (
     <Box width='100%' position='relative'>
-      <Loader loading={loading} />
+      <Loader loading={demographicsLoading} />
 
       <Stack justifyContent='center' alignItems='center' spacing={spacing}>
         <Text fontFamily='Oswald' fontSize='2xl'>

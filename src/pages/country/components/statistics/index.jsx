@@ -55,6 +55,8 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   const {
     reports,
     loading,
+    demographicsLoading,
+    returnsLoading,
     mapLoading,
     totalCant,
     filesUrl,
@@ -153,6 +155,8 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
       value={{
         isScreenShotTime,
         isCompareView: false,
+        demographicsLoading,
+        returnsLoading,
         mapLoading,
         setIsScreenShotTime,
         reports,

@@ -18,6 +18,12 @@ const START_MONTH = Number(__ENV.START_MONTH || 1);
 const END_MONTH = Number(__ENV.END_MONTH || 12);
 const INCLUDE_MODAL =
   String(__ENV.INCLUDE_MODAL || 'false').toLowerCase() === 'true';
+const ONLY_HEAD =
+  String(__ENV.ONLY_HEAD || 'false').toLowerCase() === 'true';
+const ONLY_DEMOGRAPHICS =
+  String(__ENV.ONLY_DEMOGRAPHICS || 'false').toLowerCase() === 'true';
+const ONLY_RETURNS =
+  String(__ENV.ONLY_RETURNS || 'false').toLowerCase() === 'true';
 const ONLY_SUMMARY =
   String(__ENV.ONLY_SUMMARY || 'false').toLowerCase() === 'true';
 const ONLY_DEPARTMENTS =
@@ -95,7 +101,7 @@ function buildHeaders() {
   return headers;
 }
 
-function buildCountrySummaryQuery() {
+function buildCountryHeadQuery() {
   return `
     query {
       monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
@@ -109,9 +115,30 @@ function buildCountrySummaryQuery() {
                 id
                 attributes {
                   total
-                  fuentes(pagination: { limit: -1 }) {
-                    data { attributes { url } }
-                  }
+                fuentes(pagination: { limit: -1 }) {
+                  data { attributes { url } }
+                }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+}
+
+function buildCountryDemographicQuery() {
+  return `
+    query {
+      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        data {
+          id
+          attributes {
+            returned {
+              data {
+                id
+                attributes {
                   gender_contributions(pagination: { limit: -1 }) {
                     data {
                       attributes {
@@ -136,6 +163,27 @@ function buildCountrySummaryQuery() {
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+}
+
+function buildCountryReturnQuery() {
+  return `
+    query {
+      monthlyReports(${buildCountryFilter(COUNTRY, START_MONTH, END_MONTH, YEAR)}) {
+        data {
+          id
+          attributes {
+            returned {
+              data {
+                id
+                attributes {
                   return_route_contributions(pagination: { limit: -1 }) {
                     data {
                       attributes {
@@ -254,40 +302,84 @@ export const options = {
     http_req_duration: ['p(95)<4000', 'p(99)<7000'],
     country_batch_duration: ['p(95)<5000'],
     country_graphql_errors: ['rate<0.01'],
-    'country_graphql_errors{operation:country_summary}': ['rate<0.01'],
+    'country_graphql_errors{operation:country_head}': ['rate<0.01'],
+    'country_graphql_errors{operation:country_demographics}': ['rate<0.01'],
+    'country_graphql_errors{operation:country_returns}': ['rate<0.01'],
     'country_graphql_errors{operation:country_departments}': ['rate<0.01'],
     'country_graphql_errors{operation:country_department_modal}': ['rate<0.01'],
   },
 };
 
 export default function () {
-  if (ONLY_SUMMARY && ONLY_DEPARTMENTS) {
+  const exclusiveFlags = [
+    ONLY_HEAD,
+    ONLY_DEMOGRAPHICS,
+    ONLY_RETURNS,
+    ONLY_SUMMARY,
+    ONLY_DEPARTMENTS,
+  ].filter(Boolean).length;
+
+  if (exclusiveFlags > 1) {
     throw new Error(
-      'ONLY_SUMMARY y ONLY_DEPARTMENTS no pueden ser true al mismo tiempo.'
+      'Usa solo una bandera exclusiva a la vez: ONLY_HEAD, ONLY_DEMOGRAPHICS, ONLY_RETURNS, ONLY_SUMMARY u ONLY_DEPARTMENTS.'
     );
   }
 
   const headers = buildHeaders();
   const requests = {};
 
-  if (!ONLY_DEPARTMENTS) {
-    requests.country_summary = {
+  if (ONLY_HEAD || ONLY_SUMMARY || exclusiveFlags === 0) {
+    requests.country_head = {
       method: 'POST',
       url: GRAPHQL_URL,
       body: JSON.stringify({
-        query: buildCountrySummaryQuery(),
+        query: buildCountryHeadQuery(),
       }),
       params: {
         headers,
         tags: {
-          name: 'country_summary',
+          name: 'country_head',
           country: COUNTRY,
         },
       },
     };
   }
 
-  if (!ONLY_SUMMARY) {
+  if (ONLY_DEMOGRAPHICS || ONLY_SUMMARY || exclusiveFlags === 0) {
+    requests.country_demographics = {
+      method: 'POST',
+      url: GRAPHQL_URL,
+      body: JSON.stringify({
+        query: buildCountryDemographicQuery(),
+      }),
+      params: {
+        headers,
+        tags: {
+          name: 'country_demographics',
+          country: COUNTRY,
+        },
+      },
+    };
+  }
+
+  if (ONLY_RETURNS || ONLY_SUMMARY || exclusiveFlags === 0) {
+    requests.country_returns = {
+      method: 'POST',
+      url: GRAPHQL_URL,
+      body: JSON.stringify({
+        query: buildCountryReturnQuery(),
+      }),
+      params: {
+        headers,
+        tags: {
+          name: 'country_returns',
+          country: COUNTRY,
+        },
+      },
+    };
+  }
+
+  if (ONLY_DEPARTMENTS || exclusiveFlags === 0) {
     requests.country_departments = {
       method: 'POST',
       url: GRAPHQL_URL,
@@ -304,7 +396,7 @@ export default function () {
     };
   }
 
-  if (INCLUDE_MODAL && !ONLY_SUMMARY && !ONLY_DEPARTMENTS) {
+  if (INCLUDE_MODAL && exclusiveFlags === 0) {
     requests.country_department_modal = {
       method: 'POST',
       url: GRAPHQL_URL,

@@ -80,6 +80,8 @@ const Statistics = ({
     totalCant, // si quieres usar este total en vez del que calculabas a mano
     filesUrl, // array de archivos/fuentes
     updatedAtStr, // string ya formateado
+    demographicsLoading,
+    returnsLoading,
     mapLoading,
     genderTotals,
     travelConditionTotals,
@@ -225,6 +227,8 @@ const Statistics = ({
             isCompareView: true,
             reports,
             loading,
+            demographicsLoading,
+            returnsLoading,
             mapLoading,
             period: data.period,
             year: data.year,

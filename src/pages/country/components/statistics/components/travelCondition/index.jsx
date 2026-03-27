@@ -22,7 +22,7 @@ export const options = {
 };
 
 const TravelCondition = () => {
-  const { loading, travelConditionTotals, isCompareView } =
+  const { demographicsLoading, travelConditionTotals, isCompareView } =
     useContext(StatisticsContext);
 
   // nombres esperados en tu data: "acompañado" | "no acompañado" | "otros"
@@ -56,7 +56,7 @@ const TravelCondition = () => {
 
   return (
     <Box width='100%' position='relative'>
-      <Loader loading={loading} />
+      <Loader loading={demographicsLoading} />
 
       <Stack justifyContent='center' alignItems='center'>
         <Text fontFamily='Oswald' fontSize='2xl'>

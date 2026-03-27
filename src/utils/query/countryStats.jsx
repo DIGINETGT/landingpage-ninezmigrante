@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import { getFilterByCountry } from './filters';
 import { year as currentYear } from '../year';
 
-export const GET_COUNTRY_SUMMARY_STATS = (
+export const GET_COUNTRY_HEAD_STATS = (
   country,
   period = [1, 12],
   year = currentYear
@@ -26,6 +26,29 @@ export const GET_COUNTRY_SUMMARY_STATS = (
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_COUNTRY_DEMOGRAPHIC_STATS = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
+  query {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
+      data {
+        id
+        attributes {
+          returned {
+            data {
+              id
+              attributes {
                 gender_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
@@ -68,6 +91,29 @@ export const GET_COUNTRY_SUMMARY_STATS = (
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_COUNTRY_RETURN_STATS = (
+  country,
+  period = [1, 12],
+  year = currentYear
+) => gql`
+  query {
+    monthlyReports(${getFilterByCountry(country, period, year)}) {
+      data {
+        id
+        attributes {
+          returned {
+            data {
+              id
+              attributes {
                 return_route_contributions(pagination: { limit: -1 }) {
                   data {
                     attributes {
