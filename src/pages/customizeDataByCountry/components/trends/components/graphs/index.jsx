@@ -34,7 +34,6 @@ import {
   customPeriods,
   customDataTypes,
   customDataChart,
-  datasetLabels,
 } from "./utils";
 
 import {
@@ -84,6 +83,10 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
 
   // DATOS
   const graphData = useGraphData(period, graphType, chartType, countryID);
+  const legendItems =
+    graphData?.datasets?.length > 0
+      ? graphData.datasets.map((dataset) => dataset.label)
+      : [];
 
   const sources = (
     <Stack
@@ -306,12 +309,12 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
               }`}</Text>
             </Stack>
 
-            {graphType.length > 0 && (
+            {graphType.length > 0 && legendItems.length > 0 && (
               <Stack direction="column">
-                {datasetLabels[graphType]?.map((label, index) => (
+                {legendItems.map((label, index) => (
                   <Stack direction="row" alignItems="center" key={label}>
                     <Box
-                      bgColor={itemColors[index]}
+                      bgColor={itemColors[index % itemColors.length]}
                       width="18px"
                       height="18px"
                     />

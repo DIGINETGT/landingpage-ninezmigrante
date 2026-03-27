@@ -10,7 +10,6 @@ import { useEffect } from "react";
  * @param list - "asc" o "desc" o "predeterminado"
  */
 export const sortDepartments = (list, databorders) => {
-  let total = 0;
   const depTotals = databorders.depTotals;
   const data = Object.entries(depTotals ?? {}).sort((a, b) =>
     list === "asc" || list === "default" || list?.length === 0
@@ -19,7 +18,12 @@ export const sortDepartments = (list, databorders) => {
   );
 
   const dataParsed = data.map(([key, total]) => ({
-    id: key,
+    id: key
+      ?.toLowerCase()
+      ?.replaceAll(" ", "_")
+      ?.replaceAll("department", "")
+      ?.normalize("NFD")
+      ?.replace(/[\u0300-\u036f]/g, ""),
     total,
   }));
 

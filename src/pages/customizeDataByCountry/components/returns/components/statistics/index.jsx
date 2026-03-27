@@ -19,38 +19,34 @@ import ModalContentHN from "../../../../../../components/departments/components/
 import { colors } from "../../../../../../utils/theme";
 import { year as currentYear } from "../../../../../../utils/year";
 import { monthNames } from "../../../../../../hooks/fetch";
-import getCountryContent, {
-  getDepartmentData,
-  getDepartmentDataCapital,
-} from "../../../../../../utils/country";
+import getCountryContent from "../../../../../../utils/country";
 import ModalContentSV from "../../../../../../components/departments/components/sv";
-import useReturnedFilteredQuery from "../../../../../../hooks/query";
-import {
-  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT,
-  GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL,
-} from "../../../../../../utils/query/returned";
+import { useQuery } from "@apollo/client";
+import { GET_TOP_DEPARTMENTS_STATS } from "../../../../../../utils/query/customizeStats";
 import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
+import { toISO } from "../../../../../../utils/iso";
 
 const Statistics = ({ returns }) => {
   const { countryID } = useParams();
   const { period, year, list } = returns;
   const containerRef = useRef(null);
+  const iso = toISO(countryID);
 
-  const { data: dataBordersCapital } = useReturnedFilteredQuery({
-    query: GET_RETURNEDS_BY_COUNTRY_FOR_DEPARTMENT_CAPITAL(
-      countryID,
-      period,
-      year
-    ),
-    year,
-    period,
-    country: countryID,
-  });
+  const { data: topDepartmentsData } = useQuery(
+    GET_TOP_DEPARTMENTS_STATS(iso, period, year),
+    {
+      fetchPolicy: "cache-and-network",
+      notifyOnNetworkStatusChange: true,
+      skip: !iso,
+    }
+  );
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const data = sortDepartments(
     list,
-    getDepartmentDataCapital(dataBordersCapital)
+    {
+      depTotals: topDepartmentsData?.topDepartmentsStats?.depTotals ?? {},
+    }
   );
   if (data.length > 5) data.length = 5;
 
