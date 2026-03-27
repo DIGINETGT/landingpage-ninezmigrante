@@ -18,6 +18,10 @@ const START_MONTH = Number(__ENV.START_MONTH || 1);
 const END_MONTH = Number(__ENV.END_MONTH || 12);
 const INCLUDE_MODAL =
   String(__ENV.INCLUDE_MODAL || 'false').toLowerCase() === 'true';
+const ONLY_SUMMARY =
+  String(__ENV.ONLY_SUMMARY || 'false').toLowerCase() === 'true';
+const ONLY_DEPARTMENTS =
+  String(__ENV.ONLY_DEPARTMENTS || 'false').toLowerCase() === 'true';
 const DEPARTMENT_LABEL = String(__ENV.DEPARTMENT_LABEL || 'Guatemala');
 const DEBUG_ERRORS =
   String(__ENV.DEBUG_ERRORS || 'false').toLowerCase() === 'true';
@@ -257,9 +261,17 @@ export const options = {
 };
 
 export default function () {
+  if (ONLY_SUMMARY && ONLY_DEPARTMENTS) {
+    throw new Error(
+      'ONLY_SUMMARY y ONLY_DEPARTMENTS no pueden ser true al mismo tiempo.'
+    );
+  }
+
   const headers = buildHeaders();
-  const requests = {
-    country_summary: {
+  const requests = {};
+
+  if (!ONLY_DEPARTMENTS) {
+    requests.country_summary = {
       method: 'POST',
       url: GRAPHQL_URL,
       body: JSON.stringify({
@@ -272,8 +284,11 @@ export default function () {
           country: COUNTRY,
         },
       },
-    },
-    country_departments: {
+    };
+  }
+
+  if (!ONLY_SUMMARY) {
+    requests.country_departments = {
       method: 'POST',
       url: GRAPHQL_URL,
       body: JSON.stringify({
@@ -286,10 +301,10 @@ export default function () {
           country: COUNTRY,
         },
       },
-    },
-  };
+    };
+  }
 
-  if (INCLUDE_MODAL) {
+  if (INCLUDE_MODAL && !ONLY_SUMMARY && !ONLY_DEPARTMENTS) {
     requests.country_department_modal = {
       method: 'POST',
       url: GRAPHQL_URL,
