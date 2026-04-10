@@ -58,7 +58,7 @@ export default function useCountryStats({
     loading: headLoading,
     error: headError,
   } = useQuery(headQuery, {
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
   });
 

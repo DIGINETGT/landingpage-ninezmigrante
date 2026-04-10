@@ -15,6 +15,8 @@ import {
   Skeleton,
   VisuallyHidden,
   usePrefersReducedMotion,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 
 import GraphFooter from '../../../../components/graphFooter';
@@ -70,6 +72,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
     depTotals,
     depSubDepTotals,
     depSubDepGenderTotals,
+    error,
   } = useCountryStats({ country: countryID, year, period });
 
   // Notifica loading al padre
@@ -266,6 +269,20 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
               grandes.
             </Text>
           </Stack>
+        )}
+
+        {!loading && error && (
+          <Alert
+            status='error'
+            maxWidth='800px'
+            margin='0 auto 32px'
+            borderRadius='md'
+            fontFamily='Montserrat'
+          >
+            <AlertIcon />
+            No fue posible cargar la información para este período. Intenta
+            nuevamente o revisa tu conexión.
+          </Alert>
         )}
 
         <Stack opacity={loading ? 1 : 1} maxWidth='800px' margin='auto'>
