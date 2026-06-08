@@ -328,6 +328,18 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           )}
         </Stack>
 
+        <Text
+          as='h2'
+          maxWidth='800px'
+          margin='24px auto 0'
+          textAlign='center'
+          fontFamily='Oswald'
+          fontSize={{ base: '3xl', md: '4xl' }}
+          lineHeight='1'
+        >
+          NIÑEZ Y ADOLESCENCIA MIGRANTE RETORNADA
+        </Text>
+
         <Divider
           maxWidth='800px'
           borderWidth='1px'
