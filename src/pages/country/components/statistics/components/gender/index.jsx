@@ -20,24 +20,35 @@ const Gender = () => {
 
   const tfemale = genderTotals?.['femenino'] ?? 0;
   const tmale = genderTotals?.['masculino'] ?? 0;
-  const iconHeight = isCompareView ? '42px' : '50px';
-  const valueFontSize = isCompareView ? '3xl' : '4xl';
-  const spacing = isCompareView ? '12px' : '16px';
+  const iconHeight = isCompareView ? '42px' : '44px';
+  const valueFontSize = isCompareView ? '3xl' : '3xl';
+  const spacing = isCompareView ? '12px' : '10px';
 
   return (
-    <Box width='100%' position='relative'>
+    <Box
+      width='100%'
+      position='relative'
+      display='flex'
+      justifyContent={{ base: 'center', md: 'flex-start' }}
+    >
       <Loader loading={demographicsLoading} />
 
-      <Stack justifyContent='center' alignItems='center' spacing={spacing}>
-        <Text fontFamily='Oswald' fontSize='2xl'>
+      <Stack
+        justifyContent='flex-start'
+        alignItems={{ base: 'center', md: 'flex-start' }}
+        spacing={spacing}
+        maxWidth='220px'
+        width='100%'
+      >
+        <Text fontFamily='Oswald' fontSize='2xl' textAlign='left' width='100%'>
           Sexo
         </Text>
 
         <Stack
-          gap={spacing}
+          gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent='center'
+          justifyContent='flex-start'
         >
           <Tooltip
             color='white'
@@ -57,10 +68,10 @@ const Gender = () => {
         </Stack>
 
         <Stack
-          gap={spacing}
+          gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent='center'
+          justifyContent='flex-start'
         >
           <Tooltip
             color='white'

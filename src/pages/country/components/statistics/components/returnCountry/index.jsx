@@ -2,15 +2,13 @@
 import React, { useContext, useMemo } from 'react';
 
 // CHAKRA UI
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Stack, Text, Wrap, WrapItem } from '@chakra-ui/react';
 
 // CONTEXTO GLOBAL (inyectado por <Statistics />)
 import StatisticsContext from '../../context';
 import { formatInt } from '../../../../../../utils/numbers';
 
 // (opcional) si usas colores por país
-import { colors } from '../../../../../../utils/theme';
-
 const ReturnCountry = () => {
   const {
     returnsLoading,
@@ -26,27 +24,46 @@ const ReturnCountry = () => {
     return e.sort((a, b) => Number(b[1] || 0) - Number(a[1] || 0));
   }, [returnCountryTotals]);
 
+  const positiveEntries = useMemo(
+    () => entries.filter(([, total]) => Number(total || 0) > 0),
+    [entries]
+  );
+
+  const mapMaxWidth = useMemo(() => {
+    if (positiveEntries.length <= 3) return 130;
+    if (positiveEntries.length <= 5) return 88;
+    return 68;
+  }, [positiveEntries.length]);
+
   // Estados de carga / vacío
   if (returnsLoading) {
     return (
       <Box width='100%'>
-        <Text fontFamily='Oswald' fontSize='2xl' textAlign='center'>
+        <Text
+          fontFamily='Oswald'
+          fontSize='2xl'
+          textAlign={{ base: 'center', md: 'right' }}
+        >
           Cargando país de retorno...
         </Text>
       </Box>
     );
   }
 
-  if (!entries.length) {
+  if (!positiveEntries.length) {
     return (
       <Box width='100%'>
-        <Text fontFamily='Oswald' fontSize='2xl' textAlign='center'>
+        <Text
+          fontFamily='Oswald'
+          fontSize='2xl'
+          textAlign={{ base: 'center', md: 'right' }}
+        >
           País de retorno
         </Text>
         <Text
           fontFamily='Oswald'
           fontSize='md'
-          textAlign='center'
+          textAlign={{ base: 'center', md: 'right' }}
           opacity={0.7}
         >
           Sin datos para el rango seleccionado
@@ -56,71 +73,90 @@ const ReturnCountry = () => {
   }
 
   return (
-    <Box width='100%'>
-      <Stack justifyContent='center' alignItems='center' marginBottom='24px'>
-        <Text fontFamily='Oswald' fontSize='2xl'>
-          País de retorno
-        </Text>
-      </Stack>
+    <Box
+      width='100%'
+      height='100%'
+      display='flex'
+      flexDirection='column'
+      alignItems={{ base: 'center', md: 'stretch' }}
+      justifyContent='flex-start'
+    >
+      <Box width='100%' maxWidth='none' height='100%'>
+        <Stack
+          justifyContent='flex-start'
+          alignItems={{ base: 'center', md: 'flex-end' }}
+          marginBottom='24px'
+        >
+          <Text fontFamily='Oswald' fontSize='2xl'>
+            País de retorno
+          </Text>
+        </Stack>
 
-      <Stack
-        spacing={isCompareView ? '18px' : '24px'}
-        justifyContent='center'
-        direction={{ base: 'column', md: 'row' }}
-        alignItems={{ base: 'center', md: 'flex-end' }}
-        flexWrap={isCompareView ? 'wrap' : 'nowrap'}
-        rowGap={isCompareView ? '24px' : '0'}
-      >
-        {entries.map(([country, total], idx) =>
-          total > 0 ? (
-            <Stack
-              key={`${country}-${idx}`}
-              gap={isCompareView ? '16px' : '24px'}
-              direction='column'
-              alignItems='center'
-              justifyContent='center'
-              minWidth={isCompareView ? '110px' : 'unset'}
-            >
-              {/* Mapa/imagen del país (si existe) */}
-              <img
-                src={returnCountryMaps?.[country] || ''}
-                alt={country}
-                width={isCompareView ? '110' : '130'}
-                height='100%'
-                style={{ objectFit: 'contain' }}
-                onError={(e) => {
-                  // fallback si la imagen falla
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-
-              <Stack
-                spacing='8px'
-                direction='column'
-                alignItems='center'
-                justifyContent='space-between'
+        <Wrap
+          spacing={{ base: '24px', md: isCompareView ? '18px' : '20px' }}
+          justify={{ base: 'center', md: 'flex-end' }}
+          width='100%'
+          align='flex-start'
+        >
+          {positiveEntries.map(([country, total], idx) =>
+            total > 0 ? (
+              <WrapItem
+                key={`${country}-${idx}`}
+                flex='0 0 auto'
+                justifyContent='center'
               >
-                <Text
-                  fontFamily='Oswald'
-                  fontSize={isCompareView ? 'sm' : 'md'}
-                  lineHeight='1'
-                  textAlign='center'
+                <Stack
+                  gap={isCompareView ? '10px' : '12px'}
+                  direction='column'
+                  alignItems='center'
+                  justifyContent='flex-start'
+                  minWidth={0}
                 >
-                  {country}
-                </Text>
-                <Text
-                  fontFamily='Oswald'
-                  fontSize={isCompareView ? '2xl' : '3xl'}
-                  lineHeight='1'
-                  textAlign='center'
-                >
-                  {formatInt(total)}
-                </Text>
-              </Stack>
-            </Stack>
-          ) : null
-        )}
-      </Stack>
+                  <img
+                    src={returnCountryMaps?.[country] || ''}
+                    alt={country}
+                    width={String(mapMaxWidth)}
+                    height='auto'
+                    style={{
+                      objectFit: 'contain',
+                      maxWidth: `${mapMaxWidth}px`,
+                      height: 'auto',
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+
+                  <Stack
+                    spacing='4px'
+                    direction='column'
+                    alignItems='center'
+                    justifyContent='flex-start'
+                  >
+                    <Text
+                      fontFamily='Oswald'
+                      fontSize={isCompareView ? 'sm' : 'md'}
+                      lineHeight='1'
+                      textAlign='center'
+                      textTransform='uppercase'
+                    >
+                      {country}
+                    </Text>
+                    <Text
+                      fontFamily='Oswald'
+                      fontSize={isCompareView ? '2xl' : '3xl'}
+                      lineHeight='1'
+                      textAlign='center'
+                    >
+                      {formatInt(total)}
+                    </Text>
+                  </Stack>
+                </Stack>
+              </WrapItem>
+            ) : null
+          )}
+        </Wrap>
+      </Box>
     </Box>
   );
 };

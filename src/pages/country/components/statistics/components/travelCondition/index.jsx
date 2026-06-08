@@ -49,50 +49,56 @@ const TravelCondition = () => {
     ],
   };
 
-  const chartWidth = isCompareView ? '180px' : '200px';
+  const chartWidth = isCompareView ? '180px' : '230px';
   const labelFontSize = isCompareView ? 'sm' : 'md';
   const valueFontSize = isCompareView ? 'xl' : '2xl';
-  const legendSpacing = isCompareView ? '2px' : '-8px';
+  const legendSpacing = isCompareView ? '2px' : '2px';
 
   return (
     <Box width='100%' position='relative'>
       <Loader loading={demographicsLoading} />
 
-      <Stack justifyContent='center' alignItems='center'>
+      <Stack justifyContent='flex-start' alignItems='center' spacing='12px'>
         <Text fontFamily='Oswald' fontSize='2xl'>
           Condición de viaje
         </Text>
 
-        <Box maxWidth={chartWidth}>
+        <Box width='100%' maxWidth={chartWidth}>
           <Pie data={data} options={options} />
         </Box>
 
-        <Stack direction='column' spacing={legendSpacing}>
-          <Stack direction='row' alignItems='center'>
-            <Box bgColor='blue.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              No Acompañados
-            </Text>
+        <Stack direction='column' spacing={legendSpacing} width='100%' maxWidth='300px'>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Stack direction='row' alignItems='center' spacing='10px'>
+              <Box bgColor='blue.700' width='18px' height='18px' />
+              <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
+                No Acompañados
+              </Text>
+            </Stack>
             <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(NO_ACD)}
             </Text>
           </Stack>
 
-          <Stack direction='row' alignItems='center'>
-            <Box bgColor='green.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              Acompañados
-            </Text>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Stack direction='row' alignItems='center' spacing='10px'>
+              <Box bgColor='green.700' width='18px' height='18px' />
+              <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
+                Acompañados
+              </Text>
+            </Stack>
             <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(ACD)}
             </Text>
           </Stack>
 
-          <Stack direction='row' alignItems='center'>
-            <Box bgColor='yellow.700' width='18px' height='18px' />
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              Otros
-            </Text>
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Stack direction='row' alignItems='center' spacing='10px'>
+              <Box bgColor='yellow.700' width='18px' height='18px' />
+              <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
+                Otros
+              </Text>
+            </Stack>
             <Text fontFamily='Oswald' fontSize={valueFontSize}>
               {formatInt(UN_REGISTRED)}
             </Text>

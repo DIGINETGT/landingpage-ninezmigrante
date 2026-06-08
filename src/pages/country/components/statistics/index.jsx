@@ -17,6 +17,8 @@ import {
   usePrefersReducedMotion,
   Alert,
   AlertIcon,
+  Grid,
+  SimpleGrid,
 } from '@chakra-ui/react';
 
 import GraphFooter from '../../../../components/graphFooter';
@@ -114,7 +116,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   }, [reports]);
 
   const sources = (
-    <Box direction='column' margin='auto' maxWidth='800px'>
+    <Box direction='column' margin='auto' maxWidth='920px'>
       {getCountryContent({
         countryID,
         content: {
@@ -192,7 +194,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
       >
         <Stack
           margin='auto'
-          maxWidth='800px'
+          maxWidth='920px'
           alignItems='center'
           justifyContent='space-between'
           gap={{ base: '24px', md: '40px' }}
@@ -256,7 +258,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
             gap='40px'
             width='100%'
             margin='auto'
-            maxWidth='800px'
+            maxWidth='920px'
             alignItems='center'
           >
             <Text
@@ -274,7 +276,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
         {!loading && error && (
           <Alert
             status='error'
-            maxWidth='800px'
+            maxWidth='920px'
             margin='0 auto 32px'
             borderRadius='md'
             fontFamily='Montserrat'
@@ -285,7 +287,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           </Alert>
         )}
 
-        <Stack opacity={loading ? 1 : 1} maxWidth='800px' margin='auto'>
+        <Stack opacity={loading ? 1 : 1} maxWidth='920px' margin='auto'>
           {loading ? (
             <Stack gap='40px' mb={{ base: '40px', md: '60px' }}>
               <Skeleton height='220px' borderRadius='lg' />
@@ -296,41 +298,44 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
             </Stack>
           ) : (
             <>
-              <Stack
-                gap='40px'
+              <SimpleGrid
                 width='100%'
                 margin='auto'
-                maxWidth='800px'
-                justifyContent='space-between'
-                direction={{ base: 'column', md: 'row' }}
+                maxWidth='920px'
+                columns={{ base: 1, md: 3 }}
+                alignItems='start'
+                spacing={{ base: '32px', md: '48px' }}
                 marginBottom={{ base: '40px', md: '60px' }}
-                alignItems={{ base: 'center', md: 'flex-start' }}
               >
                 <Gender period={period} year={year} />
                 <TravelCondition period={period} year={year} />
                 <AgeRanges period={period} year={year} />
-              </Stack>
+              </SimpleGrid>
 
-              <Stack
+              <Grid
                 width='100%'
                 margin='auto'
-                maxWidth='800px'
-                justifyContent='center'
-                gap={{ base: '40px', md: '40px' }}
-                direction={{ base: 'column', md: 'row' }}
+                maxWidth='920px'
+                templateColumns={{
+                  base: '1fr',
+                  md: 'minmax(0, 20%) minmax(0, 80%)',
+                  lg: 'minmax(0, 20%) minmax(0, 80%)',
+                }}
+                alignItems='stretch'
+                columnGap={{ base: '32px', md: '36px', lg: '40px' }}
+                rowGap={{ base: '32px', md: '0' }}
                 marginBottom={{ base: '40px', md: '60px' }}
-                alignItems={{ base: 'center', md: 'flex-start' }}
               >
                 <ReturnPath period={period} year={year} />
                 <ReturnCountry period={period} year={year} />
-              </Stack>
+              </Grid>
             </>
           )}
         </Stack>
 
         <Text
           as='h2'
-          maxWidth='800px'
+          maxWidth='920px'
           margin='24px auto 0'
           textAlign='center'
           fontFamily='Oswald'
@@ -341,7 +346,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
         </Text>
 
         <Divider
-          maxWidth='800px'
+          maxWidth='920px'
           borderWidth='1px'
           margin='40px auto'
           borderColor='black'
@@ -350,7 +355,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           spacing={8}
           width='100%'
           margin='auto'
-          maxWidth='800px'
+          maxWidth='920px'
           alignItems='center'
           marginBottom='40px'
           justifyContent='center'

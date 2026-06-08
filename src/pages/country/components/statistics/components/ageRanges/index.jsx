@@ -67,29 +67,33 @@ const AgeRanges = ({ disableFirstAge = false }) => {
     ],
   };
 
-  const chartWidth = isCompareView ? '260px' : '300px';
+  const chartWidth = isCompareView ? '260px' : '360px';
   const labelFontSize = isCompareView ? 'sm' : 'md';
   const valueFontSize = isCompareView ? 'xl' : '2xl';
-  const itemMinWidth = isCompareView ? 140 : 160;
+  const itemMinWidth = isCompareView ? 140 : 190;
+  const legendColumns = isCompareView
+    ? 'repeat(2, minmax(0, 1fr))'
+    : '1fr';
 
   return (
     <Box width='100%' position='relative'>
       <Loader loading={demographicsLoading} />
 
-      <Stack justifyContent='center' alignItems='center' spacing='12px'>
+      <Stack justifyContent='flex-start' alignItems='center' spacing='12px'>
         <Text fontFamily='Oswald' fontSize='2xl'>
           Rangos etarios
         </Text>
 
-        <Box width={chartWidth}>
+        <Box width='100%' maxWidth={chartWidth}>
           <Bar options={options} data={data} />
         </Box>
 
         <Grid
-          templateColumns='1fr 1fr'
-          templateRows='1fr 1fr'
-          columnGap={4}
-          rowGap={2}
+          width='100%'
+          maxWidth='520px'
+          templateColumns={legendColumns}
+          columnGap={6}
+          rowGap={3}
         >
           {chartColors.map((color, index) => (
             <Stack
@@ -99,13 +103,25 @@ const AgeRanges = ({ disableFirstAge = false }) => {
               key={`age_${index}`}
               minWidth={itemMinWidth}
             >
-              <Stack direction='row' alignItems='center'>
+              <Stack
+                direction='row'
+                alignItems='center'
+                spacing='10px'
+                flex='1'
+                minWidth='0'
+              >
                 <Box bgColor={color} width='18px' height='18px' />
                 <Text fontFamily='Oswald' fontSize={labelFontSize}>
                   {agesLabels[index]}
                 </Text>
               </Stack>
-              <Text fontFamily='Oswald' fontSize={valueFontSize}>
+              <Text
+                fontFamily='Oswald'
+                fontSize={valueFontSize}
+                minWidth='72px'
+                textAlign='right'
+                flexShrink={0}
+              >
                 {formatInt(totals[index]) || 0}
               </Text>
             </Stack>

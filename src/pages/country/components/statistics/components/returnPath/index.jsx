@@ -51,114 +51,159 @@ const ReturnPath = () => {
     };
   }, [returnRouteTotals]);
 
-  const iconHeight = isCompareView ? '42px' : '50px';
-  const iconGap = isCompareView ? '16px' : '24px';
-  const itemSpacing = isCompareView ? '18px' : '24px';
-  const labelFontSize = isCompareView ? 'sm' : 'md';
+  const iconHeight = isCompareView ? '42px' : '46px';
+  const itemSpacing = isCompareView ? '16px' : '18px';
+  const labelFontSize = isCompareView ? 'sm' : 'sm';
   const valueFontSize = isCompareView ? '2xl' : '3xl';
 
   return (
-    <Box width='100%' position='relative'>
+    <Box
+      width='100%'
+      height='100%'
+      position='relative'
+      display='flex'
+      justifyContent={{ base: 'center', md: 'flex-start' }}
+      alignItems='flex-start'
+    >
       <Loader loading={returnsLoading} />
 
-      <Stack justifyContent='center' alignItems='center' spacing={itemSpacing}>
-        <Text fontFamily='Oswald' fontSize='2xl'>
+      <Stack
+        justifyContent='flex-start'
+        alignItems={{ base: 'center', md: 'flex-start' }}
+        spacing={itemSpacing}
+        width='100%'
+        height='100%'
+        maxWidth='180px'
+      >
+        <Text
+          fontFamily='Oswald'
+          fontSize='2xl'
+          textAlign={{ base: 'center', md: 'left' }}
+          width='100%'
+          lineHeight='1'
+        >
           Vía de retorno
         </Text>
 
-        <Stack
-          gap={iconGap}
-          direction='row'
-          alignItems='center'
-          justifyContent='center'
-        >
-          <Image src={Airplane} height={iconHeight} />
-          <Stack
-            spacing='8px'
-            direction='column'
+        <Stack width='100%' spacing={isCompareView ? '14px' : '18px'} alignItems='stretch'>
+          <Box
+            width='100%'
+            display='grid'
+            gridTemplateColumns='52px 1fr'
+            columnGap='14px'
             alignItems='center'
-            justifyContent='center'
           >
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              Aérea
-            </Text>
-            <Text fontFamily='Oswald' fontSize={valueFontSize} lineHeight='1'>
-              {formatInt(totalAerea)}
-            </Text>
-          </Stack>
-        </Stack>
-
-        <Stack
-          gap={iconGap}
-          direction='row'
-          alignItems='center'
-          justifyContent='center'
-        >
-          <Image src={Bus} height={iconHeight} />
-          <Stack
-            spacing='8px'
-            direction='column'
-            alignItems='center'
-            justifyContent='center'
-          >
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              Terrestre
-            </Text>
-            <Text fontFamily='Oswald' fontSize={valueFontSize} lineHeight='1'>
-              {formatInt(totalTerrestre)}
-            </Text>
-          </Stack>
-        </Stack>
-
-        <Stack
-          gap={iconGap}
-          direction='row'
-          alignItems='center'
-          justifyContent='center'
-        >
-          <Image src={Ship} height={iconHeight} />
-          <Stack
-            spacing='8px'
-            direction='column'
-            alignItems='center'
-            justifyContent='center'
-          >
-            <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-              Marítimo
-            </Text>
-            <Text fontFamily='Oswald' fontSize={valueFontSize} lineHeight='1'>
-              {formatInt(totalMaritimo)}
-            </Text>
-          </Stack>
-        </Stack>
-
-        {totalOtros > 0 && (
-          <Stack
-            gap={iconGap}
-            direction='row'
-            alignItems='center'
-            justifyContent='center'
-          >
-            <Icon
-              as={QuestionOutlineIcon}
-              boxSize={isCompareView ? 10 : 12}
-              color='gray.800'
-            />
-            <Stack
-              spacing='8px'
-              direction='column'
-              alignItems='center'
-              justifyContent='center'
-            >
-              <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
-                Otros
+            <Image src={Airplane} height={iconHeight} />
+            <Stack spacing='4px' alignItems='flex-start'>
+              <Text
+                fontFamily='Oswald'
+                fontSize={labelFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                Aérea
               </Text>
-              <Text fontFamily='Oswald' fontSize={valueFontSize} lineHeight='1'>
-                {formatInt(totalOtros)}
+              <Text
+                fontFamily='Oswald'
+                fontSize={valueFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                {formatInt(totalAerea)}
               </Text>
             </Stack>
-          </Stack>
-        )}
+          </Box>
+
+          <Box
+            width='100%'
+            display='grid'
+            gridTemplateColumns='52px 1fr'
+            columnGap='14px'
+            alignItems='center'
+          >
+            <Image src={Bus} height={iconHeight} />
+            <Stack spacing='4px' alignItems='flex-start'>
+              <Text
+                fontFamily='Oswald'
+                fontSize={labelFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                Terrestre
+              </Text>
+              <Text
+                fontFamily='Oswald'
+                fontSize={valueFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                {formatInt(totalTerrestre)}
+              </Text>
+            </Stack>
+          </Box>
+
+          <Box
+            width='100%'
+            display='grid'
+            gridTemplateColumns='52px 1fr'
+            columnGap='14px'
+            alignItems='center'
+          >
+            <Image src={Ship} height={iconHeight} />
+            <Stack spacing='4px' alignItems='flex-start'>
+              <Text
+                fontFamily='Oswald'
+                fontSize={labelFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                Marítimo
+              </Text>
+              <Text
+                fontFamily='Oswald'
+                fontSize={valueFontSize}
+                lineHeight='1'
+                textAlign='left'
+              >
+                {formatInt(totalMaritimo)}
+              </Text>
+            </Stack>
+          </Box>
+
+          {totalOtros > 0 && (
+            <Box
+              width='100%'
+              display='grid'
+              gridTemplateColumns='52px 1fr'
+              columnGap='14px'
+              alignItems='center'
+            >
+              <Icon
+                as={QuestionOutlineIcon}
+                boxSize={isCompareView ? 10 : 12}
+                color='gray.800'
+              />
+              <Stack spacing='4px' alignItems='flex-start'>
+                <Text
+                  fontFamily='Oswald'
+                  fontSize={labelFontSize}
+                  lineHeight='1'
+                  textAlign='left'
+                >
+                  Otros
+                </Text>
+                <Text
+                  fontFamily='Oswald'
+                  fontSize={valueFontSize}
+                  lineHeight='1'
+                  textAlign='left'
+                >
+                  {formatInt(totalOtros)}
+                </Text>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
       </Stack>
     </Box>
   );
