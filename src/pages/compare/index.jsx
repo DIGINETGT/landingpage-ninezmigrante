@@ -58,13 +58,6 @@ const slugify = (value = '') =>
     .replace(/^-+|-+$/g, '');
 
 const formatInt = (value = 0) => new Intl.NumberFormat('es-GT').format(value);
-const formatGapPercentage = (value) => {
-  if (value === null || Number.isNaN(value)) return 'Porcentaje no disponible';
-
-  const roundedValue = value >= 100 ? Math.round(value) : value.toFixed(1);
-  return `${roundedValue}% por encima de la menor selección`;
-};
-
 const formatUpdateValue = (value) => {
   const time = Date.parse(value || '');
   return Number.isNaN(time) ? null : time;
@@ -225,6 +218,19 @@ const ComparePage = () => {
       ? (gapSummary / lowestSummary.total) * 100
       : null;
 
+  const comparisonChartData = [...readySummaries]
+    .sort((a, b) => b.total - a.total)
+    .map((item, index, array) => {
+      const maxValue = array[0]?.total || 0;
+      const widthPercent = maxValue > 0 ? (item.total / maxValue) * 100 : 0;
+      return {
+        ...item,
+        widthPercent,
+        isHighest: index === 0,
+        isLowest: index === array.length - 1,
+      };
+    });
+
   const selectedCountries = [1, 2, 3]
     .slice(0, Number(countValue))
     .map((key) => options[key]?.country)
@@ -331,7 +337,7 @@ const ComparePage = () => {
                 </Text>
 
                 <SimpleGrid
-                  columns={{ base: 1, md: Math.min(selectionSummaries.length + 2, 5) }}
+                  columns={{ base: 1, md: Math.min(selectionSummaries.length, 3) }}
                   spacing='16px'
                 >
                   {selectionSummaries.map((item) => (
@@ -366,71 +372,83 @@ const ComparePage = () => {
                       </Text>
                     </Box>
                   ))}
-
-                  <Box
-                    border='1px solid #ddd'
-                    borderRadius='16px'
-                    padding='16px'
-                    bgColor='rgba(117,184,65,0.08)'
-                    minHeight='180px'
-                  >
-                    <Text
-                      fontFamily='Montserrat Medium'
-                      fontSize='sm'
-                      color='gray.600'
-                      marginBottom='8px'
-                    >
-                      Mayor valor
-                    </Text>
-                    <Text
-                      fontFamily='Oswald'
-                      fontSize='lg'
-                      lineHeight='1.2'
-                      marginBottom='12px'
-                    >
-                      {highestSummary?.label || 'Calculando...'}
-                    </Text>
-                    <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
-                      {highestSummary ? formatInt(highestSummary.total) : '...'}
-                    </Text>
-                  </Box>
-
-                  <Box
-                    border='1px solid #ddd'
-                    borderRadius='16px'
-                    padding='16px'
-                    bgColor='rgba(51,132,169,0.08)'
-                    minHeight='180px'
-                  >
-                    <Text
-                      fontFamily='Montserrat Medium'
-                      fontSize='sm'
-                      color='gray.600'
-                      marginBottom='8px'
-                    >
-                      Brecha
-                    </Text>
-                    <Text
-                      fontFamily='Oswald'
-                      fontSize='lg'
-                      lineHeight='1.2'
-                      marginBottom='12px'
-                    >
-                      Diferencia entre la mayor y la menor selección
-                    </Text>
-                    <Text fontFamily='Oswald' fontSize='4xl' lineHeight='1'>
-                      {gapSummary === null ? '...' : formatInt(gapSummary)}
-                    </Text>
-                    <Text
-                      marginTop='8px'
-                      fontFamily='Montserrat Medium'
-                      fontSize='sm'
-                      color='gray.700'
-                    >
-                      {formatGapPercentage(gapPercentage)}
-                    </Text>
-                  </Box>
                 </SimpleGrid>
+
+                {comparisonChartData.length >= 2 && (
+                  <Box
+                    border='1px solid #ddd'
+                    borderRadius='16px'
+                    padding={{ base: '18px', md: '22px' }}
+                    bgColor='rgba(0,0,0,0.02)'
+                  >
+                    <Stack spacing='14px'>
+                      <Stack
+                        direction={{ base: 'column', md: 'row' }}
+                        justifyContent='space-between'
+                        alignItems={{ base: 'flex-start', md: 'center' }}
+                        spacing='6px'
+                      >
+                        <Text fontFamily='Oswald' fontSize={{ base: 'xl', md: '2xl' }}>
+                          Comparación visual
+                        </Text>
+                        <Text
+                          fontFamily='Montserrat Medium'
+                          fontSize='sm'
+                          color='gray.700'
+                        >
+                          {gapSummary === null
+                            ? 'Calculando brecha...'
+                            : `Brecha mayor-menor: ${formatInt(gapSummary)}${
+                                gapPercentage !== null
+                                  ? ` (${Math.round(gapPercentage)}%)`
+                                  : ''
+                              }`}
+                        </Text>
+                      </Stack>
+
+                      <Stack spacing='12px'>
+                        {comparisonChartData.map((item) => (
+                          <Stack key={item.key} spacing='6px'>
+                            <Stack
+                              direction={{ base: 'column', md: 'row' }}
+                              justifyContent='space-between'
+                              alignItems={{ base: 'flex-start', md: 'center' }}
+                              spacing='4px'
+                            >
+                              <Text fontFamily='Oswald' fontSize='lg' lineHeight='1.2'>
+                                {item.label}
+                              </Text>
+                              <Text fontFamily='Oswald' fontSize='2xl' lineHeight='1'>
+                                {formatInt(item.total)}
+                              </Text>
+                            </Stack>
+
+                            <Box
+                              width='100%'
+                              height='16px'
+                              bgColor='gray.100'
+                              borderRadius='999px'
+                              overflow='hidden'
+                            >
+                              <Box
+                                height='100%'
+                                width={`${Math.max(item.widthPercent, 6)}%`}
+                                bgColor={
+                                  item.isHighest
+                                    ? '#75b841'
+                                    : item.isLowest
+                                    ? '#a0aec0'
+                                    : '#3384a9'
+                                }
+                                borderRadius='999px'
+                              />
+                            </Box>
+                          </Stack>
+                        ))}
+                      </Stack>
+                    </Stack>
+                  </Box>
+                )}
               </Stack>
             </Box>
           )}
