@@ -1,5 +1,5 @@
 // REACT
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 // CHAKRA UI
 import { Box, Stack, Text, Wrap, WrapItem } from '@chakra-ui/react';
@@ -7,6 +7,43 @@ import { Box, Stack, Text, Wrap, WrapItem } from '@chakra-ui/react';
 // CONTEXTO GLOBAL (inyectado por <Statistics />)
 import StatisticsContext from '../../context';
 import { formatInt } from '../../../../../../utils/numbers';
+import UsaMap from '../../../../../../assets/usa.png';
+import MexicoMap from '../../../../../../assets/mexico.png';
+import GuatemalaMap from '../../../../../../assets/guatemala.png';
+import HondurasMap from '../../../../../../assets/honduras.png';
+import ElSalvadorMap from '../../../../../../assets/salvador.png';
+import BeliceMap from '../../../../../../assets/belice.svg';
+import NicaraguaMap from '../../../../../../assets/nicaragua.svg';
+import CostaRicaMap from '../../../../../../assets/MapaCostaRica.svg';
+
+const normalizeCountryName = (value = '') =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const COUNTRY_LABELS = {
+  belize: 'Belice',
+};
+
+const formatCountryLabel = (value = '') => {
+  const normalizedValue = normalizeCountryName(value);
+  return COUNTRY_LABELS[normalizedValue] || value;
+};
+
+const LOCAL_RETURN_COUNTRY_MAPS = {
+  'estados unidos': UsaMap,
+  mexico: MexicoMap,
+  guatemala: GuatemalaMap,
+  honduras: HondurasMap,
+  'el salvador': ElSalvadorMap,
+  belice: BeliceMap,
+  belize: BeliceMap,
+  nicaragua: NicaraguaMap,
+  'costa rica': CostaRicaMap,
+};
 
 // (opcional) si usas colores por país
 const ReturnCountry = () => {
@@ -16,6 +53,7 @@ const ReturnCountry = () => {
     returnCountryTotals, // { 'Estados Unidos': 123, 'México': 45, ... }
     returnCountryMaps, // { 'Estados Unidos': 'https://...', ... }
   } = useContext(StatisticsContext);
+  const [capturableMapUrls, setCapturableMapUrls] = useState({});
 
   // Lista ordenada desc por total
   const entries = useMemo(() => {
@@ -28,6 +66,128 @@ const ReturnCountry = () => {
     () => entries.filter(([, total]) => Number(total || 0) > 0),
     [entries]
   );
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadImage = (src) =>
+      new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+
+    const toBlackSvgDataUrl = async (blob) => {
+      const svgText = await blob.text();
+      const normalizedSvg = svgText
+        .replace(/fill="(?!none)[^"]*"/gi, 'fill="#000000"')
+        .replace(/stroke="(?!none)[^"]*"/gi, 'stroke="#000000"');
+
+      const svgWithStyle = normalizedSvg.includes('<style')
+        ? normalizedSvg
+        : normalizedSvg.replace(
+            /<svg([^>]*)>/i,
+            '<svg$1><style>*{fill:#000000!important;stroke:#000000!important;}</style>'
+          );
+
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+        svgWithStyle
+      )}`;
+    };
+
+    const toBlackSilhouetteDataUrl = async (blob) => {
+      const objectUrl = URL.createObjectURL(blob);
+
+      try {
+        const image = await loadImage(objectUrl);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        canvas.width = image.naturalWidth || image.width;
+        canvas.height = image.naturalHeight || image.height;
+
+        ctx.drawImage(image, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const { data } = imageData;
+
+        for (let idx = 0; idx < data.length; idx += 4) {
+          if (data[idx + 3] > 0) {
+            data[idx] = 0;
+            data[idx + 1] = 0;
+            data[idx + 2] = 0;
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        return canvas.toDataURL('image/png');
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+
+    const preloadMaps = async () => {
+      const nextUrls = {};
+
+      await Promise.all(
+        positiveEntries.map(async ([country]) => {
+          const normalizedCountry = normalizeCountryName(country);
+          const localMapUrl = LOCAL_RETURN_COUNTRY_MAPS[normalizedCountry];
+          const sourceUrl = localMapUrl || returnCountryMaps?.[country];
+          if (!sourceUrl) return;
+
+          try {
+            const response = await fetch(sourceUrl, {
+              mode: 'cors',
+              credentials: 'omit',
+            });
+
+            if (!response.ok) return;
+
+            const blob = await response.blob();
+            const isSvg =
+              blob.type.includes('svg') ||
+              sourceUrl.toLowerCase().includes('.svg');
+            const dataUrl = isSvg
+              ? await toBlackSvgDataUrl(blob)
+              : await toBlackSilhouetteDataUrl(blob);
+            nextUrls[country] = dataUrl;
+          } catch (error) {
+            try {
+              if (localMapUrl) {
+                const fallbackResponse = await fetch(localMapUrl);
+                if (fallbackResponse.ok) {
+                  const fallbackBlob = await fallbackResponse.blob();
+                  const isFallbackSvg =
+                    fallbackBlob.type.includes('svg') ||
+                    localMapUrl.toLowerCase().includes('.svg');
+                  nextUrls[country] = isFallbackSvg
+                    ? await toBlackSvgDataUrl(fallbackBlob)
+                    : await toBlackSilhouetteDataUrl(fallbackBlob);
+                  return;
+                }
+              }
+            } catch (fallbackError) {
+              // no-op
+            }
+
+            nextUrls[country] = sourceUrl;
+          }
+        })
+      );
+
+      if (!isCancelled) {
+        setCapturableMapUrls(nextUrls);
+      }
+    };
+
+    preloadMaps();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [positiveEntries, returnCountryMaps]);
 
   const mapMaxWidth = useMemo(() => {
     if (positiveEntries.length === 1) return 168;
@@ -159,8 +319,13 @@ const ReturnCountry = () => {
                   minWidth={0}
                 >
                   <img
-                    src={returnCountryMaps?.[country] || ''}
-                    alt={country}
+                    src={
+                      capturableMapUrls?.[country] ||
+                      LOCAL_RETURN_COUNTRY_MAPS[normalizeCountryName(country)] ||
+                      returnCountryMaps?.[country] ||
+                      ''
+                    }
+                    alt={formatCountryLabel(country)}
                     width={String(mapMaxWidth)}
                     height='auto'
                     style={{
@@ -194,7 +359,7 @@ const ReturnCountry = () => {
                       textAlign='center'
                       textTransform='uppercase'
                     >
-                      {country}
+                      {formatCountryLabel(country)}
                     </Text>
                     <Text
                       fontFamily='Oswald'
