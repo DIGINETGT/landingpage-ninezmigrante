@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 // CHAKRA UI
-import { Box, Stack, Text, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 
 // CONTEXTO GLOBAL (inyectado por <Statistics />)
 import StatisticsContext from '../../context';
@@ -197,12 +197,23 @@ const ReturnCountry = () => {
     return 68;
   }, [positiveEntries.length]);
 
+  const mapStageHeight = useMemo(() => {
+    if (positiveEntries.length === 1) return '128px';
+    if (positiveEntries.length === 2) return '116px';
+    if (positiveEntries.length === 3) return '92px';
+    if (positiveEntries.length <= 5) return '74px';
+    return '62px';
+  }, [positiveEntries.length]);
+
+  const labelMinHeight = useMemo(() => {
+    if (positiveEntries.length <= 3) return '48px';
+    return '42px';
+  }, [positiveEntries.length]);
+
   const isHighlightedLayout = positiveEntries.length > 0 && positiveEntries.length <= 3;
 
   const contentMaxWidth = useMemo(() => {
     if (positiveEntries.length === 1) return '240px';
-    if (positiveEntries.length === 2) return '340px';
-    if (positiveEntries.length === 3) return '440px';
     return '100%';
   }, [positiveEntries.length]);
 
@@ -281,8 +292,13 @@ const ReturnCountry = () => {
           </Text>
         </Stack>
 
-        <Wrap
-          spacing={{
+        <Box
+          width='100%'
+          display='flex'
+          flexWrap={{ base: 'wrap', md: 'nowrap' }}
+          justifyContent={{ base: 'center', md: 'flex-end' }}
+          alignItems='flex-start'
+          gap={{
             base: isHighlightedLayout ? highlightedSpacing.base : '24px',
             md: isHighlightedLayout
               ? highlightedSpacing.md
@@ -290,16 +306,12 @@ const ReturnCountry = () => {
               ? '18px'
               : '20px',
           }}
-          justify={{ base: 'center', md: 'flex-end' }}
-          width='100%'
-          align='flex-start'
         >
           {positiveEntries.map(([country, total], idx) =>
             total > 0 ? (
-              <WrapItem
+              <Box
                 key={`${country}-${idx}`}
                 flex='0 0 auto'
-                justifyContent='center'
               >
                 <Stack
                   gap={
@@ -318,49 +330,66 @@ const ReturnCountry = () => {
                   justifyContent='flex-start'
                   minWidth={0}
                 >
-                  <img
-                    src={
-                      capturableMapUrls?.[country] ||
-                      LOCAL_RETURN_COUNTRY_MAPS[normalizeCountryName(country)] ||
-                      returnCountryMaps?.[country] ||
-                      ''
-                    }
-                    alt={formatCountryLabel(country)}
-                    width={String(mapMaxWidth)}
-                    height='auto'
-                    style={{
-                      objectFit: 'contain',
-                      maxWidth: `${mapMaxWidth}px`,
-                      height: 'auto',
-                    }}
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
+                  <Box
+                    width='100%'
+                    height={mapStageHeight}
+                    display='flex'
+                    alignItems='flex-end'
+                    justifyContent='center'
+                  >
+                    <img
+                      src={
+                        capturableMapUrls?.[country] ||
+                        LOCAL_RETURN_COUNTRY_MAPS[normalizeCountryName(country)] ||
+                        returnCountryMaps?.[country] ||
+                        ''
+                      }
+                      alt={formatCountryLabel(country)}
+                      width={String(mapMaxWidth)}
+                      height='auto'
+                      style={{
+                        objectFit: 'contain',
+                        maxWidth: `${mapMaxWidth}px`,
+                        height: 'auto',
+                      }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </Box>
 
                   <Stack
                     spacing={isHighlightedLayout ? '6px' : '4px'}
                     direction='column'
                     alignItems='center'
                     justifyContent='flex-start'
+                    width='100%'
                   >
-                    <Text
-                      fontFamily='Oswald'
-                      fontSize={
-                        isHighlightedLayout
-                          ? isCompareView
-                            ? 'md'
-                            : 'lg'
-                          : isCompareView
-                          ? 'sm'
-                          : 'md'
-                      }
-                      lineHeight='1'
-                      textAlign='center'
-                      textTransform='uppercase'
+                    <Box
+                      minHeight={labelMinHeight}
+                      width='100%'
+                      display='flex'
+                      alignItems='center'
+                      justifyContent='center'
                     >
-                      {formatCountryLabel(country)}
-                    </Text>
+                      <Text
+                        fontFamily='Oswald'
+                        fontSize={
+                          isHighlightedLayout
+                            ? isCompareView
+                              ? 'md'
+                              : 'lg'
+                            : isCompareView
+                            ? 'sm'
+                            : 'md'
+                        }
+                        lineHeight='1.05'
+                        textAlign='center'
+                        textTransform='uppercase'
+                      >
+                        {formatCountryLabel(country)}
+                      </Text>
+                    </Box>
                     <Text
                       fontFamily='Oswald'
                       fontSize={
@@ -379,10 +408,10 @@ const ReturnCountry = () => {
                     </Text>
                   </Stack>
                 </Stack>
-              </WrapItem>
+              </Box>
             ) : null
           )}
-        </Wrap>
+        </Box>
       </Box>
     </Box>
   );
