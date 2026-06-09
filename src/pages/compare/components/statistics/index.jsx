@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from 'react';
-import { Stack, Text } from '@chakra-ui/react';
+import { Box, Divider, Stack, Text } from '@chakra-ui/react';
 
 import Gender from '../../../country/components/statistics/components/gender';
 import AgeRanges from '../../../country/components/statistics/components/ageRanges';
@@ -58,6 +58,19 @@ const normalizeDepartmentTotals = (rawTotals = {}) => {
   return normalizedTotals;
 };
 
+const compareSurfaceStyles = {
+  bg: '#f7f8fa',
+  border: '1px solid #d7dee7',
+  borderRadius: '24px',
+  boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
+};
+
+const compareSectionStyles = {
+  bg: 'rgba(255,255,255,0.78)',
+  border: '1px solid #e3e8ee',
+  borderRadius: '20px',
+};
+
 const Statistics = ({
   data,
   id,
@@ -109,113 +122,139 @@ const Statistics = ({
   }
 
   return (
-    <Stack spacing='40px'>
-      <Stack
-        spacing='16px'
-        alignItems='center'
-        justifyContent='center'
-        direction={{ base: 'column', md: 'column' }}
-      >
-        <Text
-          lineHeight='1'
-          fontFamily='Oswald'
-          textAlign='center'
-          fontSize={{ base: '4xl', md: '5xl' }}
-        >
-          {countryTitleByCode[data.country] ?? ''}
-        </Text>
-
-        <Text
-          lineHeight='1'
-          fontSize='2xl'
-          textAlign='center'
-          fontFamily='Oswald'
-        >
-          Total de niñez migrante retornada
-        </Text>
-
-        <Text
-          fontSize='xl'
-          lineHeight='1'
-          fontWeight='600'
-          fontFamily='Times'
-          textAlign={{ base: 'center', md: 'left' }}
-        >
-          {`${monthNames[data.period?.[0]]} - ${
-            monthNames[data.period?.[1]]
-          } - ${data.year ?? ''}`}
-        </Text>
-
-        <Text
-          fontFamily='Oswald'
-          fontSize={{ base: '6xl', md: '7xl' }}
-          lineHeight='1'
-        >
-          {formatInt(totalAmount ?? 0)}
-        </Text>
-      </Stack>
-
-      {loading ? (
+    <Box
+      width='100%'
+      maxWidth={{ base: '100%', md: '520px', '2xl': '540px' }}
+      margin='0 auto'
+      padding={{ base: '22px 16px', md: '24px 18px' }}
+      {...compareSurfaceStyles}
+    >
+      <Stack spacing='24px'>
         <Stack
-          gap='40px'
-          width='100%'
-          margin='auto'
-          maxWidth='800px'
-          justifyContent='space-between'
-          direction={{ base: 'column', md: 'row' }}
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          spacing='16px'
+          alignItems='center'
+          justifyContent='center'
+          direction={{ base: 'column', md: 'column' }}
         >
           <Text
-            width='100%'
-            fontSize='3xl'
-            fontWeight='bold'
+            lineHeight='1'
+            fontFamily='Oswald'
+            textAlign='center'
+            fontSize={{ base: '4xl', md: '5xl' }}
+          >
+            {countryTitleByCode[data.country] ?? ''}
+          </Text>
+
+          <Text
+            lineHeight='1'
+            fontSize='2xl'
+            textAlign='center'
+            fontFamily='Oswald'
+          >
+            Total de niñez migrante retornada
+          </Text>
+
+          <Text
+            fontSize='xl'
+            lineHeight='1'
+            fontWeight='600'
+            fontFamily='Times'
             textAlign='center'
           >
-            Generando gráficas ...
+            {`${monthNames[data.period?.[0]]} - ${
+              monthNames[data.period?.[1]]
+            } - ${data.year ?? ''}`}
+          </Text>
+
+          <Text
+            fontFamily='Oswald'
+            fontSize={{ base: '6xl', md: '7xl' }}
+            lineHeight='1'
+          >
+            {formatInt(totalAmount ?? 0)}
           </Text>
         </Stack>
-      ) : (
-        // 🔹 Provider con el MISMO shape que en la vista país
-        <StatisticsContext.Provider
-          value={{
-            ...parentStatsCtx,
-            isCompareView: true,
-            reports: [],
-            loading,
-            demographicsLoading: loading,
-            returnsLoading: loading,
-            mapLoading: loading,
-            period: data.period,
-            year: data.year,
-            countryID, // <- IMPORTANTE para HeatMap
-            totalCant,
-            filesUrl,
-            updatedAtStr: selectionStats?.updatedAtStr || '',
-            genderTotals,
-            travelConditionTotals,
-            ageGroupTotals,
-            returnRouteTotals,
-            returnCountryTotals,
-            returnCountryMaps,
-            depTotals,
-            depSubDepTotals,
-            depSubDepGenderTotals,
-          }}
-        >
-          <Gender />
-          <TravelCondition />
-          <AgeRanges />
-          <ReturnPath />
-          <ReturnCountry />
-          <HeatMap
-            period={data.period}
-            year={data.year}
-            files={filesUrl} // usa los del hook (misma forma que en país)
-            periodId={periodId} // valor (no el setter)
-          />
-        </StatisticsContext.Provider>
-      )}
-    </Stack>
+
+        <Divider borderColor='blackAlpha.200' />
+
+        {loading ? (
+          <Stack
+            padding='24px'
+            {...compareSectionStyles}
+            gap='24px'
+            width='100%'
+            justifyContent='space-between'
+            direction={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'center', md: 'flex-start' }}
+          >
+            <Text
+              width='100%'
+              fontSize='3xl'
+              fontWeight='bold'
+              textAlign='center'
+            >
+              Generando gráficas ...
+            </Text>
+          </Stack>
+        ) : (
+          <StatisticsContext.Provider
+            value={{
+              ...parentStatsCtx,
+              isCompareView: true,
+              reports: [],
+              loading,
+              demographicsLoading: loading,
+              returnsLoading: loading,
+              mapLoading: loading,
+              period: data.period,
+              year: data.year,
+              countryID,
+              totalCant,
+              filesUrl,
+              updatedAtStr: selectionStats?.updatedAtStr || '',
+              genderTotals,
+              travelConditionTotals,
+              ageGroupTotals,
+              returnRouteTotals,
+              returnCountryTotals,
+              returnCountryMaps,
+              depTotals,
+              depSubDepTotals,
+              depSubDepGenderTotals,
+            }}
+          >
+            <Stack spacing='20px'>
+              <Box padding={{ base: '16px', md: '18px' }} {...compareSectionStyles}>
+                <Stack spacing='24px'>
+                  <Gender />
+                  <Divider borderColor='blackAlpha.100' />
+                  <TravelCondition />
+                  <Divider borderColor='blackAlpha.100' />
+                  <AgeRanges />
+                </Stack>
+              </Box>
+
+              <Box padding={{ base: '16px', md: '18px' }} {...compareSectionStyles}>
+                <Stack spacing='22px'>
+                  <ReturnPath />
+                  <Divider borderColor='blackAlpha.100' />
+                  <ReturnCountry />
+                </Stack>
+              </Box>
+
+              <Box padding={{ base: '16px', md: '18px' }} {...compareSectionStyles}>
+                <HeatMap
+                  period={data.period}
+                  year={data.year}
+                  files={filesUrl}
+                  periodId={periodId}
+                />
+              </Box>
+            </Stack>
+          </StatisticsContext.Provider>
+        )}
+      </Stack>
+    </Box>
   );
 };
 

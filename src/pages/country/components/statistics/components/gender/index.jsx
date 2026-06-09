@@ -29,13 +29,15 @@ const Gender = () => {
       width='100%'
       position='relative'
       display='flex'
-      justifyContent={{ base: 'center', md: 'flex-start' }}
+      justifyContent={
+        isCompareView ? 'center' : { base: 'center', md: 'flex-start' }
+      }
     >
       <Loader loading={demographicsLoading} />
 
       <Stack
         justifyContent='flex-start'
-        alignItems={{ base: 'center', md: 'flex-start' }}
+        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
         spacing={spacing}
         maxWidth='200px'
         width='100%'
@@ -43,7 +45,7 @@ const Gender = () => {
         <Text
           fontFamily='Oswald'
           fontSize='2xl'
-          textAlign={{ base: 'center', md: 'left' }}
+          textAlign={isCompareView ? 'center' : { base: 'center', md: 'left' }}
           width='100%'
         >
           Sexo
@@ -53,7 +55,7 @@ const Gender = () => {
           gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent='flex-start'
+          justifyContent={isCompareView ? 'center' : 'flex-start'}
         >
           <Tooltip
             color='white'
@@ -76,7 +78,7 @@ const Gender = () => {
           gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent='flex-start'
+          justifyContent={isCompareView ? 'center' : 'flex-start'}
         >
           <Tooltip
             color='white'

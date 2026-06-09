@@ -94,16 +94,28 @@ const AgeRanges = ({ disableFirstAge = false }) => {
     isCompareView && visibleEntries.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr';
 
   return (
-    <Box width='100%' position='relative' display='flex' justifyContent={{ base: 'center', md: 'flex-end' }}>
+    <Box
+      width='100%'
+      position='relative'
+      display='flex'
+      justifyContent={
+        isCompareView ? 'center' : { base: 'center', md: 'flex-end' }
+      }
+    >
       <Loader loading={demographicsLoading} />
 
-      <Stack justifyContent='flex-start' alignItems={{ base: 'center', md: 'flex-end' }} spacing='12px' width='100%'>
+      <Stack
+        justifyContent='flex-start'
+        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-end' }}
+        spacing='12px'
+        width='100%'
+      >
         <Text
           fontFamily='Oswald'
           fontSize='2xl'
-          textAlign={{ base: 'center', md: 'right' }}
-          alignSelf={{ base: 'center', md: 'stretch' }}
-          width={{ base: 'auto', md: '100%' }}
+          textAlign={isCompareView ? 'center' : { base: 'center', md: 'right' }}
+          alignSelf={isCompareView ? 'center' : { base: 'center', md: 'stretch' }}
+          width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
         >
           Rangos etarios
         </Text>

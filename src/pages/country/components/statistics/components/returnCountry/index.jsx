@@ -192,27 +192,45 @@ const ReturnCountry = () => {
   }, [positiveEntries, returnCountryMaps]);
 
   const mapMaxWidth = useMemo(() => {
+    if (isCompareView) {
+      if (positiveEntries.length === 1) return 132;
+      if (positiveEntries.length === 2) return 108;
+      if (positiveEntries.length === 3) return 92;
+      if (positiveEntries.length === 4) return 76;
+      return 60;
+    }
+
     if (positiveEntries.length === 1) return 168;
     if (positiveEntries.length === 2) return 148;
     if (positiveEntries.length === 3) return 108;
     if (positiveEntries.length <= 5) return 88;
     return 68;
-  }, [positiveEntries.length]);
+  }, [isCompareView, positiveEntries.length]);
 
   const mapStageHeight = useMemo(() => {
+    if (isCompareView) {
+      if (positiveEntries.length === 1) return '112px';
+      if (positiveEntries.length === 2) return '92px';
+      if (positiveEntries.length === 3) return '82px';
+      if (positiveEntries.length === 4) return '70px';
+      return '56px';
+    }
+
     if (positiveEntries.length === 1) return '128px';
     if (positiveEntries.length === 2) return '116px';
     if (positiveEntries.length === 3) return '92px';
     if (positiveEntries.length <= 5) return '74px';
     return '62px';
-  }, [positiveEntries.length]);
+  }, [isCompareView, positiveEntries.length]);
 
   const labelMinHeight = useMemo(() => {
     if (positiveEntries.length <= 3) return '48px';
     return '42px';
   }, [positiveEntries.length]);
 
-  const shouldWrapDesktop = positiveEntries.length > 7;
+  const shouldWrapDesktop = isCompareView
+    ? positiveEntries.length > 4
+    : positiveEntries.length > 7;
 
   const isHighlightedLayout = positiveEntries.length > 0 && positiveEntries.length <= 3;
 
@@ -282,32 +300,38 @@ const ReturnCountry = () => {
     >
       <Box
         width='100%'
-        maxWidth={isHighlightedLayout ? contentMaxWidth : 'none'}
-        marginLeft='auto'
+        maxWidth={isCompareView ? '100%' : isHighlightedLayout ? contentMaxWidth : 'none'}
+        marginLeft={isCompareView ? '0' : 'auto'}
         height='100%'
+        overflow='hidden'
       >
-        <Stack
-          justifyContent='flex-start'
-          alignItems={{ base: 'center', md: 'flex-end' }}
-          marginBottom={isHighlightedLayout ? titleSpacing : '24px'}
-        >
-          <Text fontFamily='Oswald' fontSize='2xl'>
-            País de retorno
-          </Text>
+      <Stack
+        justifyContent='flex-start'
+        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-end' }}
+        marginBottom={isHighlightedLayout ? titleSpacing : '24px'}
+      >
+        <Text fontFamily='Oswald' fontSize='2xl'>
+          País de retorno
+        </Text>
         </Stack>
 
         <Box
           width='100%'
           display='flex'
-          flexWrap={{ base: 'wrap', md: shouldWrapDesktop ? 'wrap' : 'nowrap' }}
-          justifyContent={{ base: 'center', md: 'flex-end' }}
+          flexWrap={{
+            base: 'wrap',
+            md: shouldWrapDesktop ? 'wrap' : 'nowrap',
+          }}
+          justifyContent={
+            isCompareView ? 'center' : { base: 'center', md: 'flex-end' }
+          }
           alignItems='flex-start'
           gap={{
             base: isHighlightedLayout ? highlightedSpacing.base : '24px',
             md: isHighlightedLayout
               ? highlightedSpacing.md
               : isCompareView
-              ? '18px'
+              ? '14px'
               : '20px',
           }}
         >
@@ -316,6 +340,18 @@ const ReturnCountry = () => {
               <Box
                 key={`${country}-${idx}`}
                 flex='0 0 auto'
+                width='auto'
+                maxWidth={
+                  isCompareView
+                    ? positiveEntries.length <= 2
+                      ? '148px'
+                      : positiveEntries.length === 3
+                      ? '116px'
+                      : positiveEntries.length === 4
+                      ? '96px'
+                      : '88px'
+                    : undefined
+                }
               >
                 <Stack
                   gap={

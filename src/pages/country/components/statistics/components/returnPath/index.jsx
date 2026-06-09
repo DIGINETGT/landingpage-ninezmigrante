@@ -62,14 +62,16 @@ const ReturnPath = () => {
       height='100%'
       position='relative'
       display='flex'
-      justifyContent={{ base: 'center', md: 'flex-start' }}
+      justifyContent={
+        isCompareView ? 'center' : { base: 'center', md: 'flex-start' }
+      }
       alignItems='flex-start'
     >
       <Loader loading={returnsLoading} />
 
       <Stack
         justifyContent='flex-start'
-        alignItems={{ base: 'center', md: 'flex-start' }}
+        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
         spacing={itemSpacing}
         width='100%'
         height='100%'
@@ -78,7 +80,7 @@ const ReturnPath = () => {
         <Text
           fontFamily='Oswald'
           fontSize='2xl'
-          textAlign={{ base: 'center', md: 'left' }}
+          textAlign={isCompareView ? 'center' : { base: 'center', md: 'left' }}
           width='100%'
           lineHeight='1'
         >
@@ -91,8 +93,10 @@ const ReturnPath = () => {
           alignItems='stretch'
         >
           <Box
-            width={{ base: 'fit-content', md: '100%' }}
-            margin={{ base: '0 auto', md: '0' }}
+            width={
+              isCompareView ? 'fit-content' : { base: 'fit-content', md: '100%' }
+            }
+            margin={isCompareView ? '0 auto' : { base: '0 auto', md: '0' }}
             display='grid'
             gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
             columnGap={{ base: '8px', md: '14px' }}
@@ -102,9 +106,9 @@ const ReturnPath = () => {
             <Stack
               direction={{ base: 'row', md: 'column' }}
               spacing={{ base: '8px', md: '4px' }}
-              alignItems={{ base: 'center', md: 'flex-start' }}
-              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
-              width={{ base: 'auto', md: '100%' }}
+              alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
+              justifyContent='flex-start'
+              width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
             >
               <Text
                 fontFamily='Oswald'
@@ -126,8 +130,10 @@ const ReturnPath = () => {
           </Box>
 
           <Box
-            width={{ base: 'fit-content', md: '100%' }}
-            margin={{ base: '0 auto', md: '0' }}
+            width={
+              isCompareView ? 'fit-content' : { base: 'fit-content', md: '100%' }
+            }
+            margin={isCompareView ? '0 auto' : { base: '0 auto', md: '0' }}
             display='grid'
             gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
             columnGap={{ base: '8px', md: '14px' }}
@@ -137,9 +143,9 @@ const ReturnPath = () => {
             <Stack
               direction={{ base: 'row', md: 'column' }}
               spacing={{ base: '8px', md: '4px' }}
-              alignItems={{ base: 'center', md: 'flex-start' }}
-              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
-              width={{ base: 'auto', md: '100%' }}
+              alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
+              justifyContent='flex-start'
+              width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
             >
               <Text
                 fontFamily='Oswald'
@@ -161,8 +167,10 @@ const ReturnPath = () => {
           </Box>
 
           <Box
-            width={{ base: 'fit-content', md: '100%' }}
-            margin={{ base: '0 auto', md: '0' }}
+            width={
+              isCompareView ? 'fit-content' : { base: 'fit-content', md: '100%' }
+            }
+            margin={isCompareView ? '0 auto' : { base: '0 auto', md: '0' }}
             display='grid'
             gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
             columnGap={{ base: '8px', md: '14px' }}
@@ -172,9 +180,9 @@ const ReturnPath = () => {
             <Stack
               direction={{ base: 'row', md: 'column' }}
               spacing={{ base: '8px', md: '4px' }}
-              alignItems={{ base: 'center', md: 'flex-start' }}
-              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
-              width={{ base: 'auto', md: '100%' }}
+              alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
+              justifyContent='flex-start'
+              width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
             >
               <Text
                 fontFamily='Oswald'
@@ -197,8 +205,10 @@ const ReturnPath = () => {
 
           {totalOtros > 0 && (
             <Box
-              width={{ base: 'fit-content', md: '100%' }}
-              margin={{ base: '0 auto', md: '0' }}
+              width={
+                isCompareView ? 'fit-content' : { base: 'fit-content', md: '100%' }
+              }
+              margin={isCompareView ? '0 auto' : { base: '0 auto', md: '0' }}
               display='grid'
               gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
               columnGap={{ base: '8px', md: '14px' }}
@@ -212,9 +222,9 @@ const ReturnPath = () => {
               <Stack
                 direction={{ base: 'row', md: 'column' }}
                 spacing={{ base: '8px', md: '4px' }}
-                alignItems={{ base: 'center', md: 'flex-start' }}
-                justifyContent={{ base: 'flex-start', md: 'flex-start' }}
-                width={{ base: 'auto', md: '100%' }}
+                alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
+                justifyContent='flex-start'
+                width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
               >
                 <Text
                   fontFamily='Oswald'
