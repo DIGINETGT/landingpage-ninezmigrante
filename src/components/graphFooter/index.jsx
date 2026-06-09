@@ -8,6 +8,8 @@ import LogoNinezMigrante from "../../assets/LogoNinezMigrante.png";
 import LogoCoiproden from "../../assets/LogoCoiproden.png";
 import LogoPAMI from "../../assets/LogoPAMI.png";
 import LogoKnh from "../../assets/LogoKnh.png";
+import LogoGMIES from "../../assets/LogoGMIES.png";
+import LogoRROCM from "../../assets/LogoRROCM.png";
 
 const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
   const isCompact = responsive || compact;
@@ -39,10 +41,10 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
 
         <Box
           display="grid"
-          gridTemplateColumns="repeat(5, minmax(0, 1fr))"
+          gridTemplateColumns="repeat(7, minmax(0, 1fr))"
           alignItems="center"
           width="100%"
-          columnGap={fullWidth ? "12px" : "10px"}
+          columnGap={fullWidth ? "10px" : "8px"}
         >
           <Box display="flex" justifyContent="center" alignItems="center">
             <Link to="/" _hover={{ textDecoration: "none" }}>
@@ -87,6 +89,18 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           <Box display="flex" justifyContent="center" alignItems="center">
             <a href="https://pami-guatemala.org/" target="_blank">
               <Image src={LogoPAMI} h="50px" objectFit="contain" />
+            </a>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://gmies.org" target="_blank">
+              <Image src={LogoGMIES} h="38px" objectFit="contain" />
+            </a>
+          </Box>
+
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <a href="https://rrocm.net" target="_blank">
+              <Image src={LogoRROCM} h="38px" objectFit="contain" />
             </a>
           </Box>
         </Box>
@@ -169,16 +183,18 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
           marginBottom="40px"
         >
           <Stack
-            gap={isCompact ? "12px" : "30px"}
+            gap={isCompact ? "10px" : "22px"}
             alignItems={"center"}
             direction={{ base: "column", md: "row" }}
+            flexWrap="wrap"
+            justifyContent="center"
           >
             <a href="https://www.kindernothilfe.org/" target="_blank">
               <Image
                 src={LogoKnh}
                 maxH={isCompact ? "56px" : "unset"}
-                maxW={isCompact ? "170px" : "250px"}
-                minWidth={isCompact ? "unset" : "250px"}
+                maxW={isCompact ? "170px" : "220px"}
+                minWidth={isCompact ? "unset" : "220px"}
                 objectFit="contain"
               />
             </a>
@@ -186,8 +202,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
               <Image
                 src={LogoProyectoBinacional}
                 maxH={isCompact ? "44px" : "unset"}
-                maxWidth={isCompact ? "72px" : "80px"}
-                minWidth={isCompact ? "unset" : "80px"}
+                maxWidth={isCompact ? "72px" : "76px"}
+                minWidth={isCompact ? "unset" : "76px"}
                 objectFit="contain"
               />
             </a>
@@ -195,8 +211,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
               <Image
                 src={LogoCoiproden}
                 maxH={isCompact ? "72px" : "unset"}
-                maxW={isCompact ? "180px" : "unset"}
-                minWidth={isCompact ? "unset" : "200px"}
+                maxW={isCompact ? "180px" : "170px"}
+                minWidth={isCompact ? "unset" : "170px"}
                 objectFit="contain"
               />
             </a>
@@ -204,8 +220,26 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
               <Image
                 src={LogoPAMI}
                 maxH={isCompact ? "74px" : "unset"}
-                maxW={isCompact ? "96px" : "unset"}
-                minWidth={isCompact ? "unset" : "80px"}
+                maxW={isCompact ? "96px" : "90px"}
+                minWidth={isCompact ? "unset" : "90px"}
+                objectFit="contain"
+              />
+            </a>
+            <a href="https://gmies.org" target="_blank">
+              <Image
+                src={LogoGMIES}
+                maxH={isCompact ? "52px" : "unset"}
+                maxW={isCompact ? "92px" : "90px"}
+                minWidth={isCompact ? "unset" : "90px"}
+                objectFit="contain"
+              />
+            </a>
+            <a href="https://rrocm.net" target="_blank">
+              <Image
+                src={LogoRROCM}
+                maxH={isCompact ? "52px" : "unset"}
+                maxW={isCompact ? "92px" : "90px"}
+                minWidth={isCompact ? "unset" : "90px"}
                 objectFit="contain"
               />
             </a>

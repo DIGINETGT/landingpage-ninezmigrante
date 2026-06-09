@@ -12,12 +12,15 @@ import HeatMapSV from './components/sv';
 import HeatMapHN from './components/hn';
 
 import depKey from './utils/depKey'; // 👈 helper de normalización
+import depName from './components/modal/utils';
 import { useHeatColors } from './hooks'; // (no hace fetch)
+import { formatInt } from '../../../../../../utils/numbers';
 import './style.css';
 
 const HeatMap = ({ period, year, periodId, files }) => {
   const {
     countryID, // 'gt' | 'sv' | 'hn'
+    isScreenShotTime,
     depTotals, // { [depNameNorm]: total }
     depSubDepTotals, // { [depNameNorm]: { [muniName]: total } }
     depSubDepGenderTotals, // { [depNameNorm]: { masculino: n, femenino: n, ... } }
@@ -77,6 +80,27 @@ const HeatMap = ({ period, year, periodId, files }) => {
     depSubDepGenderTotals?.[norm] ?? depSubDepGenderTotals?.[modalDep] ?? {};
   const deptTotal = depTotals?.[norm] ?? depTotals?.[modalDep] ?? 0;
 
+  const topDepartments = useMemo(() => {
+    const toReadableDepartment = (key = '') =>
+      depName[key] ||
+      key
+        .split('_')
+        .filter(Boolean)
+        .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+        .join(' ');
+
+    return Object.entries(depTotals || {})
+      .map(([key, total]) => [key, Number(total) || 0])
+      .filter(([, total]) => total > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([key, total]) => ({
+        key,
+        label: toReadableDepartment(key),
+        total,
+      }));
+  }, [depTotals]);
+
   return (
     <HeatMapContext.Provider value={{ colorScales, onClick }}>
       <Box
@@ -124,6 +148,64 @@ const HeatMap = ({ period, year, periodId, files }) => {
             elsalvador: <HeatMapSV />,
           },
         })}
+
+        {isScreenShotTime && topDepartments.length > 0 && (
+          <Box
+            width='100%'
+            maxWidth='400px'
+            marginTop='-8px'
+            background='whiteAlpha.700'
+            border='1px solid'
+            borderColor='blackAlpha.100'
+            borderRadius='lg'
+            padding='10px 14px 12px'
+          >
+            <Text
+              fontFamily='Oswald'
+              fontSize='lg'
+              textAlign='center'
+              textTransform='uppercase'
+              letterSpacing='0.02em'
+              marginBottom='6px'
+            >
+              Top 3 departamentos
+            </Text>
+
+            <Box
+              borderTop='1px solid'
+              borderColor='blackAlpha.100'
+              paddingTop='4px'
+            >
+              {topDepartments.map((department, index) => (
+                <Flex
+                  key={department.key}
+                  justifyContent='space-between'
+                  alignItems='baseline'
+                  gap='12px'
+                  paddingY={index === 0 ? '6px' : '7px'}
+                  borderTop={index === 0 ? 'none' : '1px solid'}
+                  borderColor='blackAlpha.100'
+                >
+                  <Text
+                    fontFamily='Oswald'
+                    fontSize='md'
+                    lineHeight='1.1'
+                  >
+                    {index + 1}. {department.label}
+                  </Text>
+                  <Text
+                    fontFamily='Oswald'
+                    fontSize='lg'
+                    lineHeight='1'
+                    whiteSpace='nowrap'
+                  >
+                    {formatInt(department.total)}
+                  </Text>
+                </Flex>
+              ))}
+            </Box>
+          </Box>
+        )}
 
         {/* Modal con datos ya agregados */}
         <MapModal
