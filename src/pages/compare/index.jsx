@@ -239,7 +239,7 @@ const ComparePage = () => {
           }
 
           if (country === 'hn' || country === 'honduras') {
-            return 'Fuente Honduras: DINAF';
+            return 'Fuente Honduras: SENAF';
           }
 
           return null;

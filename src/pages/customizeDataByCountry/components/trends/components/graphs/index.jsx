@@ -109,7 +109,7 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
           countryID,
           content: {
             guatemala: "Instituto Guatemalteco de Migración -IGM-",
-            honduras: "DINAF",
+            honduras: "SENAF",
           },
         })}
       </Text>

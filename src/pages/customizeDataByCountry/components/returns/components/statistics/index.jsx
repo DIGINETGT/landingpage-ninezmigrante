@@ -71,7 +71,7 @@ const Statistics = ({ returns }) => {
           countryID,
           content: {
             guatemala: "Instituto Guatemalteco de Migración -IGM-",
-            honduras: "DINAF",
+            honduras: "SENAF",
           },
         })}
       </Text>

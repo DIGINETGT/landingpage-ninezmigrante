@@ -37,32 +37,50 @@ const AgeRanges = ({ disableFirstAge = false }) => {
     };
   }, [ageGroupTotals]);
 
-  const labels = ['P. INF', 'NIÑEZ', 'ADOL', 'NR'];
-  let chartColors = [
-    colors.yellow[700],
-    colors.blue[700],
-    colors.green[700],
-    colors.gray[500],
-  ];
-  let agesLabels = [
-    'Primera infancia',
-    'Niñez',
-    'Adolescencia',
-    'No registrado',
-  ];
+  const visibleEntries = useMemo(() => {
+    const baseEntries = [
+      {
+        key: 'primera-infancia',
+        shortLabel: 'P. INF',
+        label: 'Primera infancia',
+        color: colors.yellow[700],
+        value: f1,
+      },
+      {
+        key: 'ninez',
+        shortLabel: 'NIÑEZ',
+        label: 'Niñez',
+        color: colors.blue[700],
+        value: f2,
+      },
+      {
+        key: 'adolescencia',
+        shortLabel: 'ADOL',
+        label: 'Adolescencia',
+        color: colors.green[700],
+        value: f3,
+      },
+      {
+        key: 'no-registrado',
+        shortLabel: 'NR',
+        label: 'No registrado',
+        color: colors.gray[500],
+        value: f4,
+      },
+    ];
 
-  const totals = [f1, f2, f3, f4].slice(disableFirstAge ? 1 : 0);
-  if (disableFirstAge) {
-    chartColors = chartColors.slice(1);
-    agesLabels = agesLabels.slice(1);
-  }
+    const slicedEntries = disableFirstAge ? baseEntries.slice(1) : baseEntries;
+    const filteredEntries = slicedEntries.filter((entry) => Number(entry.value) > 0);
+
+    return filteredEntries.length > 0 ? filteredEntries : slicedEntries;
+  }, [disableFirstAge, f1, f2, f3, f4]);
 
   const data = {
-    labels: disableFirstAge ? labels.slice(1) : labels,
+    labels: visibleEntries.map((entry) => entry.shortLabel),
     datasets: [
       {
-        data: totals,
-        backgroundColor: chartColors,
+        data: visibleEntries.map((entry) => entry.value),
+        backgroundColor: visibleEntries.map((entry) => entry.color),
       },
     ],
   };
@@ -70,17 +88,23 @@ const AgeRanges = ({ disableFirstAge = false }) => {
   const chartWidth = isCompareView ? '260px' : '360px';
   const labelFontSize = isCompareView ? 'sm' : 'md';
   const valueFontSize = isCompareView ? 'xl' : '2xl';
+  const legendSpacing = isCompareView ? '2px' : '2px';
   const itemMinWidth = isCompareView ? 140 : 190;
-  const legendColumns = isCompareView
-    ? 'repeat(2, minmax(0, 1fr))'
-    : '1fr';
+  const legendColumns =
+    isCompareView && visibleEntries.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr';
 
   return (
-    <Box width='100%' position='relative'>
+    <Box width='100%' position='relative' display='flex' justifyContent={{ base: 'center', md: 'flex-end' }}>
       <Loader loading={demographicsLoading} />
 
-      <Stack justifyContent='flex-start' alignItems='center' spacing='12px'>
-        <Text fontFamily='Oswald' fontSize='2xl'>
+      <Stack justifyContent='flex-start' alignItems={{ base: 'center', md: 'flex-end' }} spacing='12px' width='100%'>
+        <Text
+          fontFamily='Oswald'
+          fontSize='2xl'
+          textAlign={{ base: 'center', md: 'right' }}
+          alignSelf={{ base: 'center', md: 'stretch' }}
+          width={{ base: 'auto', md: '100%' }}
+        >
           Rangos etarios
         </Text>
 
@@ -88,45 +112,73 @@ const AgeRanges = ({ disableFirstAge = false }) => {
           <Bar options={options} data={data} />
         </Box>
 
-        <Grid
-          width='100%'
-          maxWidth='520px'
-          templateColumns={legendColumns}
-          columnGap={6}
-          rowGap={3}
-        >
-          {chartColors.map((color, index) => (
-            <Stack
-              direction='row'
-              alignItems='center'
-              justifyContent='space-between'
-              key={`age_${index}`}
-              minWidth={itemMinWidth}
-            >
+        {legendColumns === '1fr' ? (
+          <Stack
+            direction='column'
+            spacing={legendSpacing}
+            width='100%'
+            maxWidth='300px'
+          >
+            {visibleEntries.map((entry) => (
               <Stack
                 direction='row'
                 alignItems='center'
-                spacing='10px'
-                flex='1'
-                minWidth='0'
+                justifyContent='space-between'
+                key={entry.key}
               >
-                <Box bgColor={color} width='18px' height='18px' />
-                <Text fontFamily='Oswald' fontSize={labelFontSize}>
-                  {agesLabels[index]}
+                <Stack direction='row' alignItems='center' spacing='10px'>
+                  <Box bgColor={entry.color} width='18px' height='18px' />
+                  <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
+                    {entry.label}
+                  </Text>
+                </Stack>
+                <Text fontFamily='Oswald' fontSize={valueFontSize}>
+                  {formatInt(entry.value)}
                 </Text>
               </Stack>
-              <Text
-                fontFamily='Oswald'
-                fontSize={valueFontSize}
-                minWidth='72px'
-                textAlign='right'
-                flexShrink={0}
+            ))}
+          </Stack>
+        ) : (
+          <Grid
+            width='100%'
+            maxWidth='520px'
+            templateColumns={legendColumns}
+            columnGap={6}
+            rowGap={3}
+          >
+            {visibleEntries.map((entry) => (
+              <Stack
+                direction='row'
+                alignItems='center'
+                justifyContent='space-between'
+                key={entry.key}
+                minWidth={itemMinWidth}
               >
-                {formatInt(totals[index]) || 0}
-              </Text>
-            </Stack>
-          ))}
-        </Grid>
+                <Stack
+                  direction='row'
+                  alignItems='center'
+                  spacing='10px'
+                  flex='1'
+                  minWidth='0'
+                >
+                  <Box bgColor={entry.color} width='18px' height='18px' />
+                  <Text fontFamily='Oswald' fontSize={labelFontSize} lineHeight='1'>
+                    {entry.label}
+                  </Text>
+                </Stack>
+                <Text
+                  fontFamily='Oswald'
+                  fontSize={valueFontSize}
+                  minWidth='72px'
+                  textAlign='right'
+                  flexShrink={0}
+                >
+                  {formatInt(entry.value)}
+                </Text>
+              </Stack>
+            ))}
+          </Grid>
+        )}
       </Stack>
     </Box>
   );

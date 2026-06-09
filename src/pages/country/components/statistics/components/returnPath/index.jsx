@@ -51,10 +51,10 @@ const ReturnPath = () => {
     };
   }, [returnRouteTotals]);
 
-  const iconHeight = isCompareView ? '42px' : '46px';
+  const iconHeight = isCompareView ? '42px' : { base: '38px', md: '46px' };
   const itemSpacing = isCompareView ? '16px' : '18px';
-  const labelFontSize = isCompareView ? 'sm' : 'sm';
-  const valueFontSize = isCompareView ? '2xl' : '3xl';
+  const labelFontSize = isCompareView ? 'sm' : { base: 'sm', md: 'sm' };
+  const valueFontSize = isCompareView ? '2xl' : { base: '2xl', md: '3xl' };
 
   return (
     <Box
@@ -73,7 +73,7 @@ const ReturnPath = () => {
         spacing={itemSpacing}
         width='100%'
         height='100%'
-        maxWidth='180px'
+        maxWidth={{ base: '260px', md: '180px' }}
       >
         <Text
           fontFamily='Oswald'
@@ -85,16 +85,27 @@ const ReturnPath = () => {
           Vía de retorno
         </Text>
 
-        <Stack width='100%' spacing={isCompareView ? '14px' : '18px'} alignItems='stretch'>
+        <Stack
+          width='100%'
+          spacing={isCompareView ? '14px' : { base: '16px', md: '18px' }}
+          alignItems='stretch'
+        >
           <Box
-            width='100%'
+            width={{ base: 'fit-content', md: '100%' }}
+            margin={{ base: '0 auto', md: '0' }}
             display='grid'
-            gridTemplateColumns='52px 1fr'
-            columnGap='14px'
+            gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
+            columnGap={{ base: '8px', md: '14px' }}
             alignItems='center'
           >
             <Image src={Airplane} height={iconHeight} />
-            <Stack spacing='4px' alignItems='flex-start'>
+            <Stack
+              direction={{ base: 'row', md: 'column' }}
+              spacing={{ base: '8px', md: '4px' }}
+              alignItems={{ base: 'center', md: 'flex-start' }}
+              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
+              width={{ base: 'auto', md: '100%' }}
+            >
               <Text
                 fontFamily='Oswald'
                 fontSize={labelFontSize}
@@ -115,14 +126,21 @@ const ReturnPath = () => {
           </Box>
 
           <Box
-            width='100%'
+            width={{ base: 'fit-content', md: '100%' }}
+            margin={{ base: '0 auto', md: '0' }}
             display='grid'
-            gridTemplateColumns='52px 1fr'
-            columnGap='14px'
+            gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
+            columnGap={{ base: '8px', md: '14px' }}
             alignItems='center'
           >
             <Image src={Bus} height={iconHeight} />
-            <Stack spacing='4px' alignItems='flex-start'>
+            <Stack
+              direction={{ base: 'row', md: 'column' }}
+              spacing={{ base: '8px', md: '4px' }}
+              alignItems={{ base: 'center', md: 'flex-start' }}
+              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
+              width={{ base: 'auto', md: '100%' }}
+            >
               <Text
                 fontFamily='Oswald'
                 fontSize={labelFontSize}
@@ -143,14 +161,21 @@ const ReturnPath = () => {
           </Box>
 
           <Box
-            width='100%'
+            width={{ base: 'fit-content', md: '100%' }}
+            margin={{ base: '0 auto', md: '0' }}
             display='grid'
-            gridTemplateColumns='52px 1fr'
-            columnGap='14px'
+            gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
+            columnGap={{ base: '8px', md: '14px' }}
             alignItems='center'
           >
             <Image src={Ship} height={iconHeight} />
-            <Stack spacing='4px' alignItems='flex-start'>
+            <Stack
+              direction={{ base: 'row', md: 'column' }}
+              spacing={{ base: '8px', md: '4px' }}
+              alignItems={{ base: 'center', md: 'flex-start' }}
+              justifyContent={{ base: 'flex-start', md: 'flex-start' }}
+              width={{ base: 'auto', md: '100%' }}
+            >
               <Text
                 fontFamily='Oswald'
                 fontSize={labelFontSize}
@@ -172,18 +197,25 @@ const ReturnPath = () => {
 
           {totalOtros > 0 && (
             <Box
-              width='100%'
+              width={{ base: 'fit-content', md: '100%' }}
+              margin={{ base: '0 auto', md: '0' }}
               display='grid'
-              gridTemplateColumns='52px 1fr'
-              columnGap='14px'
+              gridTemplateColumns={{ base: '40px auto', md: '52px 1fr' }}
+              columnGap={{ base: '8px', md: '14px' }}
               alignItems='center'
             >
               <Icon
                 as={QuestionOutlineIcon}
-                boxSize={isCompareView ? 10 : 12}
+                boxSize={isCompareView ? 10 : { base: 10, md: 12 }}
                 color='gray.800'
               />
-              <Stack spacing='4px' alignItems='flex-start'>
+              <Stack
+                direction={{ base: 'row', md: 'column' }}
+                spacing={{ base: '8px', md: '4px' }}
+                alignItems={{ base: 'center', md: 'flex-start' }}
+                justifyContent={{ base: 'flex-start', md: 'flex-start' }}
+                width={{ base: 'auto', md: '100%' }}
+              >
                 <Text
                   fontFamily='Oswald'
                   fontSize={labelFontSize}

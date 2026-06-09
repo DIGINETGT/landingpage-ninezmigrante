@@ -37,10 +37,15 @@ const Gender = () => {
         justifyContent='flex-start'
         alignItems={{ base: 'center', md: 'flex-start' }}
         spacing={spacing}
-        maxWidth='220px'
+        maxWidth='200px'
         width='100%'
       >
-        <Text fontFamily='Oswald' fontSize='2xl' textAlign='left' width='100%'>
+        <Text
+          fontFamily='Oswald'
+          fontSize='2xl'
+          textAlign={{ base: 'center', md: 'left' }}
+          width='100%'
+        >
           Sexo
         </Text>
 

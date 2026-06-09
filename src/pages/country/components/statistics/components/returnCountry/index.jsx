@@ -30,9 +30,33 @@ const ReturnCountry = () => {
   );
 
   const mapMaxWidth = useMemo(() => {
-    if (positiveEntries.length <= 3) return 130;
+    if (positiveEntries.length === 1) return 168;
+    if (positiveEntries.length === 2) return 148;
+    if (positiveEntries.length === 3) return 108;
     if (positiveEntries.length <= 5) return 88;
     return 68;
+  }, [positiveEntries.length]);
+
+  const isHighlightedLayout = positiveEntries.length > 0 && positiveEntries.length <= 3;
+
+  const contentMaxWidth = useMemo(() => {
+    if (positiveEntries.length === 1) return '240px';
+    if (positiveEntries.length === 2) return '340px';
+    if (positiveEntries.length === 3) return '440px';
+    return '100%';
+  }, [positiveEntries.length]);
+
+  const highlightedSpacing = useMemo(() => {
+    if (positiveEntries.length === 1) return { base: '20px', md: '20px' };
+    if (positiveEntries.length === 2) return { base: '18px', md: '18px' };
+    return { base: '24px', md: '24px' };
+  }, [positiveEntries.length]);
+
+  const titleSpacing = useMemo(() => {
+    if (positiveEntries.length === 1) return '22px';
+    if (positiveEntries.length === 2) return '16px';
+    if (positiveEntries.length === 3) return '22px';
+    return '24px';
   }, [positiveEntries.length]);
 
   // Estados de carga / vacío
@@ -81,11 +105,16 @@ const ReturnCountry = () => {
       alignItems={{ base: 'center', md: 'stretch' }}
       justifyContent='flex-start'
     >
-      <Box width='100%' maxWidth='none' height='100%'>
+      <Box
+        width='100%'
+        maxWidth={isHighlightedLayout ? contentMaxWidth : 'none'}
+        marginLeft='auto'
+        height='100%'
+      >
         <Stack
           justifyContent='flex-start'
           alignItems={{ base: 'center', md: 'flex-end' }}
-          marginBottom='24px'
+          marginBottom={isHighlightedLayout ? titleSpacing : '24px'}
         >
           <Text fontFamily='Oswald' fontSize='2xl'>
             País de retorno
@@ -93,7 +122,14 @@ const ReturnCountry = () => {
         </Stack>
 
         <Wrap
-          spacing={{ base: '24px', md: isCompareView ? '18px' : '20px' }}
+          spacing={{
+            base: isHighlightedLayout ? highlightedSpacing.base : '24px',
+            md: isHighlightedLayout
+              ? highlightedSpacing.md
+              : isCompareView
+              ? '18px'
+              : '20px',
+          }}
           justify={{ base: 'center', md: 'flex-end' }}
           width='100%'
           align='flex-start'
@@ -106,7 +142,17 @@ const ReturnCountry = () => {
                 justifyContent='center'
               >
                 <Stack
-                  gap={isCompareView ? '10px' : '12px'}
+                  gap={
+                    isHighlightedLayout
+                      ? isCompareView
+                        ? '12px'
+                        : positiveEntries.length === 2
+                        ? '10px'
+                        : '14px'
+                      : isCompareView
+                      ? '10px'
+                      : '12px'
+                  }
                   direction='column'
                   alignItems='center'
                   justifyContent='flex-start'
@@ -128,14 +174,22 @@ const ReturnCountry = () => {
                   />
 
                   <Stack
-                    spacing='4px'
+                    spacing={isHighlightedLayout ? '6px' : '4px'}
                     direction='column'
                     alignItems='center'
                     justifyContent='flex-start'
                   >
                     <Text
                       fontFamily='Oswald'
-                      fontSize={isCompareView ? 'sm' : 'md'}
+                      fontSize={
+                        isHighlightedLayout
+                          ? isCompareView
+                            ? 'md'
+                            : 'lg'
+                          : isCompareView
+                          ? 'sm'
+                          : 'md'
+                      }
                       lineHeight='1'
                       textAlign='center'
                       textTransform='uppercase'
@@ -144,7 +198,15 @@ const ReturnCountry = () => {
                     </Text>
                     <Text
                       fontFamily='Oswald'
-                      fontSize={isCompareView ? '2xl' : '3xl'}
+                      fontSize={
+                        isHighlightedLayout
+                          ? isCompareView
+                            ? '3xl'
+                            : '4xl'
+                          : isCompareView
+                          ? '2xl'
+                          : '3xl'
+                      }
                       lineHeight='1'
                       textAlign='center'
                     >

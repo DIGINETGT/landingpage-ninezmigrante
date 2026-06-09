@@ -137,7 +137,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
               fontFamily='Oswald'
               fontSize={{ base: 'xl', md: '2xl' }}
             >
-              Fuente: Dirección de Niñez, Adolescencia y Familia (DINAF)
+              Fuente: Secretaría de Niñez, Adolescencia y Familia (SENAF)
             </Text>
           ),
           elsalvador: (
@@ -243,11 +243,9 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
             ) : (
               <BigStat
                 value={totalCant}
-                compactFrom={
-                  isScreenShotTime ? Number.POSITIVE_INFINITY : 10_000
-                }
+                compactFrom={Number.POSITIVE_INFINITY}
                 mode='long'
-                showExactHelper
+                showExactHelper={false}
               />
             )}
           </Stack>
@@ -298,19 +296,23 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
             </Stack>
           ) : (
             <>
-              <SimpleGrid
+              <Grid
                 width='100%'
                 margin='auto'
                 maxWidth='920px'
-                columns={{ base: 1, md: 3 }}
+                templateColumns={{
+                  base: '1fr',
+                  md: 'minmax(0, 0.82fr) minmax(0, 1.09fr) minmax(0, 1.09fr)',
+                }}
                 alignItems='start'
-                spacing={{ base: '32px', md: '48px' }}
+                columnGap={{ base: '32px', md: '36px' }}
+                rowGap={{ base: '32px', md: '0' }}
                 marginBottom={{ base: '40px', md: '60px' }}
               >
                 <Gender period={period} year={year} />
                 <TravelCondition period={period} year={year} />
                 <AgeRanges period={period} year={year} />
-              </SimpleGrid>
+              </Grid>
 
               <Grid
                 width='100%'
@@ -339,8 +341,9 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           margin='24px auto 0'
           textAlign='center'
           fontFamily='Oswald'
-          fontSize={{ base: '3xl', md: '4xl' }}
-          lineHeight='1'
+          fontSize={{ base: '2xl', md: '4xl' }}
+          lineHeight={{ base: '1.05', md: '1' }}
+          paddingX={{ base: '8px', md: '0' }}
         >
           NIÑEZ Y ADOLESCENCIA MIGRANTE RETORNADA
         </Text>
