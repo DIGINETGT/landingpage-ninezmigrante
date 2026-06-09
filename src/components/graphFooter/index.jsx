@@ -22,7 +22,7 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
         alignItems="center"
         justifyContent="center"
         width="100%"
-        maxWidth={fullWidth ? "100%" : "800px"}
+        maxWidth={fullWidth ? "100%" : "860px"}
         margin="0 auto"
         px={fullWidth ? "24px" : "0"}
         spacing={4}
@@ -41,25 +41,30 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
 
         <Box
           display="grid"
-          gridTemplateColumns="repeat(7, minmax(0, 1fr))"
+          gridTemplateColumns="1.6fr repeat(6, 1fr)"
           alignItems="center"
           width="100%"
-          columnGap={fullWidth ? "10px" : "8px"}
+          columnGap={fullWidth ? "14px" : "12px"}
         >
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box
+            height="64px"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
             <Link to="/" _hover={{ textDecoration: "none" }}>
               <Stack direction="row" alignItems="center" spacing={2} minW="0">
                 <Image
                   src={LogoNinezMigrante}
-                  h="36px"
-                  w="36px"
-                  minW="36px"
+                  h="40px"
+                  w="40px"
+                  minW="40px"
                   objectFit="contain"
                 />
                 <Text
                   lineHeight={1}
                   fontFamily="Oswald"
-                  fontSize="0.75em"
+                  fontSize="0.8em"
                   whiteSpace="nowrap"
                 >
                   NiñezMigrante.org
@@ -68,39 +73,52 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
             </Link>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box height="64px" display="flex" justifyContent="center" alignItems="center">
             <a href="https://www.kindernothilfe.org/" target="_blank">
-              <Image src={LogoKnh} h="44px" objectFit="contain" />
+              <Image src={LogoKnh} maxW="102px" maxH="48px" objectFit="contain" />
             </a>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box height="64px" display="flex" justifyContent="center" alignItems="center">
             <a href="https://redcoiproden.org/" target="_blank">
-              <Image src={LogoProyectoBinacional} h="40px" objectFit="contain" />
+              <Image src={LogoProyectoBinacional} maxW="68px" maxH="48px" objectFit="contain" />
             </a>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box height="64px" display="flex" justifyContent="center" alignItems="center">
             <a href="https://redcoiproden.org/" target="_blank">
-              <Image src={LogoCoiproden} h="46px" objectFit="contain" />
+              <Image src={LogoCoiproden} maxW="104px" maxH="48px" objectFit="contain" />
             </a>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box height="64px" display="flex" justifyContent="center" alignItems="center">
             <a href="https://pami-guatemala.org/" target="_blank">
-              <Image src={LogoPAMI} h="50px" objectFit="contain" />
+              <Image src={LogoPAMI} maxW="72px" maxH="48px" objectFit="contain" />
             </a>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box height="64px" display="flex" justifyContent="center" alignItems="center">
             <a href="https://gmies.org" target="_blank">
-              <Image src={LogoGMIES} h="38px" objectFit="contain" />
+              <Image src={LogoGMIES} maxW="72px" maxH="38px" objectFit="contain" />
             </a>
           </Box>
 
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box
+            height="64px"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            overflow="visible"
+          >
             <a href="https://rrocm.net" target="_blank">
-              <Image src={LogoRROCM} h="38px" objectFit="contain" />
+              <Image
+                src={LogoRROCM}
+                maxW="92px"
+                maxH="48px"
+                objectFit="contain"
+                transform="scale(1.45)"
+                transformOrigin="center"
+              />
             </a>
           </Box>
         </Box>

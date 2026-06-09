@@ -110,7 +110,7 @@ const HeatMap = ({ period, year, periodId, files }) => {
         alignItems='center'
         flexDirection='column'
         justifyContent='center'
-        maxWidth={{ base: '100%', md: '450px' }}
+        maxWidth={{ base: '100%', md: isScreenShotTime ? '520px' : '450px' }}
       >
         <Text fontFamily='Oswald' fontSize='2xl'>
           Departamento de origen
@@ -152,7 +152,7 @@ const HeatMap = ({ period, year, periodId, files }) => {
         {isScreenShotTime && topDepartments.length > 0 && (
           <Box
             width='100%'
-            maxWidth='400px'
+            maxWidth={isScreenShotTime ? '460px' : '400px'}
             marginTop='-8px'
             background='whiteAlpha.700'
             border='1px solid'

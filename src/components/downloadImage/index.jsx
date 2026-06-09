@@ -124,15 +124,9 @@ const DownloadImage = ({
           }
           await waitForImages(element);
 
-          const captureWidth = Math.ceil(
-            Math.max(element.scrollWidth, element.getBoundingClientRect().width)
-          );
-          const captureHeight = Math.ceil(
-            Math.max(
-              element.scrollHeight,
-              element.getBoundingClientRect().height
-            )
-          );
+          const bounds = element.getBoundingClientRect();
+          const captureWidth = Math.ceil(bounds.width);
+          const captureHeight = Math.ceil(bounds.height);
 
           const html2canvas = (await import('html2canvas')).default;
           const canvas = await html2canvas(element, {
@@ -150,12 +144,10 @@ const DownloadImage = ({
           const pdf = new jsPDF({
             unit: 'pt',
             format: [canvas.width, canvas.height],
+            orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
           });
-          const imgProps = pdf.getImageProperties(data);
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-          pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          pdf.addImage(data, 'JPEG', 0, 0, canvas.width, canvas.height);
           await pdf.save(fileName, { returnPromise: true });
         } finally {
           restoreLayout();

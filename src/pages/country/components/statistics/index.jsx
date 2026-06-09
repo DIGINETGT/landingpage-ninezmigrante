@@ -50,6 +50,13 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const { countryID } = useParams();
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
+  const contentMaxWidth = isScreenShotTime ? '1080px' : '920px';
+  const containerPadding = isScreenShotTime
+    ? { base: '32px 24px', md: '36px 32px 28px' }
+    : { base: '40px 24px', md: '80px 40px' };
+  const sectionGap = isScreenShotTime
+    ? { base: '28px', md: '28px' }
+    : { base: '24px', md: '40px' };
 
   // Ref interna para leer el DOM y exponerla al padre
   const resultsRef = useRef(null);
@@ -116,7 +123,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   }, [reports]);
 
   const sources = (
-    <Box direction='column' margin='auto' maxWidth='920px'>
+    <Box direction='column' margin='auto' maxWidth={contentMaxWidth}>
       {getCountryContent({
         countryID,
         content: {
@@ -186,7 +193,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
       <Box
         id='resultados'
         ref={resultsRef} // 👈 ref DOM interna
-        padding={{ base: '40px 24px', md: '80px 40px' }}
+        padding={containerPadding}
         bgColor={isScreenShotTime ? '#fff' : '#eee'}
         scrollMarginTop={{ base: '80px', md: '112px' }}
         role='region'
@@ -194,12 +201,12 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
       >
         <Stack
           margin='auto'
-          maxWidth='920px'
+          maxWidth={contentMaxWidth}
           alignItems='center'
           justifyContent='space-between'
-          gap={{ base: '24px', md: '40px' }}
+          gap={sectionGap}
           direction={{ base: 'column', md: 'row' }}
-          marginBottom={{ base: '40px', md: '80px' }}
+          marginBottom={isScreenShotTime ? { base: '28px', md: '36px' } : { base: '40px', md: '80px' }}
         >
           <Stack direction='column' spacing='16px'>
             <Text
@@ -256,7 +263,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
             gap='40px'
             width='100%'
             margin='auto'
-            maxWidth='920px'
+            maxWidth={contentMaxWidth}
             alignItems='center'
           >
             <Text
@@ -274,7 +281,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
         {!loading && error && (
           <Alert
             status='error'
-            maxWidth='920px'
+            maxWidth={contentMaxWidth}
             margin='0 auto 32px'
             borderRadius='md'
             fontFamily='Montserrat'
@@ -285,7 +292,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           </Alert>
         )}
 
-        <Stack opacity={loading ? 1 : 1} maxWidth='920px' margin='auto'>
+        <Stack opacity={loading ? 1 : 1} maxWidth={contentMaxWidth} margin='auto'>
           {loading ? (
             <Stack gap='40px' mb={{ base: '40px', md: '60px' }}>
               <Skeleton height='220px' borderRadius='lg' />
@@ -299,15 +306,15 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
               <Grid
                 width='100%'
                 margin='auto'
-                maxWidth='920px'
+                maxWidth={contentMaxWidth}
                 templateColumns={{
                   base: '1fr',
                   md: 'minmax(0, 0.82fr) minmax(0, 1.09fr) minmax(0, 1.09fr)',
                 }}
                 alignItems='start'
-                columnGap={{ base: '32px', md: '36px' }}
+                columnGap={isScreenShotTime ? { base: '32px', md: '44px' } : { base: '32px', md: '36px' }}
                 rowGap={{ base: '32px', md: '0' }}
-                marginBottom={{ base: '40px', md: '60px' }}
+                marginBottom={isScreenShotTime ? { base: '32px', md: '40px' } : { base: '40px', md: '60px' }}
               >
                 <Gender period={period} year={year} />
                 <TravelCondition period={period} year={year} />
@@ -317,16 +324,16 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
               <Grid
                 width='100%'
                 margin='auto'
-                maxWidth='920px'
+                maxWidth={contentMaxWidth}
                 templateColumns={{
                   base: '1fr',
                   md: 'minmax(0, 20%) minmax(0, 80%)',
                   lg: 'minmax(0, 20%) minmax(0, 80%)',
                 }}
                 alignItems='stretch'
-                columnGap={{ base: '32px', md: '36px', lg: '40px' }}
+                columnGap={isScreenShotTime ? { base: '32px', md: '48px', lg: '52px' } : { base: '32px', md: '36px', lg: '40px' }}
                 rowGap={{ base: '32px', md: '0' }}
-                marginBottom={{ base: '40px', md: '60px' }}
+                marginBottom={isScreenShotTime ? { base: '32px', md: '40px' } : { base: '40px', md: '60px' }}
               >
                 <ReturnPath period={period} year={year} />
                 <ReturnCountry period={period} year={year} />
@@ -337,7 +344,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
 
         <Text
           as='h2'
-          maxWidth='920px'
+          maxWidth={contentMaxWidth}
           margin='24px auto 0'
           textAlign='center'
           fontFamily='Oswald'
@@ -349,18 +356,18 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
         </Text>
 
         <Divider
-          maxWidth='920px'
+          maxWidth={contentMaxWidth}
           borderWidth='1px'
-          margin='40px auto'
+          margin={isScreenShotTime ? '28px auto' : '40px auto'}
           borderColor='black'
         />
         <Stack
           spacing={8}
           width='100%'
           margin='auto'
-          maxWidth='920px'
+          maxWidth={contentMaxWidth}
           alignItems='center'
-          marginBottom='40px'
+          marginBottom={isScreenShotTime ? '24px' : '40px'}
           justifyContent='center'
           direction={{ base: 'column', md: 'row' }}
         >
@@ -387,7 +394,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
           isScreenShotTime={isScreenShotTime}
         />
 
-        {!loading && (
+        {!loading && !isScreenShotTime && (
           <DownloadTable files={filesUrl} satisticsRef={resultsRef} />
         )}
 
