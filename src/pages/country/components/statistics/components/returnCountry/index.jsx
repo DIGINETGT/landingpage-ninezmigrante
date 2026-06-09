@@ -14,6 +14,7 @@ import HondurasMap from '../../../../../../assets/honduras.png';
 import ElSalvadorMap from '../../../../../../assets/salvador.png';
 import BeliceMap from '../../../../../../assets/belice.svg';
 import NicaraguaMap from '../../../../../../assets/nicaragua.svg';
+import PanamaMap from '../../../../../../assets/panama.svg';
 import CostaRicaMap from '../../../../../../assets/MapaCostaRica.svg';
 
 const normalizeCountryName = (value = '') =>
@@ -42,6 +43,7 @@ const LOCAL_RETURN_COUNTRY_MAPS = {
   belice: BeliceMap,
   belize: BeliceMap,
   nicaragua: NicaraguaMap,
+  panama: PanamaMap,
   'costa rica': CostaRicaMap,
 };
 
@@ -210,6 +212,8 @@ const ReturnCountry = () => {
     return '42px';
   }, [positiveEntries.length]);
 
+  const shouldWrapDesktop = positiveEntries.length > 7;
+
   const isHighlightedLayout = positiveEntries.length > 0 && positiveEntries.length <= 3;
 
   const contentMaxWidth = useMemo(() => {
@@ -295,7 +299,7 @@ const ReturnCountry = () => {
         <Box
           width='100%'
           display='flex'
-          flexWrap={{ base: 'wrap', md: 'nowrap' }}
+          flexWrap={{ base: 'wrap', md: shouldWrapDesktop ? 'wrap' : 'nowrap' }}
           justifyContent={{ base: 'center', md: 'flex-end' }}
           alignItems='flex-start'
           gap={{
