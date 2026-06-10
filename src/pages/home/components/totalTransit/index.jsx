@@ -26,6 +26,8 @@ const TotalTransit = () => {
     });
   });
 
+  if (totalCant === 0) return null;
+
   return (
     <Box bg='blue.500' p={{ base: '40px 24px', md: '80px 40px' }}>
       {/* CONTAINER */}

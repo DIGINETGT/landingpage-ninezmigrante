@@ -35,7 +35,7 @@ const Header = ({ returns, handleChange, handleMonts }) => {
             fontSize={{ base: "2xl", md: "4xl" }}
             lineHeight={{ base: "1.4", md: "1" }}
           >
-            DEPARTAMENTOS CON MÁS O MENOS RETORNADOS
+            DEPARTAMENTOS CON MÁS O MENOS NIÑEZ Y ADOLESCENCIA RETORNADA
           </Text>
 
           <Stack

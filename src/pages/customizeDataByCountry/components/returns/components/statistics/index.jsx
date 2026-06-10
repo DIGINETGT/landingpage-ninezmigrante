@@ -5,7 +5,7 @@ import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 // CHAKRA UI COMONENTS
-import { Box, Stack, Text } from "@chakra-ui/react";
+import { Box, Stack, Text, SimpleGrid } from "@chakra-ui/react";
 
 import DownloadImage from "../../../../../../components/downloadImage";
 
@@ -115,11 +115,11 @@ const Statistics = ({ returns }) => {
             fontSize="2xl"
             fontFamily="Oswald"
             lineHeight={{ base: "1.5", md: "1" }}
-            textAlign={{ base: "center", md: "left" }}
+            textAlign="center"
           >
             {`DEPARTAMENTOS CON ${
               list === "desc" ? "MENOS" : "MÁS"
-            } RETORNADOS - ${getCountryContent({
+            } NIÑEZ Y ADOLESCENCIA RETORNADA - ${getCountryContent({
               countryID,
               capitalize: true,
             }).toUpperCase()}`}
@@ -137,21 +137,25 @@ const Statistics = ({ returns }) => {
         </Stack>
 
         {/* DEPARTMENTS */}
-        <Stack
-          alignItems="center"
-          justifyContent="center"
-          gap={{ base: "40px", md: "60px" }}
-          direction={{ base: "column", md: "row" }}
+        <SimpleGrid
+          width="100%"
+          columns={{ base: 1, md: Math.max(data?.length || 1, 1) }}
+          spacingX={{ base: 0, md: 8 }}
+          spacingY={10}
+          justifyItems="center"
+          alignItems="start"
         >
           {/* DEPARMENT BOX */}
           {data?.map((department, index) => (
             <Stack
               key={index}
+              width={{ base: "100%", md: "132px" }}
               direction="column"
               alignItems="center"
               justifyContent="center"
+              textAlign="center"
             >
-              <Stack height="80px">
+              <Stack height="80px" width="100%" alignItems="center" justifyContent="center">
                 {getCountryContent({
                   countryID,
                   content: {
@@ -183,7 +187,8 @@ const Statistics = ({ returns }) => {
               <Stack
                 direction="column"
                 justifyContent="center"
-                alignItems={{ base: "center", md: "flex-start" }}
+                alignItems="center"
+                width="100%"
               >
                 <Text fontFamily="Oswald" fontSize="xl" lineHeight="1">
                   {depName[department?.id?.replace("Department", "")]}
@@ -194,7 +199,7 @@ const Statistics = ({ returns }) => {
               </Stack>
             </Stack>
           ))}
-        </Stack>
+        </SimpleGrid>
 
         {/* SOURCES */}
         {!isScreenShotTime && sources}

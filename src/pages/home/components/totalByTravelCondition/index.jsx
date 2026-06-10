@@ -61,7 +61,7 @@ const TotalByTravelCondition = () => {
 
               <BigStat
                 value={acompanado}
-                compactFrom={10_000} // o Infinity si NO quieres compacto
+                compactFrom={Number.MAX_SAFE_INTEGER}
                 mode='long' // "short" => 16.3K
                 withTooltip={false}
                 numberProps={{
@@ -96,7 +96,7 @@ const TotalByTravelCondition = () => {
 
               <BigStat
                 value={noAcompanado}
-                compactFrom={10_000} // o Infinity si NO quieres compacto
+                compactFrom={Number.MAX_SAFE_INTEGER}
                 mode='long' // "short" => 16.3K
                 withTooltip={false}
                 numberProps={{

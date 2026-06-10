@@ -23,12 +23,16 @@ const TotalReturns = () => {
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
+
   const total = (data?.monthlyReports?.data ?? []).reduce(
     (acc, report) => {
+      const userRelation = report?.attributes?.users_permissions_user?.data;
+      const userAttributes = Array.isArray(userRelation)
+        ? userRelation?.[0]?.attributes
+        : userRelation?.attributes;
       const iso =
-        report?.attributes?.users_permissions_user?.data?.[0]?.attributes
-          ?.organization?.data?.attributes?.department?.data?.attributes
-          ?.country?.data?.attributes?.isoCode;
+        userAttributes?.organization?.data?.attributes?.department?.data
+          ?.attributes?.country?.data?.attributes?.isoCode;
       const reportTotal =
         Number(report?.attributes?.returned?.data?.attributes?.total) || 0;
 

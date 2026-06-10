@@ -11,7 +11,12 @@ import LogoKnh from "../../assets/LogoKnh.png";
 import LogoGMIES from "../../assets/LogoGMIES.png";
 import LogoRROCM from "../../assets/LogoRROCM.png";
 
-const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
+const GraphFooter = ({
+  responsive,
+  compact = false,
+  fullWidth = false,
+  sources = null,
+}) => {
   const isCompact = responsive || compact;
 
   if (compact) {
@@ -27,6 +32,12 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
         px={fullWidth ? "24px" : "0"}
         spacing={4}
       >
+        {sources && (
+          <Box width="100%">
+            {sources}
+          </Box>
+        )}
+
         <Stack direction="column" alignItems="center" spacing={2}>
           <Text
             lineHeight={1}
@@ -137,6 +148,8 @@ const GraphFooter = ({ responsive, compact = false, fullWidth = false }) => {
       paddingRight={isCompact ? "32px" : "100px"}
       justifyContent="center"
     >
+      {sources && <Box width="100%">{sources}</Box>}
+
       <Stack direction={{ base: "column", md: "row" }} justifyContent="center">
         <Stack
           pr={4}

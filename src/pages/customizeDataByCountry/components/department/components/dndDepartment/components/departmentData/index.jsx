@@ -15,8 +15,6 @@ import getCountryContent from '../../../../../../../../utils/country';
 import MaleIcon from '../../../../../../../../assets/male.png';
 import FemaleIcon from '../../../../../../../../assets/femenine.png';
 
-import GenderGapChip from '../../../../../../../../components/common/GenderGapChip';
-
 import useDepartmentCard from '../../hooks/useDepartmentCard';
 import { depColors } from '../../utils';
 
@@ -104,28 +102,12 @@ export default function DepartmentData({
             </Text>
 
             {(() => {
-              const iso = (country || '').toUpperCase(); // 'GT' | 'HN' | 'SV'
-              const t = Number(total) || 0;
               const m = Number(male) || 0;
               const f = Number(female) || 0;
               const sum = m + f;
-              const gap = Math.max(0, t - sum);
-              const canDisaggregate = ['GT'].includes(iso); // GT sí reporta M/F normalmente
 
-              // Si NO hay desagregación (sum=0) o hay brecha (gap>0): mostrar chip
-              if (sum === 0 || gap > 0) {
-                return (
-                  <GenderGapChip
-                    total={t}
-                    male={m}
-                    female={f}
-                    canDisaggregate={canDisaggregate}
-                    size='sm'
-                  />
-                );
-              }
+              if (sum === 0) return null;
 
-              // Si cuadra (sum === total): mostrar M/F
               return (
                 <>
                   <Stack direction='row' align='center'>

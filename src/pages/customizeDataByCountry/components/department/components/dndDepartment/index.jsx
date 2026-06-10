@@ -96,6 +96,14 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
     if (!dep) return;
 
     setDepDataList((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => !item?.reload && item?.id === dep.id
+      );
+
+      if (existingIndex !== -1 && existingIndex !== slotIndex) {
+        return prev;
+      }
+
       const next = [...prev];
       next[slotIndex] = {
         reload: false,
@@ -194,9 +202,22 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
               lineHeight={{ base: '1.5', md: '1' }}
               textAlign={{ base: 'center', md: 'left' }}
             >
-              {`TOTAL DE NIÑEZ Y ADOLESCENCIA RETORNADA - ${
-                countryID.charAt(0).toUpperCase() + countryID.slice(1)
-              }`}
+              {`TOTAL DE NIÑEZ Y ADOLESCENCIA RETORNADA (${getCountryContent({
+                countryID,
+                content: {
+                  guatemala: 'Guatemala',
+                  honduras: 'Honduras',
+                  elsalvador: 'El Salvador',
+                },
+              })})`}
+            </Text>
+            <Text
+              fontSize='2xl'
+              lineHeight='1'
+              fontWeight='600'
+              fontFamily='Times'
+            >
+              {'Comparativo entre departamentos'}
             </Text>
             <Text
               fontSize='2xl'
@@ -206,7 +227,7 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
             >
               {`${monthNames[period?.[0]] ?? 'Enero'} - ${
                 monthNames[period?.[1]] ?? 'Enero'
-              } - ${currentYear} - Departamentos seleccionados`}
+              } - ${currentYear}`}
             </Text>
           </Stack>
 
