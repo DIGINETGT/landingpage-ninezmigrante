@@ -124,12 +124,14 @@ const Statistics = ({
   return (
     <Box
       width='100%'
+      height='100%'
+      display='flex'
       maxWidth={{ base: '100%', md: '520px', '2xl': '540px' }}
       margin='0 auto'
       padding={{ base: '22px 16px', md: '24px 18px' }}
       {...compareSurfaceStyles}
     >
-      <Stack spacing='24px'>
+      <Stack spacing='24px' flex='1'>
         <Stack
           spacing='16px'
           alignItems='center'

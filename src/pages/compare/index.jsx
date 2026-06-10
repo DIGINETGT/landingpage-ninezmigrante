@@ -468,7 +468,7 @@ const ComparePage = () => {
               '2xl': Number(countValue),
             }}
             spacing={{ base: '28px', md: '32px', xl: '36px' }}
-            alignItems='start'
+            alignItems='stretch'
             justifyItems='center'
             margin='0 auto 60px auto'
             maxWidth={{
