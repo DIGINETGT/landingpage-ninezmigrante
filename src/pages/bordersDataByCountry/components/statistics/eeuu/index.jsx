@@ -450,7 +450,7 @@ const EEUU = () => {
               updateDate={updateDate}
               isScreenShotTime={isScreenShotTime}
             />
-            {isScreenShotTime && <GraphFooter responsive />}
+            {isScreenShotTime && <GraphFooter responsive compact />}
           </Box>
           {!isScreenShotTime && (
             <DownloadTable files={files} satisticsRef={containerRef} />

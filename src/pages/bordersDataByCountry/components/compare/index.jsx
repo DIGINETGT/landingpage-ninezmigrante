@@ -419,7 +419,7 @@ const Compare = () => {
                 updateDate={updateDate}
                 isScreenShotTime={isScreenShotTime}
               />
-              {isScreenShotTime && <GraphFooter responsive />}
+              {isScreenShotTime && <GraphFooter responsive compact />}
             </Box>
             {!isScreenShotTime && (
               <DownloadTable
