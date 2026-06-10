@@ -245,7 +245,11 @@ const ComparePage = () => {
           }
 
           if (country === 'hn' || country === 'honduras') {
-            return 'Fuente Honduras: SENAF';
+            return 'Fuente Honduras: Secretaría de Niñez, Adolescencia y Familia (SENAF)';
+          }
+
+          if (country === 'sv' || country === 'elsalvador') {
+            return 'Fuente El Salvador: Dirección General de Migración y Extranjería El Salvador';
           }
 
           return null;
@@ -254,15 +258,19 @@ const ComparePage = () => {
     )
   );
 
-  const compareMethodology = [
-    selectedCountries.some((country) => country === 'gt' || country === 'guatemala') &&
-      selectedCountries.some((country) => country === 'hn' || country === 'honduras')
-      ? 'Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de Niñez Migrante Guatemala-Honduras'
-      : null,
-    selectedCountries.some((country) => country === 'sv' || country === 'elsalvador')
-      ? 'Esta información ha sido procesada por Niñez Migrante Guatemala-El Salvador'
-      : null,
-  ].filter(Boolean);
+  const methodologyCountries = Array.from(
+    new Set(
+      selectedCountries
+        .map((country) => countryDisplayName[country])
+        .filter(Boolean)
+    )
+  );
+
+  const compareMethodology = methodologyCountries.length
+    ? `Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante - Monitoreo Binacional de Niñez Migrante ${methodologyCountries.join(
+        ' y '
+      )}.`
+    : null;
 
   const sources = (
     <Stack
@@ -288,17 +296,17 @@ const ComparePage = () => {
         </Text>
       ))}
 
-      {compareMethodology.map((note) => (
+      {compareMethodology && (
         <Text
-          key={note}
+          key={compareMethodology}
           textAlign='center'
           fontFamily='Montserrat Medium'
           fontSize={{ base: 'xs', md: 'sm' }}
           lineHeight='1.35'
         >
-          {note}
+          {compareMethodology}
         </Text>
-      ))}
+      )}
     </Stack>
   );
 
@@ -453,12 +461,31 @@ const ComparePage = () => {
             </Box>
           )}
 
-          <Stack
-            gap='40px'
-            alignContent='center'
-            justifyContent='center'
-            marginBottom='60px'
-            direction={{ base: 'column', md: 'row' }}
+          <SimpleGrid
+            columns={{
+              base: 1,
+              xl: countValue === '3' ? 2 : Number(countValue),
+              '2xl': Number(countValue),
+            }}
+            spacing={{ base: '28px', md: '32px', xl: '36px' }}
+            alignItems='start'
+            justifyItems='center'
+            margin='0 auto 60px auto'
+            maxWidth={{
+              base: '100%',
+              xl:
+                countValue === '2'
+                  ? '1120px'
+                  : countValue === '3'
+                  ? '1120px'
+                  : '540px',
+              '2xl':
+                countValue === '3'
+                  ? '1680px'
+                  : countValue === '2'
+                  ? '1120px'
+                  : '540px',
+            }}
           >
             <Statistics
               data={options['1']}
@@ -482,7 +509,7 @@ const ComparePage = () => {
                 compareLoading={compareLoading}
               />
             )}
-          </Stack>
+          </SimpleGrid>
 
           <LastDate
             sources={sources}

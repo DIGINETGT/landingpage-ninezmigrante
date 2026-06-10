@@ -53,6 +53,8 @@ const TravelCondition = () => {
   const labelFontSize = isCompareView ? 'sm' : 'md';
   const valueFontSize = isCompareView ? 'xl' : '2xl';
   const legendSpacing = isCompareView ? '2px' : '2px';
+  const legendMaxWidth = isCompareView ? '220px' : '300px';
+  const valueMinWidth = isCompareView ? '52px' : 'auto';
 
   return (
     <Box width='100%' position='relative'>
@@ -67,7 +69,12 @@ const TravelCondition = () => {
           <Pie data={data} options={options} />
         </Box>
 
-        <Stack direction='column' spacing={legendSpacing} width='100%' maxWidth='300px'>
+        <Stack
+          direction='column'
+          spacing={legendSpacing}
+          width='100%'
+          maxWidth={legendMaxWidth}
+        >
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
             <Stack direction='row' alignItems='center' spacing='10px'>
               <Box bgColor='blue.700' width='18px' height='18px' />
@@ -75,7 +82,13 @@ const TravelCondition = () => {
                 No Acompañados
               </Text>
             </Stack>
-            <Text fontFamily='Oswald' fontSize={valueFontSize}>
+            <Text
+              fontFamily='Oswald'
+              fontSize={valueFontSize}
+              minWidth={valueMinWidth}
+              textAlign='right'
+              flexShrink={0}
+            >
               {formatInt(NO_ACD)}
             </Text>
           </Stack>
@@ -87,7 +100,13 @@ const TravelCondition = () => {
                 Acompañados
               </Text>
             </Stack>
-            <Text fontFamily='Oswald' fontSize={valueFontSize}>
+            <Text
+              fontFamily='Oswald'
+              fontSize={valueFontSize}
+              minWidth={valueMinWidth}
+              textAlign='right'
+              flexShrink={0}
+            >
               {formatInt(ACD)}
             </Text>
           </Stack>
@@ -99,7 +118,13 @@ const TravelCondition = () => {
                 Otros
               </Text>
             </Stack>
-            <Text fontFamily='Oswald' fontSize={valueFontSize}>
+            <Text
+              fontFamily='Oswald'
+              fontSize={valueFontSize}
+              minWidth={valueMinWidth}
+              textAlign='right'
+              flexShrink={0}
+            >
               {formatInt(UN_REGISTRED)}
             </Text>
           </Stack>

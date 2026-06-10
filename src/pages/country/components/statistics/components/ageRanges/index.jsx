@@ -89,9 +89,12 @@ const AgeRanges = ({ disableFirstAge = false }) => {
   const labelFontSize = isCompareView ? 'sm' : 'md';
   const valueFontSize = isCompareView ? 'xl' : '2xl';
   const legendSpacing = isCompareView ? '2px' : '2px';
-  const itemMinWidth = isCompareView ? 140 : 190;
+  const itemMinWidth = isCompareView ? 112 : 190;
   const legendColumns =
     isCompareView && visibleEntries.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr';
+  const legendMaxWidth = isCompareView ? '240px' : '300px';
+  const compareLegendGridMaxWidth = isCompareView ? '320px' : '520px';
+  const valueMinWidth = isCompareView ? '52px' : '72px';
 
   return (
     <Box
@@ -129,7 +132,7 @@ const AgeRanges = ({ disableFirstAge = false }) => {
             direction='column'
             spacing={legendSpacing}
             width='100%'
-            maxWidth='300px'
+            maxWidth={legendMaxWidth}
           >
             {visibleEntries.map((entry) => (
               <Stack
@@ -144,7 +147,13 @@ const AgeRanges = ({ disableFirstAge = false }) => {
                     {entry.label}
                   </Text>
                 </Stack>
-                <Text fontFamily='Oswald' fontSize={valueFontSize}>
+                <Text
+                  fontFamily='Oswald'
+                  fontSize={valueFontSize}
+                  minWidth={valueMinWidth}
+                  textAlign='right'
+                  flexShrink={0}
+                >
                   {formatInt(entry.value)}
                 </Text>
               </Stack>
@@ -153,9 +162,9 @@ const AgeRanges = ({ disableFirstAge = false }) => {
         ) : (
           <Grid
             width='100%'
-            maxWidth='520px'
+            maxWidth={compareLegendGridMaxWidth}
             templateColumns={legendColumns}
-            columnGap={6}
+            columnGap={4}
             rowGap={3}
           >
             {visibleEntries.map((entry) => (
@@ -181,7 +190,7 @@ const AgeRanges = ({ disableFirstAge = false }) => {
                 <Text
                   fontFamily='Oswald'
                   fontSize={valueFontSize}
-                  minWidth='72px'
+                  minWidth={valueMinWidth}
                   textAlign='right'
                   flexShrink={0}
                 >
