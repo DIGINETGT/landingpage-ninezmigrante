@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 // REACT ROUTER DOM
 import { useParams } from "react-router-dom";
@@ -30,6 +30,7 @@ import {
 import useGraphData from "./hooks";
 import {
   itemColors,
+  defaultItemColors,
   graphDataTypes,
   customPeriods,
   customDataTypes,
@@ -61,6 +62,85 @@ ChartJS.register(
   Filler
 );
 
+const formatChartValue = (value) => Number(value || 0).toLocaleString("en-US");
+
+const getDatasetLabelColor = (datasetIndex) => {
+  if (datasetIndex === 3) return "#1f2937";
+  return "#ffffff";
+};
+
+const drawOutlinedText = (ctx, text, x, y, fillStyle) => {
+  ctx.save();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(255,255,255,0.95)";
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = fillStyle;
+  ctx.fillText(text, x, y);
+  ctx.restore();
+};
+
+const drawContrastText = (
+  ctx,
+  text,
+  x,
+  y,
+  fillStyle,
+  strokeStyle = "rgba(31,41,55,0.55)"
+) => {
+  ctx.save();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = strokeStyle;
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = fillStyle;
+  ctx.fillText(text, x, y);
+  ctx.restore();
+};
+
+const drawLabelTag = (ctx, text, x, y, accentColor) => {
+  ctx.save();
+  ctx.font = "600 12px Oswald";
+
+  const metrics = ctx.measureText(text);
+  const paddingX = 8;
+  const paddingY = 5;
+  const width = metrics.width + paddingX * 2;
+  const height = 22;
+  const left = x - width / 2;
+  const top = y - height / 2;
+  const radius = 6;
+
+  ctx.beginPath();
+  ctx.moveTo(left + radius, top);
+  ctx.lineTo(left + width - radius, top);
+  ctx.quadraticCurveTo(left + width, top, left + width, top + radius);
+  ctx.lineTo(left + width, top + height - radius);
+  ctx.quadraticCurveTo(
+    left + width,
+    top + height,
+    left + width - radius,
+    top + height
+  );
+  ctx.lineTo(left + radius, top + height);
+  ctx.quadraticCurveTo(left, top + height, left, top + height - radius);
+  ctx.lineTo(left, top + radius);
+  ctx.quadraticCurveTo(left, top, left + radius, top);
+  ctx.closePath();
+
+  ctx.fillStyle = "rgba(255,255,255,0.96)";
+  ctx.strokeStyle = accentColor;
+  ctx.lineWidth = 1.25;
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = accentColor;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, x, y + 0.5);
+  ctx.restore();
+};
+
 const TrendsGraphs = ({ country = "guatemala" }) => {
   // IDS
   const countryID = useParams().countryID || country;
@@ -87,6 +167,114 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
     graphData?.datasets?.length > 0
       ? graphData.datasets.map((dataset) => dataset.label)
       : [];
+  const activeChartType = chartType || "bar";
+  const showValueLabels = true;
+  const isStackedChart = activeChartType === "group";
+  const isAreaChart = activeChartType === "area";
+  const exportValueLabelsPlugin = useMemo(
+    () => ({
+      id: "exportValueLabels",
+      afterDatasetsDraw(chart) {
+        if (!showValueLabels) return;
+
+        const { ctx, chartArea } = chart;
+        if (!ctx || !chartArea) return;
+
+        ctx.save();
+        ctx.font = "600 12px Oswald";
+        ctx.textAlign = "center";
+        if (isAreaChart) {
+          ctx.textBaseline = "middle";
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta?.data?.length || meta.hidden) return;
+
+            meta.data.forEach((element, dataIndex) => {
+              const value = Number(dataset?.data?.[dataIndex] || 0);
+              if (!value) return;
+
+              const isBlueSeries = datasetIndex % 2 === 0;
+              const preferredX = element.x + (isBlueSeries ? -34 : 34);
+              const minX = chartArea.left + 38;
+              const maxX = chartArea.right - 38;
+              const x = Math.min(Math.max(preferredX, minX), maxX);
+
+              let y = element.y - (isBlueSeries ? 14 : 28);
+              if (y < chartArea.top + 14) {
+                y = element.y + (isBlueSeries ? 18 : 26);
+              }
+
+              drawLabelTag(
+                ctx,
+                formatChartValue(value),
+                x,
+                y,
+                defaultItemColors[datasetIndex % defaultItemColors.length]
+              );
+            });
+          });
+        } else if (isStackedChart) {
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta?.data?.length || meta.hidden) return;
+
+            meta.data.forEach((element, dataIndex) => {
+              const value = Number(dataset?.data?.[dataIndex] || 0);
+              if (!value) return;
+
+              const segmentHeight = Math.abs((element.base ?? 0) - element.y);
+              const label = formatChartValue(value);
+
+              if (segmentHeight < 28) {
+                const x = element.x;
+                const y = Math.max(
+                  element.y - 12 - datasetIndex * 24,
+                  chartArea.top + 14
+                );
+                drawLabelTag(
+                  ctx,
+                  label,
+                  x,
+                  y,
+                  defaultItemColors[datasetIndex % defaultItemColors.length]
+                );
+                return;
+              }
+
+              ctx.textBaseline = "middle";
+              const x = element.x;
+              const y = element.y + ((element.base ?? element.y) - element.y) / 2;
+              drawContrastText(
+                ctx,
+                label,
+                x,
+                y,
+                getDatasetLabelColor(datasetIndex)
+              );
+            });
+          });
+        } else {
+          ctx.textBaseline = "bottom";
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta?.data?.length || meta.hidden) return;
+
+            meta.data.forEach((element, dataIndex) => {
+              const value = Number(dataset?.data?.[dataIndex] || 0);
+              if (!value) return;
+
+              const x = element.x;
+              const y = Math.max(element.y - 8, chartArea.top + 12);
+              drawOutlinedText(ctx, formatChartValue(value), x, y, "#1f2937");
+            });
+          });
+        }
+
+        ctx.restore();
+      },
+    }),
+    [isAreaChart, isStackedChart, showValueLabels]
+  );
 
   const sources = (
     <Stack
@@ -109,7 +297,8 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
           countryID,
           content: {
             guatemala: "Instituto Guatemalteco de Migración -IGM-",
-            honduras: "SENAF",
+            honduras: "Secretaría de Niñez, Adolescencia y Familia (SENAF)",
+            elsalvador: "Dirección General de Migración y Extranjería El Salvador",
           },
         })}
       </Text>
@@ -119,8 +308,9 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
         fontFamily="Montserrat Medium"
         fontSize={{ base: "xs", md: "sm" }}
       >
-        Esta información ha sido procesada por: Monitoreo de niñez y adolescencia migrante -Monitoreo Binacional de
-        Niñez Migrante Guatemala-Honduras-.
+        Esta información ha sido procesada por: Monitoreo de niñez y
+        adolescencia migrante - Monitoreo Binacional de Niñez Migrante
+        Guatemala-Honduras y El Salvador.
       </Text>
     </Stack>
   );
@@ -345,10 +535,18 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
                         chartType === "group" ||
                         chartType === "") && (
                         <Bar
+                          key={`bar-${activeChartType}-${isScreenShotTime ? "export" : "screen"}`}
                           width={800}
                           height={300}
+                          plugins={[exportValueLabelsPlugin]}
                           options={{
                             responsive: true,
+                            animation: isScreenShotTime ? false : undefined,
+                            layout: {
+                              padding: {
+                                top: 42,
+                              },
+                            },
                             plugins: {
                               legend: {
                                 display: false,
@@ -368,10 +566,18 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
                       )}
                       {chartType === "area" && (
                         <Line
+                          key={`line-${isScreenShotTime ? "export" : "screen"}`}
                           width={800}
                           height={300}
+                          plugins={[exportValueLabelsPlugin]}
                           options={{
                             responsive: true,
+                            animation: isScreenShotTime ? false : undefined,
+                            layout: {
+                              padding: {
+                                top: 42,
+                              },
+                            },
                             plugins: {
                               legend: {
                                 display: false,
@@ -391,7 +597,7 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
             {sources}
           </Box>
 
-          {isScreenShotTime && <GraphFooter sources={sources} responsive />}
+          {isScreenShotTime && <GraphFooter sources={sources} responsive compact />}
 
           <DownloadImage
             containerRef={containerRef}

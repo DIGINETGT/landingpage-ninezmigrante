@@ -129,7 +129,8 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
           countryID,
           content: {
             guatemala: 'Instituto Guatemalteco de Migración -IGM-',
-            honduras: 'SENAF',
+            honduras: 'Secretaría de Niñez, Adolescencia y Familia (SENAF)',
+            elsalvador: 'Dirección General de Migración y Extranjería El Salvador',
           },
         })}
       </Text>
@@ -140,8 +141,8 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
         fontSize={{ base: 'xs', md: 'sm' }}
       >
         Esta información ha sido procesada por: Monitoreo de niñez y
-        adolescencia migrante -Monitoreo Binacional de Niñez Migrante
-        Guatemala-Honduras-.
+        adolescencia migrante - Monitoreo Binacional de Niñez Migrante
+        Guatemala-Honduras y El Salvador.
       </Text>
     </Stack>
   );
@@ -261,7 +262,7 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
           </Stack>
 
           {!isScreenShotTime && sources}
-          {isScreenShotTime && <GraphFooter sources={sources} responsive />}
+          {isScreenShotTime && <GraphFooter sources={sources} responsive compact />}
 
           <DownloadImage
             containerRef={containerRef}
