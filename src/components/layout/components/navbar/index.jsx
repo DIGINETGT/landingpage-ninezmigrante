@@ -207,15 +207,6 @@ const Navbar = () => {
                   </MenuItem>
                 </Link>
 
-                <Link to="/transit">
-                  <MenuItem
-                    color="gray.600"
-                    fontFamily="Montserrat Medium"
-                    _hover={{ bgColor: 'blue.700', color: 'white' }}
-                  >
-                    Niñez en tránsito
-                  </MenuItem>
-                </Link>
               </MenuList>
             </Menu>
           </HStack>
