@@ -168,6 +168,40 @@ const Compare = () => {
     },
   });
 
+  const exportHeader = (
+    <Stack
+      width='100%'
+      maxWidth='720px'
+      margin='0 auto 40px'
+      alignItems='center'
+      justifyContent='center'
+      direction='column'
+      spacing='6px'
+      textAlign='center'
+      paddingTop='8px'
+      paddingX='12px'
+    >
+      <Text
+        lineHeight='1'
+        color='gray.700'
+        fontFamily='Oswald'
+        fontSize={{ base: '4xl', md: '5em' }}
+        textAlign='center'
+      >
+        {getCountryContent({ countryID, capitalize: true }).toUpperCase()}
+      </Text>
+      <Text
+        lineHeight='1.05'
+        color='gray.700'
+        fontFamily='Times'
+        fontSize={{ base: 'xl', md: '3xl' }}
+        textAlign='center'
+      >
+        Niñez y adolescencia migrante detenida en fronteras de Estados Unidos y México
+      </Text>
+    </Stack>
+  );
+
   const ready =
     Boolean(selectedYear) &&
     Array.isArray(currentPeriod) &&
@@ -246,6 +280,7 @@ const Compare = () => {
               display='flow-root'
               pt={{ base: 8, md: 14 }}
             >
+              {isScreenShotTime && exportHeader}
               <Loader loading={loading} />
 
               <Grid
@@ -364,7 +399,7 @@ const Compare = () => {
                     maxWidth='800px'
                   >
                     <a
-                      href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
+                      href='https://portales.segob.gob.mx/es/PoliticaMigratoria/Direccion_de_Estadistica#est'
                       target='_blank'
                       rel='noreferrer'
                     >

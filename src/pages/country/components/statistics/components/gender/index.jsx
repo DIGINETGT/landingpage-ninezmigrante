@@ -15,7 +15,12 @@ import Loader from '../../../../../../components/loader';
 import { formatInt } from '../../../../../../utils/numbers';
 
 const Gender = () => {
-  const { demographicsLoading, genderTotals, isCompareView } =
+  const {
+    demographicsLoading,
+    genderTotals,
+    isCompareView,
+    centerDemographicsCards,
+  } =
     useContext(StatisticsContext);
 
   const tfemale = genderTotals?.['femenino'] ?? 0;
@@ -30,14 +35,20 @@ const Gender = () => {
       position='relative'
       display='flex'
       justifyContent={
-        isCompareView ? 'center' : { base: 'center', md: 'flex-start' }
+        isCompareView || centerDemographicsCards
+          ? 'center'
+          : { base: 'center', md: 'flex-start' }
       }
     >
       <Loader loading={demographicsLoading} />
 
       <Stack
         justifyContent='flex-start'
-        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-start' }}
+        alignItems={
+          isCompareView || centerDemographicsCards
+            ? 'center'
+            : { base: 'center', md: 'flex-start' }
+        }
         spacing={spacing}
         maxWidth='200px'
         width='100%'
@@ -45,7 +56,11 @@ const Gender = () => {
         <Text
           fontFamily='Oswald'
           fontSize='2xl'
-          textAlign={isCompareView ? 'center' : { base: 'center', md: 'left' }}
+          textAlign={
+            isCompareView || centerDemographicsCards
+              ? 'center'
+              : { base: 'center', md: 'left' }
+          }
           width='100%'
         >
           Sexo
@@ -55,7 +70,7 @@ const Gender = () => {
           gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent={isCompareView ? 'center' : 'flex-start'}
+          justifyContent={isCompareView || centerDemographicsCards ? 'center' : 'flex-start'}
         >
           <Tooltip
             color='white'
@@ -78,7 +93,7 @@ const Gender = () => {
           gap='12px'
           direction='row'
           alignItems='center'
-          justifyContent={isCompareView ? 'center' : 'flex-start'}
+          justifyContent={isCompareView || centerDemographicsCards ? 'center' : 'flex-start'}
         >
           <Tooltip
             color='white'

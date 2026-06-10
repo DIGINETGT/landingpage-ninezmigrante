@@ -23,7 +23,12 @@ export const options = {
 };
 
 const AgeRanges = ({ disableFirstAge = false }) => {
-  const { demographicsLoading, ageGroupTotals, isCompareView } =
+  const {
+    demographicsLoading,
+    ageGroupTotals,
+    isCompareView,
+    centerDemographicsCards,
+  } =
     useContext(StatisticsContext);
 
   // nombres esperados en tu data: "primera infancia" | "niñez" | "adolescencia" | "no registrados"
@@ -102,23 +107,41 @@ const AgeRanges = ({ disableFirstAge = false }) => {
       position='relative'
       display='flex'
       justifyContent={
-        isCompareView ? 'center' : { base: 'center', md: 'flex-end' }
+        isCompareView || centerDemographicsCards
+          ? 'center'
+          : { base: 'center', md: 'flex-end' }
       }
     >
       <Loader loading={demographicsLoading} />
 
       <Stack
         justifyContent='flex-start'
-        alignItems={isCompareView ? 'center' : { base: 'center', md: 'flex-end' }}
+        alignItems={
+          isCompareView || centerDemographicsCards
+            ? 'center'
+            : { base: 'center', md: 'flex-end' }
+        }
         spacing='12px'
         width='100%'
       >
         <Text
           fontFamily='Oswald'
           fontSize='2xl'
-          textAlign={isCompareView ? 'center' : { base: 'center', md: 'right' }}
-          alignSelf={isCompareView ? 'center' : { base: 'center', md: 'stretch' }}
-          width={isCompareView ? 'auto' : { base: 'auto', md: '100%' }}
+          textAlign={
+            isCompareView || centerDemographicsCards
+              ? 'center'
+              : { base: 'center', md: 'right' }
+          }
+          alignSelf={
+            isCompareView || centerDemographicsCards
+              ? 'center'
+              : { base: 'center', md: 'stretch' }
+          }
+          width={
+            isCompareView || centerDemographicsCards
+              ? 'auto'
+              : { base: 'auto', md: '100%' }
+          }
         >
           Rangos etarios
         </Text>

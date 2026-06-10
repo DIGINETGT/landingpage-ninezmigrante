@@ -14,6 +14,7 @@ import {
 import MapaMexico from '../../../../../assets/MapaMexico.png';
 
 import { year as defaultYear } from '../../../../../utils/year';
+import getCountryContent from '../../../../../utils/country';
 import LastDate from '../../../../../components/lastUpdate';
 import YearSelect from '../../../../../components/yearSelect';
 import MonthPicker from '../../../../../components/monthPicker';
@@ -104,7 +105,7 @@ const Mexico = () => {
       maxWidth='800px'
     >
       <a
-        href='http://www.politicamigratoria.gob.mx/es/PoliticaMigratoria/Boletines_Estadisticos'
+        href='https://portales.segob.gob.mx/es/PoliticaMigratoria/Direccion_de_Estadistica#est'
         target='_blank'
         rel='noreferrer'
       >
@@ -118,6 +119,47 @@ const Mexico = () => {
           Registro e Identidad de Personas. Gobierno de México.
         </Text>
       </a>
+    </Stack>
+  );
+
+  const exportHeader = (
+    <Stack
+      width='100%'
+      maxWidth='720px'
+      margin='0 auto 40px'
+      alignItems='center'
+      justifyContent='center'
+      direction='column'
+      spacing='6px'
+      textAlign='center'
+      paddingTop='8px'
+      paddingX='12px'
+    >
+      <Stack
+        spacing='6px'
+        alignItems='center'
+        justifyContent='center'
+        maxWidth='720px'
+      >
+        <Text
+          lineHeight='1'
+          color='gray.700'
+          fontFamily='Oswald'
+          fontSize={{ base: '4xl', md: '5em' }}
+          textAlign='center'
+        >
+          {getCountryContent({ countryID, capitalize: true }).toUpperCase()}
+        </Text>
+        <Text
+          lineHeight='1.05'
+          color='gray.700'
+          fontFamily='Times'
+          fontSize={{ base: 'xl', md: '3xl' }}
+          textAlign='center'
+        >
+          Niñez y adolescencia migrante detenida en fronteras de Estados Unidos y México
+        </Text>
+      </Stack>
     </Stack>
   );
 
@@ -169,6 +211,7 @@ const Mexico = () => {
             isScreenShotTime,
             setIsScreenShotTime,
             loading,
+            centerDemographicsCards: true,
             genderTotals,
             travelConditionTotals,
             ageGroupTotals,
@@ -185,6 +228,7 @@ const Mexico = () => {
             p={{ base: 4, md: 8 }}
           >
             <Box position='relative'>
+              {isScreenShotTime && exportHeader}
               <Loader loading={loading} />
 
               {!hasSelection && !loading ? (
@@ -231,9 +275,10 @@ const Mexico = () => {
                         </Text>
                         <BigStat
                           value={Number.isFinite(baseTotal) ? baseTotal : 0}
-                          compactFrom={10000}
+                          compactFrom={Number.POSITIVE_INFINITY}
                           mode='long'
                           withTooltip={false}
+                          showExactHelper={false}
                           numberProps={{
                             fontFamily: 'Oswald',
                             fontSize: { base: '5xl', md: '6xl' },
@@ -248,7 +293,7 @@ const Mexico = () => {
                           gap={4}
                           pt={1}
                         >
-                          <Stack spacing={0}>
+                          <Stack spacing={1} alignItems='center' textAlign='center'>
                             <Text
                               fontFamily='Montserrat Medium'
                               fontSize='sm'
@@ -258,9 +303,11 @@ const Mexico = () => {
                             </Text>
                             <BigStat
                               value={acd}
-                              compactFrom={10000}
+                              compactFrom={Number.POSITIVE_INFINITY}
                               mode='long'
                               withTooltip={false}
+                              showExactHelper={false}
+                              statProps={{ textAlign: 'center' }}
                               numberProps={{
                                 fontFamily: 'Oswald',
                                 fontSize: '2xl',
@@ -270,7 +317,7 @@ const Mexico = () => {
                             />
                           </Stack>
 
-                          <Stack spacing={0}>
+                          <Stack spacing={1} alignItems='center' textAlign='center'>
                             <Text
                               fontFamily='Montserrat Medium'
                               fontSize='sm'
@@ -280,9 +327,11 @@ const Mexico = () => {
                             </Text>
                             <BigStat
                               value={noAcd}
-                              compactFrom={10000}
+                              compactFrom={Number.POSITIVE_INFINITY}
                               mode='long'
                               withTooltip={false}
+                              showExactHelper={false}
+                              statProps={{ textAlign: 'center' }}
                               numberProps={{
                                 fontFamily: 'Oswald',
                                 fontSize: '2xl',
