@@ -516,7 +516,7 @@ const ComparePage = () => {
             updateDate={updateDate}
             isScreenShotTime={isScreenShotTime}
           />
-          {isScreenShotTime && <GraphFooter responsive />}
+          {isScreenShotTime && <GraphFooter responsive compact />}
           <DownloadTable
             files={compareFiles}
             satisticsRef={satisticsRef}
