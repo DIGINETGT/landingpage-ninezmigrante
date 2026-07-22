@@ -24,22 +24,12 @@ const isSafePrimitive = (value) =>
 const trimString = (value, maxLength = 120) =>
   typeof value === 'string' ? value.slice(0, maxLength) : value;
 
-const getApiBaseUrl = () => {
-  const rawBase =
-    import.meta.env.VITE_API_URL || import.meta.env.VITE_APP_API_URL || '';
-
+const getAnalyticsEndpoint = () => {
+  const rawBase = import.meta.env.VITE_API_URL || '';
   if (!rawBase) return '';
 
-  return rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
-};
-
-const getAnalyticsEndpoint = () => {
-  const baseUrl = getApiBaseUrl();
-  if (!baseUrl) return '';
-
-  return baseUrl.endsWith('/api')
-    ? `${baseUrl}/analytics/events`
-    : `${baseUrl}/api/analytics/events`;
+  const baseUrl = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+  return `${baseUrl}/api/analytics/events`;
 };
 
 const createFallbackSessionId = () =>
