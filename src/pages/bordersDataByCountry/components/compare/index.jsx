@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -29,6 +29,8 @@ import MapaGuatemala from '../../../../assets/MapaGuatemala.png';
 import { year as defaultYear } from '../../../../utils/year';
 import getCountryContent from '../../../../utils/country';
 import { monthNames } from '../../../../hooks/fetch';
+import { toISO } from '../../../../utils/iso';
+import { trackEvent } from '../../../../services/analytics';
 
 import { useUSDetained } from '../statistics/eeuu/hooks';
 import { useDetainedMexico } from '../statistics/mexico/hooks';
@@ -82,6 +84,9 @@ const StatNumber = ({ value, fontSize = { base: '4xl', md: '5xl' } }) => {
 const Compare = () => {
   const { countryID } = useParams(); // gt | hn | sv
   const containerRef = useRef();
+  const trackedStartRef = useRef('');
+  const trackedResultRef = useRef('');
+  const countryISO = toISO(countryID);
 
   const [currentYear, setCurrentYear] = useState('');
   const [currentPeriod, setCurrentPeriod] = useState([]); // [from, to]
@@ -206,6 +211,80 @@ const Compare = () => {
     Boolean(selectedYear) &&
     Array.isArray(currentPeriod) &&
     currentPeriod.length === 2;
+  const [fromM, toM] = currentPeriod || [];
+  const totalResults =
+    Number(totalCant || 0) +
+    Number(dataUS?.totalMes || 0) +
+    Number(dataMx?.totalMes || 0);
+
+  useEffect(() => {
+    if (!ready) return;
+
+    const eventKey = [countryISO, selectedYear, fromM, toM].join('|');
+    if (trackedStartRef.current === eventKey) return;
+    trackedStartRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_compare',
+      visualizationType: 'borders_compare',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    trackEvent('filter_applied', baseProperties);
+    trackEvent('search_started', baseProperties);
+  }, [countryISO, fromM, ready, selectedYear, toM]);
+
+  useEffect(() => {
+    if (!ready || loading) return;
+
+    const eventKey = [
+      countryISO,
+      selectedYear,
+      fromM,
+      toM,
+      totalResults,
+      Number(dataUS?.totalMes || 0),
+      Number(dataMx?.totalMes || 0),
+      Number(totalCant || 0),
+    ].join('|');
+    if (trackedResultRef.current === eventKey) return;
+    trackedResultRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_compare',
+      visualizationType: 'borders_compare',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      resultCount: totalResults,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    if (totalResults > 0) {
+      trackEvent('search_completed', baseProperties);
+      trackEvent('visualization_viewed', baseProperties);
+    } else {
+      trackEvent('search_without_results', baseProperties);
+    }
+  }, [
+    countryISO,
+    dataMx,
+    dataUS,
+    fromM,
+    loading,
+    ready,
+    selectedYear,
+    toM,
+    totalCant,
+    totalResults,
+  ]);
 
   return (
     <Box width='100%' bgColor='#d9e8e8' padding={{ base: '24px', md: '40px' }}>
@@ -425,6 +504,14 @@ const Compare = () => {
               <DownloadTable
                 satisticsRef={containerRef}
                 files={combinedFiles}
+                analyticsProperties={{
+                  section: 'borders_compare',
+                  visualizationType: 'borders_compare',
+                  filters: {
+                    country: countryISO,
+                    year: selectedYear,
+                  },
+                }}
               />
             )}
           </StatisticsContext.Provider>

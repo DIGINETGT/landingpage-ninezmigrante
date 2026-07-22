@@ -12,10 +12,12 @@ import { theme } from "../../utils/theme";
 // COMPONENTS
 import Layout from "../layout";
 import ApolloProvider from "../../providers/apollo";
+import PageViewTracker from "../analytics/PageViewTracker";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <PageViewTracker />
       <ApolloProvider>
         <ChakraProvider theme={theme}>
           <Layout>

@@ -31,6 +31,7 @@ import ModalContentSV from '../../../../../../components/departments/components/
 import DepartmentListCarousel from '../../../../../../components/departmentListCarousel';
 import DownloadImage from '../../../../../../components/downloadImage';
 import GraphFooter from '../../../../../../components/graphFooter';
+import { trackEvent } from '../../../../../../services/analytics';
 
 // ----------------------------------------------------
 // Componente
@@ -54,6 +55,8 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
     { reload: true },
   ]);
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
+  const trackedFilterRef = useRef('');
+  const trackedSelectionRef = useRef('');
 
   // UI helpers
   const [windowWidth, setWindowWidth] = useState(
@@ -73,6 +76,63 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  useEffect(() => {
+    const eventKey = [iso, currentYear, period?.[0], period?.[1]].join('|');
+    if (trackedFilterRef.current === eventKey) return;
+    trackedFilterRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'customize_department_compare',
+      visualizationType: 'department_comparison',
+      periodStartMonth: period?.[0],
+      periodEndMonth: period?.[1],
+      filters: {
+        country: iso,
+        year: Number(currentYear),
+      },
+    };
+
+    trackEvent('filter_applied', baseProperties);
+    trackEvent('search_started', baseProperties);
+  }, [currentYear, iso, period]);
+
+  useEffect(() => {
+    const selectedDepartments = depDataList
+      .filter((item) => !item?.reload && item?.id)
+      .map((item) => item.id);
+
+    if (selectedDepartments.length === 0) return;
+
+    const eventKey = [
+      iso,
+      currentYear,
+      period?.[0],
+      period?.[1],
+      ...selectedDepartments,
+    ].join('|');
+
+    if (trackedSelectionRef.current === eventKey) return;
+    trackedSelectionRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'customize_department_compare',
+      visualizationType: 'department_comparison',
+      selectionCount: selectedDepartments.length,
+      periodStartMonth: period?.[0],
+      periodEndMonth: period?.[1],
+      resultCount: selectedDepartments.length,
+      filters: {
+        country: iso,
+        year: Number(currentYear),
+        department: selectedDepartments.join(','),
+      },
+    };
+
+    trackEvent('visualization_changed', baseProperties);
+    trackEvent('visualization_viewed', baseProperties);
+    trackEvent('search_completed', baseProperties);
+  }, [currentYear, depDataList, iso, period]);
 
   // Handlers filtros
   const handlePeriod = (ranges) => setPeriod(ranges);
@@ -289,6 +349,21 @@ const DnDDepartment = ({ country = 'guatemala' }) => {
             containerRef={containerRef}
             label='Descargar imagen de comparación'
             onSS={setIsScreenShotTime}
+            analyticsProperties={{
+              section: 'customize_department_compare',
+              visualizationType: 'department_comparison',
+              selectionCount: depDataList.filter(
+                (item) => !item?.reload && item?.id
+              ).length,
+              filters: {
+                country: iso,
+                year: Number(currentYear),
+                department: depDataList
+                  .filter((item) => !item?.reload && item?.id)
+                  .map((item) => item.id)
+                  .join(','),
+              },
+            }}
           />
         </Box>
       </DragDropContext>

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 // REACT ROUTER DOM
 import { useParams } from "react-router-dom";
@@ -50,6 +50,8 @@ import {
 } from "chart.js";
 import handleGraphType from "./utils/events";
 import getCountryContent from "../../../../../../utils/country";
+import { toISO } from "../../../../../../utils/iso";
+import { trackEvent } from "../../../../../../services/analytics";
 
 ChartJS.register(
   CategoryScale,
@@ -144,6 +146,7 @@ const drawLabelTag = (ctx, text, x, y, accentColor) => {
 const TrendsGraphs = ({ country = "guatemala" }) => {
   // IDS
   const countryID = useParams().countryID || country;
+  const countryISO = toISO(countryID);
 
   // STATES
   const [graphType, setGraphType] = useState("");
@@ -153,6 +156,9 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
 
   // REF
   const containerRef = useRef(null);
+  const trackedStartRef = useRef("");
+  const trackedResultRef = useRef("");
+  const trackedVisualizationRef = useRef("");
 
   // PERIOD
   const handlePeriod = (ev) => setPeriod(ev.target.value);
@@ -163,14 +169,110 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
 
   // DATOS
   const graphData = useGraphData(period, graphType, chartType, countryID);
+  const hasValidSelection =
+    period !== "" && graphType.length > 0 && chartType.length > 0;
   const legendItems =
     graphData?.datasets?.length > 0
       ? graphData.datasets.map((dataset) => dataset.label)
       : [];
   const activeChartType = chartType || "bar";
+  const trendPeriodLabel = customPeriods[period] || "";
+  const positiveValueCount = useMemo(
+    () =>
+      (graphData?.datasets || []).reduce(
+        (acc, dataset) =>
+          acc +
+          (Array.isArray(dataset?.data)
+            ? dataset.data.filter((value) => Number(value || 0) > 0).length
+            : 0),
+        0
+      ),
+    [graphData]
+  );
   const showValueLabels = true;
   const isStackedChart = activeChartType === "group";
   const isAreaChart = activeChartType === "area";
+
+  useEffect(() => {
+    if (!hasValidSelection) return;
+
+    const eventKey = [countryISO, period, graphType, chartType].join("|");
+    if (trackedStartRef.current === eventKey) return;
+    trackedStartRef.current = eventKey;
+
+    const baseProperties = {
+      section: "customize_trends",
+      visualizationType: chartType,
+      chartDataType: graphType,
+      trendPeriod: trendPeriodLabel,
+      filters: {
+        country: countryISO,
+      },
+    };
+
+    trackEvent("filter_applied", baseProperties);
+    trackEvent("search_started", baseProperties);
+  }, [chartType, countryISO, graphType, hasValidSelection, period, trendPeriodLabel]);
+
+  useEffect(() => {
+    if (!hasValidSelection) return;
+
+    const eventKey = [countryISO, graphType, chartType].join("|");
+    if (trackedVisualizationRef.current === eventKey) return;
+    trackedVisualizationRef.current = eventKey;
+
+    trackEvent("visualization_changed", {
+      section: "customize_trends",
+      visualizationType: chartType,
+      chartDataType: graphType,
+      trendPeriod: trendPeriodLabel,
+      filters: {
+        country: countryISO,
+      },
+    });
+  }, [chartType, countryISO, graphType, hasValidSelection, trendPeriodLabel]);
+
+  useEffect(() => {
+    if (!hasValidSelection) return;
+    if (!Array.isArray(graphData?.labels) || graphData.labels.length === 0) return;
+    if (positiveValueCount <= 0) return;
+
+    const eventKey = [
+      countryISO,
+      period,
+      graphType,
+      chartType,
+      graphData.labels.length,
+      graphData?.datasets?.length || 0,
+      positiveValueCount,
+    ].join("|");
+    if (trackedResultRef.current === eventKey) return;
+    trackedResultRef.current = eventKey;
+
+    const baseProperties = {
+      section: "customize_trends",
+      visualizationType: chartType,
+      chartDataType: graphType,
+      trendPeriod: trendPeriodLabel,
+      resultCount: positiveValueCount,
+      filters: {
+        country: countryISO,
+      },
+    };
+
+    trackEvent("search_completed", baseProperties);
+    trackEvent("visualization_viewed", baseProperties);
+  }, [
+    chartType,
+    countryISO,
+    graphData,
+    graphType,
+    hasValidSelection,
+    period,
+    positiveValueCount,
+    trendPeriodLabel,
+  ]);
+
   const exportValueLabelsPlugin = useMemo(
     () => ({
       id: "exportValueLabels",
@@ -603,6 +705,15 @@ const TrendsGraphs = ({ country = "guatemala" }) => {
             containerRef={containerRef}
             label="Descargar imagen de tendencias"
             onSS={setIsScreenShotTime}
+            analyticsProperties={{
+              section: "customize_trends",
+              visualizationType: chartType || activeChartType,
+              chartDataType: graphType || "",
+              trendPeriod: trendPeriodLabel,
+              filters: {
+                country: countryISO,
+              },
+            }}
           />
         </Box>
       </DragDropContext>

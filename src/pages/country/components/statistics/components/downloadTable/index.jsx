@@ -17,11 +17,25 @@ import folder from "../../../../../../assets/folder.png";
 import DownloadImage from "../../../../../../components/downloadImage";
 import { useContext } from "react";
 import StatisticsContext from "../../context";
+import { trackEvent } from "../../../../../../services/analytics";
 
-const DownloadTable = ({ satisticsRef, files, imageFileName }) => {
+const DownloadTable = ({
+  satisticsRef,
+  files,
+  imageFileName,
+  analyticsEventType = "infographic_downloaded",
+  analyticsProperties = {},
+}) => {
   const { setIsScreenShotTime } = useContext(StatisticsContext);
 
   let data = files ?? [];
+
+  const handleFileDownload = (file) => {
+    trackEvent("file_downloaded", {
+      resourceCode: file?.name || "period_xls",
+      resourceType: "xls",
+    });
+  };
 
   return (
     <>
@@ -80,6 +94,7 @@ const DownloadTable = ({ satisticsRef, files, imageFileName }) => {
                         size="lg"
                         as="a"
                         href={file?.url}
+                        onClick={() => handleFileDownload(file)}
                         bgColor="#ccc"
                         target="_blank"
                         rel="noreferrer noopener"
@@ -107,6 +122,8 @@ const DownloadTable = ({ satisticsRef, files, imageFileName }) => {
                 containerRef={satisticsRef}
                 fileName={imageFileName}
                 onSS={setIsScreenShotTime}
+                analyticsEventType={analyticsEventType}
+                analyticsProperties={analyticsProperties}
               />
             </AccordionButton>
           </AccordionItem>

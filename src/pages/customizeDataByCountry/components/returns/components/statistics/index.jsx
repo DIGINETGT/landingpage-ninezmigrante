@@ -1,5 +1,5 @@
 // REACT
-import React, { useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // REACT ROUTER DOM
 import { useParams } from "react-router-dom";
@@ -25,12 +25,15 @@ import { useQuery } from "@apollo/client";
 import { GET_TOP_DEPARTMENTS_STATS } from "../../../../../../utils/query/customizeStats";
 import depName from "../../../../../country/components/statistics/components/heatMap/components/modal/utils";
 import { toISO } from "../../../../../../utils/iso";
+import { trackEvent } from "../../../../../../services/analytics";
 
 const Statistics = ({ returns }) => {
   const { countryID } = useParams();
   const { period, year, list } = returns;
   const containerRef = useRef(null);
   const iso = toISO(countryID);
+  const trackedStartRef = useRef("");
+  const trackedResultRef = useRef("");
 
   const { data: topDepartmentsData } = useQuery(
     GET_TOP_DEPARTMENTS_STATS(iso, period, year),
@@ -49,6 +52,77 @@ const Statistics = ({ returns }) => {
     }
   );
   if (data.length > 5) data.length = 5;
+  const hasValidSelection =
+    Number(year) > 0 &&
+    Array.isArray(period) &&
+    period.length === 2 &&
+    Number(period[0]) > 0 &&
+    Number(period[1]) > 0 &&
+    Boolean(list) &&
+    list !== "default";
+
+  useEffect(() => {
+    if (!hasValidSelection) return;
+
+    const eventKey = [iso, year, period?.[0], period?.[1], list].join("|");
+    if (trackedStartRef.current === eventKey) return;
+    trackedStartRef.current = eventKey;
+
+    const baseProperties = {
+      section: "customize_top_departments",
+      visualizationType: "top_departments",
+      listType: list,
+      periodStartMonth: period?.[0],
+      periodEndMonth: period?.[1],
+      filters: {
+        country: iso,
+        year: Number(year),
+      },
+    };
+
+    trackEvent("filter_applied", baseProperties);
+    trackEvent("search_started", baseProperties);
+  }, [hasValidSelection, iso, list, period, year]);
+
+  useEffect(() => {
+    if (!hasValidSelection) return;
+    if (!topDepartmentsData?.topDepartmentsStats) return;
+
+    const resultCount = data.filter(
+      (department) => Number(department?.total || 0) > 0
+    ).length;
+
+    const eventKey = [
+      iso,
+      year,
+      period?.[0],
+      period?.[1],
+      list,
+      resultCount,
+    ].join("|");
+    if (trackedResultRef.current === eventKey) return;
+    trackedResultRef.current = eventKey;
+
+    const baseProperties = {
+      section: "customize_top_departments",
+      visualizationType: "top_departments",
+      listType: list,
+      periodStartMonth: period?.[0],
+      periodEndMonth: period?.[1],
+      resultCount,
+      filters: {
+        country: iso,
+        year: Number(year),
+      },
+    };
+
+    if (resultCount > 0) {
+      trackEvent("search_completed", baseProperties);
+      trackEvent("visualization_viewed", baseProperties);
+    } else {
+      trackEvent("search_without_results", baseProperties);
+    }
+  }, [data, hasValidSelection, iso, list, period, topDepartmentsData, year]);
 
   const sources = (
     <Stack
@@ -209,6 +283,15 @@ const Statistics = ({ returns }) => {
           containerRef={containerRef}
           label="Descargar imagen de comparación"
           onSS={setIsScreenShotTime}
+          analyticsProperties={{
+            section: "customize_top_departments",
+            visualizationType: "top_departments",
+            listType: list,
+            filters: {
+              country: iso,
+              year: Number(year),
+            },
+          }}
         />
       </Stack>
     </Box>

@@ -8,6 +8,7 @@ import {
 import { onError } from '@apollo/client/link/error';
 import { RetryLink } from '@apollo/client/link/retry';
 import { setContext } from '@apollo/client/link/context';
+import { trackEvent } from '../services/analytics';
 
 const logLink = new ApolloLink((operation, forward) => {
   const t0 = performance.now();
@@ -34,12 +35,22 @@ const authLink = setContext((_, { headers }) => ({
 
 const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors?.length) {
+    trackEvent('application_error', {
+      errorCode: 'graphql_response_error',
+      section: operation?.operationName || 'graphql',
+    });
     console.warn('GraphQL errors', {
       op: operation.operationName,
       graphQLErrors,
     });
   }
-  if (networkError) console.warn('Network error', networkError);
+  if (networkError) {
+    trackEvent('application_error', {
+      errorCode: 'graphql_network_error',
+      section: operation?.operationName || 'graphql',
+    });
+    console.warn('Network error', networkError);
+  }
 });
 
 const retryLink = new RetryLink({

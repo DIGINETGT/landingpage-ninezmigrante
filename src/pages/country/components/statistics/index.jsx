@@ -38,6 +38,7 @@ import useCountryStats from '../../../../hooks/useCountryStats';
 import { dateToString } from '../../../../utils/tools';
 import Loader from '../../../../components/loader';
 import BigStat from '../../../../components/common/BigStat';
+import { trackEvent } from '../../../../services/analytics';
 
 const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   const {
@@ -60,6 +61,7 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
 
   // Ref interna para leer el DOM y exponerla al padre
   const resultsRef = useRef(null);
+  const trackedResultKeyRef = useRef('');
   useImperativeHandle(forwardedRef, () => resultsRef.current);
 
   // Carga de datos
@@ -88,6 +90,37 @@ const Statistics = React.forwardRef(function Statistics(props, forwardedRef) {
   useEffect(() => {
     onLoadingChange && onLoadingChange(loading);
   }, [loading, onLoadingChange]);
+
+  useEffect(() => {
+    if (loading || error || !countryID || !year || period.length < 2) return;
+
+    const resultKey = `${countryID}-${year}-${period[0]}-${period[1]}-${totalCant}`;
+    if (trackedResultKeyRef.current === resultKey) return;
+
+    trackedResultKeyRef.current = resultKey;
+
+    const properties = {
+      section: 'country',
+      resultCount: Number(totalCant) || 0,
+      periodStartMonth: Number(period[0]),
+      periodEndMonth: Number(period[1]),
+      filters: {
+        country: countryID.toUpperCase(),
+        year: Number(year),
+      },
+    };
+
+    if ((Number(totalCant) || 0) > 0) {
+      trackEvent('search_completed', properties);
+      trackEvent('visualization_viewed', {
+        ...properties,
+        visualizationType: 'country_statistics',
+      });
+      return;
+    }
+
+    trackEvent('search_without_results', properties);
+  }, [countryID, error, loading, period, totalCant, year]);
 
   // Scroll INMEDIATO cuando se solicita (muestra skeletons abajo)
   useEffect(() => {

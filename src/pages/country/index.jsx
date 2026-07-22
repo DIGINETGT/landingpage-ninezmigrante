@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Progress } from '@chakra-ui/react'; // 👈 nuevo
 import Period from './components/period';
 import Statistics from './components/statistics';
+import { trackEvent } from '../../services/analytics';
 
 const CountryPage = () => {
   const [period, setPeriod] = useState([]);
@@ -11,6 +12,7 @@ const CountryPage = () => {
   const [shouldScroll, setShouldScroll] = useState(false);
   const [loadingStats, setLoadingStats] = useState(false); // 👈 nuevo
   const resultsRef = useRef(null);
+  const lastTrackedSearchRef = useRef('');
   const { countryID } = useParams();
 
   useEffect(() => {
@@ -21,6 +23,28 @@ const CountryPage = () => {
   useEffect(() => {
     if (period.length > 0 && year) setShouldScroll(true);
   }, [period, year]);
+
+  useEffect(() => {
+    if (!countryID || !year || period.length < 2) return;
+
+    const searchKey = `${countryID}-${year}-${period[0]}-${period[1]}`;
+    if (lastTrackedSearchRef.current === searchKey) return;
+
+    lastTrackedSearchRef.current = searchKey;
+
+    const properties = {
+      section: 'country',
+      periodStartMonth: Number(period[0]),
+      periodEndMonth: Number(period[1]),
+      filters: {
+        country: countryID.toUpperCase(),
+        year: Number(year),
+      },
+    };
+
+    trackEvent('filter_applied', properties);
+    trackEvent('search_started', properties);
+  }, [countryID, period, year]);
 
   return (
     <>

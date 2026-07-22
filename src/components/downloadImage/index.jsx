@@ -4,12 +4,15 @@ import { Stack, Text, Button, Image } from '@chakra-ui/react';
 import { DownloadIcon } from '@chakra-ui/icons';
 import folder from '../../assets/folder.png';
 import LoadSplash from '../loadSplash';
+import { trackEvent } from '../../services/analytics';
 
 const DownloadImage = ({
   label,
   containerRef,
   fileName = 'download.pdf',
   onSS = (screenshot) => {},
+  analyticsEventType = 'infographic_downloaded',
+  analyticsProperties = {},
 }) => {
   const waitForNextPaint = () =>
     new Promise((resolve) =>
@@ -149,6 +152,11 @@ const DownloadImage = ({
 
           pdf.addImage(data, 'JPEG', 0, 0, canvas.width, canvas.height);
           await pdf.save(fileName, { returnPromise: true });
+          await trackEvent(analyticsEventType, {
+            resourceCode: fileName.replace(/\.[^.]+$/, ''),
+            resourceType: 'pdf',
+            ...analyticsProperties,
+          });
         } finally {
           restoreLayout();
           onSS(false);

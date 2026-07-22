@@ -1,5 +1,5 @@
 // pages/.../mexico/index.jsx
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -28,6 +28,8 @@ import AgeRanges from '../../../../../pages/country/components/statistics/compon
 import TravelCondition from '../../../../../pages/country/components/statistics/components/travelCondition';
 import GraphFooter from '../../../../../components/graphFooter';
 import Loader from '../../../../../components/loader';
+import { toISO } from '../../../../../utils/iso';
+import { trackEvent } from '../../../../../services/analytics';
 
 const Mexico = () => {
   const { countryID } = useParams(); // "gt" | "hn" | "sv"
@@ -36,6 +38,9 @@ const Mexico = () => {
   const [currentYear, setCurrentYear] = useState('');
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const containerRef = useRef(null);
+  const trackedStartRef = useRef('');
+  const trackedResultRef = useRef('');
+  const countryISO = toISO(countryID);
 
   // normaliza a números
   const handleMonth = (range) =>
@@ -94,6 +99,57 @@ const Mexico = () => {
 
   const hasData =
     baseTotal > 0 || acd > 0 || noAcd > 0 || f > 0 || m > 0 || f2 > 0 || f3 > 0;
+
+  useEffect(() => {
+    if (!hasSelection) return;
+
+    const eventKey = [countryISO, selectedYear, fromM, toM].join('|');
+    if (trackedStartRef.current === eventKey) return;
+    trackedStartRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_mexico',
+      visualizationType: 'detained_mexico',
+      borderSource: 'mexico',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    trackEvent('filter_applied', baseProperties);
+    trackEvent('search_started', baseProperties);
+  }, [countryISO, fromM, hasSelection, selectedYear, toM]);
+
+  useEffect(() => {
+    if (!hasSelection || loading) return;
+
+    const eventKey = [countryISO, selectedYear, fromM, toM, baseTotal].join('|');
+    if (trackedResultRef.current === eventKey) return;
+    trackedResultRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_mexico',
+      visualizationType: 'detained_mexico',
+      borderSource: 'mexico',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      resultCount: baseTotal,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    if (baseTotal > 0) {
+      trackEvent('search_completed', baseProperties);
+      trackEvent('visualization_viewed', baseProperties);
+    } else {
+      trackEvent('search_without_results', baseProperties);
+    }
+  }, [baseTotal, countryISO, fromM, hasSelection, loading, selectedYear, toM]);
 
   const sources = (
     <Stack
@@ -413,7 +469,19 @@ const Mexico = () => {
             {isScreenShotTime && <GraphFooter responsive compact />}
           </Box>
           {!isScreenShotTime && (
-            <DownloadTable files={files} satisticsRef={containerRef} />
+            <DownloadTable
+              files={files}
+              satisticsRef={containerRef}
+              analyticsProperties={{
+                section: 'borders_mexico',
+                visualizationType: 'detained_mexico',
+                borderSource: 'mexico',
+                filters: {
+                  country: countryISO,
+                  year: selectedYear,
+                },
+              }}
+            />
           )}
         </StatisticsContext.Provider>
       </Stack>

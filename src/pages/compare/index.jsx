@@ -10,6 +10,7 @@ import GraphFooter from '../../components/graphFooter';
 import StatisticsContext from '../country/components/statistics/context';
 import LastDate from '../../components/lastUpdate';
 import { GET_COMPARE_COUNTRY_STATS } from '../../utils/query/compareStats';
+import { trackEvent } from '../../services/analytics';
 
 const shortMonthNames = [
   '',
@@ -73,6 +74,8 @@ const ComparePage = () => {
 
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
   const satisticsRef = useRef(null);
+  const trackedCompareStartRef = useRef('');
+  const trackedCompareResultRef = useRef('');
 
   const onChange = (id, data) => {
     setOptions((prevOptions) => ({ ...prevOptions, [id]: data }));
@@ -271,6 +274,87 @@ const ComparePage = () => {
         ' y '
       )}.`
     : null;
+
+  useEffect(() => {
+    if (!validSelections.length || validSelections.length !== Number(countValue)) {
+      return;
+    }
+
+    const compareKey = validSelections
+      .map((item) => `${item.key}:${item.country}-${item.year}-${item.period?.join('-')}`)
+      .join('|');
+
+    if (trackedCompareStartRef.current === compareKey) return;
+
+    trackedCompareStartRef.current = compareKey;
+
+    const filters = {
+      country: validSelections.map((item) => item.country.toUpperCase()).join(','),
+      year: Number(validSelections[0]?.year) || undefined,
+    };
+
+    trackEvent('filter_applied', {
+      section: 'compare',
+      selectionCount: validSelections.length,
+      periodStartMonth: Number(validSelections[0]?.period?.[0]) || undefined,
+      periodEndMonth: Number(validSelections[0]?.period?.[1]) || undefined,
+      filters,
+    });
+
+    trackEvent('search_started', {
+      section: 'compare',
+      selectionCount: validSelections.length,
+      filters,
+    });
+  }, [countValue, validSelections]);
+
+  useEffect(() => {
+    if (
+      !validSelections.length ||
+      validSelections.length !== Number(countValue) ||
+      compareLoading
+    ) {
+      return;
+    }
+
+    if (!readySummaries.length || readySummaries.length !== Number(countValue)) {
+      return;
+    }
+
+    const resultKey = readySummaries
+      .map((item) => `${item.key}:${item.total}`)
+      .join('|');
+
+    if (trackedCompareResultRef.current === resultKey) return;
+
+    trackedCompareResultRef.current = resultKey;
+
+    const filters = {
+      country: validSelections.map((item) => item.country.toUpperCase()).join(','),
+      year: Number(validSelections[0]?.year) || undefined,
+    };
+
+    const totalResults = readySummaries.reduce(
+      (acc, item) => acc + (Number(item.total) || 0),
+      0
+    );
+
+    const baseProperties = {
+      section: 'compare',
+      selectionCount: readySummaries.length,
+      resultCount: totalResults,
+      visualizationType: 'compare_statistics',
+      filters,
+    };
+
+    if (totalResults > 0) {
+      trackEvent('search_completed', baseProperties);
+      trackEvent('visualization_viewed', baseProperties);
+      return;
+    }
+
+    trackEvent('search_without_results', baseProperties);
+  }, [compareLoading, countValue, readySummaries, validSelections]);
 
   const sources = (
     <Stack

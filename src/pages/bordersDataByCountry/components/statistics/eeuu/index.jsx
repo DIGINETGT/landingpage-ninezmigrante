@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   Stack,
@@ -23,6 +23,8 @@ import Loader from '../../../../../components/loader';
 import { monthNames } from '../../../../../hooks/fetch';
 import BigStat from '../../../../../components/common/BigStat';
 import { formatInt } from '../../../../../utils/numbers';
+import { toISO } from '../../../../../utils/iso';
+import { trackEvent } from '../../../../../services/analytics';
 
 // Hook que ya hiciste
 import { useUSDetained } from './hooks';
@@ -127,9 +129,12 @@ const EEUU = () => {
   const [currentYear, setCurrentYear] = useState('');
   const [period, setPeriod] = useState([]); // [from, to] como números 1..12
   const [isScreenShotTime, setIsScreenShotTime] = useState(false);
+  const trackedStartRef = useRef('');
+  const trackedResultRef = useRef('');
 
   const { countryID } = useParams(); // "gt" | "hn" | "sv"
   const containerRef = useRef(null);
+  const countryISO = toISO(countryID);
 
   // Normaliza a números
   const handleMonth = (range) =>
@@ -230,6 +235,66 @@ const EEUU = () => {
     Number(dataPerMonth?.totalMes ?? 0) > 0 ||
     Object.values(dataPerDeps?.acm || {}).some((v) => Number(v) > 0) ||
     Object.values(dataPerDeps?.noacm || {}).some((v) => Number(v) > 0);
+
+  useEffect(() => {
+    if (!hasSelection) return;
+
+    const eventKey = [countryISO, selectedYear, fromM, toM].join('|');
+    if (trackedStartRef.current === eventKey) return;
+    trackedStartRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_eeuu',
+      visualizationType: 'detained_eeuu',
+      borderSource: 'eeuu',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    trackEvent('filter_applied', baseProperties);
+    trackEvent('search_started', baseProperties);
+  }, [countryISO, fromM, hasSelection, selectedYear, toM]);
+
+  useEffect(() => {
+    if (!hasSelection || loading) return;
+
+    const resultTotal = Number(dataPerMonth?.totalMes ?? 0);
+    const eventKey = [countryISO, selectedYear, fromM, toM, resultTotal].join('|');
+    if (trackedResultRef.current === eventKey) return;
+    trackedResultRef.current = eventKey;
+
+    const baseProperties = {
+      section: 'borders_eeuu',
+      visualizationType: 'detained_eeuu',
+      borderSource: 'eeuu',
+      periodStartMonth: fromM,
+      periodEndMonth: toM,
+      resultCount: resultTotal,
+      filters: {
+        country: countryISO,
+        year: selectedYear,
+      },
+    };
+
+    if (resultTotal > 0) {
+      trackEvent('search_completed', baseProperties);
+      trackEvent('visualization_viewed', baseProperties);
+    } else {
+      trackEvent('search_without_results', baseProperties);
+    }
+  }, [
+    countryISO,
+    dataPerMonth,
+    fromM,
+    hasSelection,
+    loading,
+    selectedYear,
+    toM,
+  ]);
 
   return (
     <Box width='100%' padding='40px'>
@@ -453,7 +518,19 @@ const EEUU = () => {
             {isScreenShotTime && <GraphFooter responsive compact />}
           </Box>
           {!isScreenShotTime && (
-            <DownloadTable files={files} satisticsRef={containerRef} />
+            <DownloadTable
+              files={files}
+              satisticsRef={containerRef}
+              analyticsProperties={{
+                section: 'borders_eeuu',
+                visualizationType: 'detained_eeuu',
+                borderSource: 'eeuu',
+                filters: {
+                  country: countryISO,
+                  year: selectedYear,
+                },
+              }}
+            />
           )}
         </StatisticsContext.Provider>
       </Stack>
